@@ -7,7 +7,7 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true,
+    "noPropertyAccessFromIndexSignature": false,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
@@ -17,6 +17,7 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "target": "ES2022",
+    "types": ["node"],
     "module": "ES2022",
     "useDefineForClassFields": false,
     "lib": [

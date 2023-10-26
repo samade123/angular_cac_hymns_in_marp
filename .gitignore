@@ -44,3 +44,8 @@ Thumbs.db
 # dotenv environment variables file
 .env
 .env.test
+.vercel
+.env*.local
+.vscode/extensions.json
+.vscode/launch.json
+.vscode/tasks.json

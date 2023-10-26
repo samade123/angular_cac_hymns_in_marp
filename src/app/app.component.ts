@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { GrabNotiondbService } from './grab-notiondb.service';
 
 @Component({
   selector: 'app-root',
@@ -7,4 +8,8 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'marp-hymns';
+
+  // constructor(private service: GrabNotiondbService) {
+  //   // service.logNotionKeys();
+  // }
 }

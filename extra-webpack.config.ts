@@ -35,7 +35,7 @@ export default (
     config.plugins.push(
       new CopyPlugin({
         patterns: [
-          { from: "src/api", to: "../api" },
+          { from: "src/api", to: "../../api" },
         ],
       }),);
   }

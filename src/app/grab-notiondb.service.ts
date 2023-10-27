@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { catchError, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -7,12 +8,14 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 export class GrabNotiondbService {
   constructor(private http: HttpClient) {}
 
-  // async getFunctionData(functionName: string): Promise<any> {
-  //   const response = await this.http.get(
-  //     `http://localhost:3000/${functionName}`
-  //   );
-  //   return response.data;
-  // }
+  getFunctionData(functionName: string) {
+    return this.http.get(`http://localhost:3000/${functionName}`).pipe(
+      catchError((error) => {
+        console.log(error);
+        return throwError('Error');
+      })
+    );
+  }
 }
 
 // import { HttpClient, HttpHeaders } from '@angular/common/http';

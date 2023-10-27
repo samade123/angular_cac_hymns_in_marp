@@ -1,12 +1,10 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-// this is for localDev testing the actula folder will be in dist api
-
-export default function handler(
-  request: VercelRequest,
-  res: VercelResponse,
-) {
+export default function handler(request, res) {
   res.setHeader("Cache-Control", "max-age=0, s-maxage=86400");
 
+  // const { lat, long, name } = request.query;
+  // console.log(lat, long, name);
+
+  // var axios = require("axios");
   var key = process.env.DATABASE_ID;
 
   console.log(key)
@@ -35,4 +33,3 @@ export default function handler(
 //       console.error(error);
 //     });
 }
-

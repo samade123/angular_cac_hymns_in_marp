@@ -1,12 +1,24 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { catchError, throwError } from 'rxjs';
+import { Observable, catchError, throwError } from 'rxjs';
+import { StorageManagerService } from './storage-manager.service';
+
+export interface SimpleHymn {
+  id: string;
+  name: string;
+  last_edited_by: string;
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class GrabNotiondbService {
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    // private storageManagerService: StorageManagerService
+  ) {}
+
+
 
   getFunctionData(functionName: string) {
     return this.http.get(`http://localhost:3000/${functionName}`).pipe(
@@ -16,27 +28,23 @@ export class GrabNotiondbService {
       })
     );
   }
+
+  //   simplifyHymns(results: NotionPage[]): SimpleHymn[] {
+  //     return results.map((result) => {
+  //       // let name: string | notion.TitleProperty = result.properties.Name;
+  //       const name: ResultsProperty  = result.properties
+  //       // const name: ResultsProperty  = result.properties.Name.rich_text[0].text.content;
+
+  //       const last_edited_by = result.last_edited_by.id;
+
+  //       return {
+  //         id: result.id,
+  //         name,
+  //         last_edited_by,
+  //       };
+  //     });
+  //   }
+  //   private isTitleProperty(property: any): property is notion.TitleProperty {
+  //     return property.type === 'title';
+  //   }
 }
-
-// import { HttpClient, HttpHeaders } from '@angular/common/http';
-
-// const headers = new HttpHeaders({
-//   'Notion-Version': '2022-06-28',
-//   'Authorization': `Bearer YOUR_API_KEY`,
-//   'Accept': '*/*',
-//   'Cache-Control': 'no-cache',
-//   'Host': 'api.notion.com',
-//   'Accept-Encoding': 'gzip, deflate, br',
-//   'Connection': 'keep-alive',
-// });
-
-// constructor(private httpClient: HttpClient) {}
-
-// async getPages(databaseId: string): Promise<Page[]> {
-//   const response = await this.httpClient.get<Page[]>(
-//     `https://api.notion.com/v1/databases/${databaseId}/pages`,
-//     { headers }
-//   );
-
-//   return response.data;
-// }

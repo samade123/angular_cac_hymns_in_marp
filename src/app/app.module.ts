@@ -5,12 +5,13 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { GrabNotiondbService } from './grab-notiondb.service';
 import { HttpClientModule } from '@angular/common/http';
+import { StorageManagerService } from './storage-manager.service';
 
 @NgModule({
   declarations: [AppComponent],
   // imports: [BrowserModule, AppRoutingModule],
   imports: [BrowserModule, HttpClientModule],
-  providers: [GrabNotiondbService],
+  providers: [GrabNotiondbService, StorageManagerService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -93,3 +93,17 @@ export interface Number {
   type:  string;
   title: RichText[];
 }
+
+
+export interface SimpleHymn {
+  id: string;
+  name: string;
+  last_edited_time: Date;
+  hymnNumber: number;
+}
+
+
+export interface RequestOptions {
+  method: string;
+  redirect: RequestRedirect;
+}

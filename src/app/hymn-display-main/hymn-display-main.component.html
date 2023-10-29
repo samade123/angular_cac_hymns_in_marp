@@ -1,0 +1,15 @@
+<!-- <p>{{file}}</p> -->
+<!-- <div class="marp-wrapper" *ngIf="html.length > 0"> -->
+<div class="marp-wrapper">
+  <!--  -->
+  <div id="template-div" [innerHTML]='data' class='marpit'>
+
+  </div>
+</div>
+
+<style>
+  .marpit {
+    display: grid;
+    place-items: center;
+  }
+</style>

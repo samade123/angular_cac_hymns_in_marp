@@ -1,0 +1,20 @@
+<fieldset disabled>
+  <label for="hymn-search-input"></label>
+  <input type="text" id="hymn-search-input" placeholder="Search through hymns here">
+</fieldset>
+
+<section>
+  <div class="hymn-list-wrapper">
+    <div class="hymn-select-item" *ngFor="let hymn of simpleHymns; index as i; trackBy: hymnTrackbyFn"
+      [style]="'--hymn-number: '+hymn.hymnNumber" [attr.data-number]="hymn.hymnNumber" (click)="pickHymn(hymn.id)">
+      <div class="hymn-select-item__circle">
+        {{hymn.hymnNumber}}
+      </div>
+      <h3 class="hymn-select-item__title">
+        {{hymn.name}}
+      </h3>
+    </div>
+
+  </div>
+</section>
+

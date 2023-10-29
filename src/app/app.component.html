@@ -1,17 +1,18 @@
-<div *ngFor="let result of results">
+<header class="header">
+  CAC Hymns
+  <button (click)="getNotionResponse()">Reload</button>
+</header>
+<aside>
+  <app-hymn-sidebar [simpleHymns]="hymnsList" (selectedHymnId)="selectHymnId($event)"></app-hymn-sidebar>
+</aside>
+<main id="main">
+  <app-hymn-display-main [hymn]="selectedHymnObject" ></app-hymn-display-main>
+</main>
+<!-- <div *ngFor="let result of results; index as i; trackBy: notionPageTrackByFn">
   <div *ngIf="result['properties']['Name']['rich_text'][0]">
     {{result['properties']['Name']['rich_text'][0]['plain_text']| json}}
   </div>
+</div> -->
 
-  <!-- <div *ngIf='result["properties"]["Name"]["rich_text"]["text"]["content"]'></div> -->
-</div>
-
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * The content above * * * * * * * * * * * -->
-<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * -->
-<!-- * * * * * * * * * * and can be replaced. * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * End of Placeholder * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
 
 <!-- <router-outlet></router-outlet> -->

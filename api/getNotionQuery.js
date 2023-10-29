@@ -1,10 +1,8 @@
-
-import axios from 'axios';
-export default function handler(request, res) {
+const axios = require("axios");
+module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "max-age=0, s-maxage=86400");
   var databaseId = process.env.DATABASE_ID;
   var notionApiToken = process.env.NOTION_API_KEY;
-  // var axios = require("axios");
 
   // res.status(200).json({ database: key, notion: notion });
 

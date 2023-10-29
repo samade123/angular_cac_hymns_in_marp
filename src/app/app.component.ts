@@ -46,10 +46,7 @@ export class AppComponent implements OnInit {
 
       }
     }
-  }
-
-  private getNotionResponse(): void {
-    this.service.getFunctionData('api/getNotion.mjs').subscribe((response) => {
+    this.service.getFunctionData('api/getNotionQuery.js').subscribe((response) => {
       const notionResponse = response as NotionDBQuery;
       this.data = notionResponse;
       this.results = [...notionResponse.results];

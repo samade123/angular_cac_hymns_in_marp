@@ -1,0 +1,5 @@
+@import './card-div.scss';
+.header {
+  @extend .card-div;
+
+}

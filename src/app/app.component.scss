@@ -1,0 +1,25 @@
+@import './styles/card-div.scss';
+
+:host {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) 2fr;
+  grid-template-rows: 120px auto;
+  gap: 0 35px;
+
+  width: 100%;
+  max-width: 95vw;
+  height: 100%;
+  box-sizing: border-box;
+  margin-block: auto;
+  place-items: center stretch;
+
+  border-radius: 10px;
+  header {
+    grid-column: span 2;
+  }
+
+  aside, main {
+    @extend .card-div;
+    place-self: start stretch;
+  }
+}

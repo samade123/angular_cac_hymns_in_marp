@@ -2,7 +2,7 @@
 <!-- <div class="marp-wrapper" *ngIf="html.length > 0"> -->
 <div class="marp-wrapper">
   <!--  -->
-  <div id="template-div" [innerHTML]='data' class='marpit'>
+  <div id="template-div" *ngIf="html[0]" [innerHTML]='data' class='marpit'>
 
   </div>
 </div>

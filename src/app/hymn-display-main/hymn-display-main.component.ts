@@ -65,7 +65,7 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
           .getMarp(this.url)
           .then((file) => {
             this.file = file;
-            this.renderMarp()
+            this.renderMarp();
           })
           .catch((err) => {
             console.log(err);
@@ -136,10 +136,18 @@ section footer {
     }
     this.theme = this.marpit.themeSet.add(this.themeString);
     this.marpit.themeSet.default = this.theme;
-    window.addEventListener('resize', this.windowChanged);
+    window.addEventListener(
+      'resize',
+      () => {
+        this.windowChanged();
+      },
+      { once: true }
+    );
   }
 
   renderMarp(): void {
+
+    this.html = [];
     const { html, css } = this.marpit.render(this.file, {
       htmlAsArray: true,
     });

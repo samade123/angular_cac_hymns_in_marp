@@ -31,12 +31,13 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
     inlineSVG: false,
   });
   html: string | Array<any> | string[] = '';
-  data: SafeHtml;
+  data: SafeHtml[] =[];
   css: string;
   sheet = document.createElement('style');
   theme: Marpit.Theme;
   themeString: string;
   hymnDict: { [hymnNumber: string]: string } = {};
+  index = 0;
 
   ngOnInit(): void {
     document.body.appendChild(this.sheet);
@@ -154,6 +155,9 @@ section footer {
   color: #3333;
   grid-column: span 2;
 }
+section header {
+  display: none;
+}
 `;
 
     if (this.marpit.themeSet) {
@@ -172,16 +176,24 @@ section footer {
 
   renderMarp(): void {
     this.html = [];
+    this.data = [];
+    this.index = 0;
     const { html, css } = this.marpit.render(this.file, {
       htmlAsArray: true,
     });
     this.css = css;
     this.html = html;
-    let safeHtml = this.sanitizer.sanitize(SecurityContext.HTML, html[0]);
 
-    if (typeof safeHtml == 'string') {
-      this.data = safeHtml;
-    }
+
+    this.html.forEach((page,index)=>{
+
+      let safeHtml = this.sanitizer.sanitize(SecurityContext.HTML, html[index]);
+
+      if (typeof safeHtml == 'string') {
+        this.data.push(safeHtml);
+      }
+    })
+
     let tempDiv = document.getElementById('template-div');
 
     // if (tempDiv instanceof HTMLElement) {

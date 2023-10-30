@@ -2,7 +2,12 @@
 <!-- <div class="marp-wrapper" *ngIf="html.length > 0"> -->
 <div class="marp-wrapper">
   <!--  -->
-  <div id="template-div" *ngIf="html[0]" [innerHTML]='data' class='marpit'>
+  <div id="template-div" *ngIf="html[0]" [innerHTML]='data[index]' class='marpit'>
+  </div>
+  <div class="buttons " *ngIf="html[0]">
+    <button type="button" class="previous" [disabled]="index == 0" (click)="index = (index-1) % (data.length)">&larr;-</button>
+    <h4>{{index +1}} of {{data.length}}</h4>
+    <button type="button" class="previous" [disabled]="index == data.length-1" (click)="index = (index+1) % (data.length)">&rarr;</button>
 
   </div>
 </div>
@@ -11,5 +16,38 @@
   .marpit {
     display: grid;
     place-items: center;
+    z-index: 35;
+  }
+
+
+  .marp-wrapper {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .buttons {
+    position: absolute;
+    bottom: 5px;
+
+    display: grid;
+    place-content: center;
+    grid-template-columns: auto auto auto;
+    gap: 10px;
+    width: 100%;
+
+    margin: 0 auto;
+    /* background: #4441; */
+    color: #4444;
+    padding: 0;
+    border-radius: 10px;
+    z-index: 50;
+  }
+
+  .buttons button {
+    height: fit-content;
+    padding: 4px;
+  }
+  .buttons h4 {
+    margin: 0;
   }
 </style>

@@ -10,6 +10,7 @@ import { Result } from './../test-interface';
 import { GrabNotiondbService } from '../grab-notiondb.service';
 import { Marpit } from '@marp-team/marpit';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { StorageManagerService } from '../storage-manager.service';
 
 @Component({
   selector: 'app-hymn-display-main',
@@ -19,10 +20,12 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
   constructor(
     private service: GrabNotiondbService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private storageService: StorageManagerService
   ) {}
   @Input() hymn: Result;
   url = '';
+  hymnNumber = '';
   file = '';
   marpit = new Marpit({
     inlineSVG: false,
@@ -33,9 +36,20 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
   sheet = document.createElement('style');
   theme: Marpit.Theme;
   themeString: string;
+  hymnDict: { [hymnNumber: string]: string } = {};
 
   ngOnInit(): void {
     document.body.appendChild(this.sheet);
+    if (this.storageService.doesDataExist('hymn-dict')) {
+      let hymnDict = this.storageService.getData('hymn-dict');
+      if (
+        typeof hymnDict === 'object' &&
+        hymnDict !== null &&
+        Object.keys(hymnDict).every((key) => typeof key === 'string')
+      ) {
+        this.hymnDict = Object.assign(hymnDict);
+      }
+    }
     this.themeString = `
   /* @theme my-first-theme */
   section {
@@ -60,16 +74,27 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
         changes.hymn.currentValue.properties['Files & media']['files'][0][
           'file'
         ]['url'];
+      this.hymnNumber =
+        changes.hymn.currentValue.properties['Number']['title'][0][
+          'plain_text'
+        ];
       if (this.url) {
-        this.service
-          .getMarp(this.url)
-          .then((file) => {
-            this.file = file;
-            this.renderMarp();
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+        if (this.hymnDict[this.hymnNumber]) {
+          this.file = this.hymnDict[this.hymnNumber];
+          this.renderMarp();
+        } else {
+          this.service
+            .getMarp(this.url)
+            .then((file) => {
+              this.file = file;
+              this.hymnDict[this.hymnNumber] = this.file;
+              this.renderMarp();
+              this.storageService.storeData('hymn-dict', this.hymnDict);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
       }
     }
   }
@@ -146,7 +171,6 @@ section footer {
   }
 
   renderMarp(): void {
-
     this.html = [];
     const { html, css } = this.marpit.render(this.file, {
       htmlAsArray: true,

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { GrabNotiondbService } from './grab-notiondb.service';
+import { GrabNotiondbService } from './services/grab-notiondb.service';
 import { NotionDBQuery, Result, SimpleHymn } from './test-interface';
-import { StorageManagerService } from './storage-manager.service';
+import { StorageManagerService } from './services/storage-manager.service';
 import { addHours, isPast } from 'date-fns';
 
 @Component({

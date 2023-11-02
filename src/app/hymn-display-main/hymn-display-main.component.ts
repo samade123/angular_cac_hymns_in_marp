@@ -7,10 +7,11 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { Result } from './../test-interface';
-import { GrabNotiondbService } from '../grab-notiondb.service';
+import { GrabNotiondbService } from '../services/grab-notiondb.service';
 import { Marpit } from '@marp-team/marpit';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { StorageManagerService } from '../storage-manager.service';
+import { StorageManagerService } from '../services/storage-manager.service';
+import { PresentationToolsService } from '../services/presentation-tools.service';
 
 @Component({
   selector: 'app-hymn-display-main',

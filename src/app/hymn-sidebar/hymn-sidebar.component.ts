@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { SimpleHymn } from './../test-interface';
-import { GrabNotiondbService } from './../grab-notiondb.service';
+import { GrabNotiondbService } from '../services/grab-notiondb.service';
 
 @Component({
   selector: 'app-hymn-sidebar',

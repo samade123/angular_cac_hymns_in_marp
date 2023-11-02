@@ -3,9 +3,9 @@ import { BrowserModule } from '@angular/platform-browser';
 
 // import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { GrabNotiondbService } from './grab-notiondb.service';
+import { GrabNotiondbService } from './services/grab-notiondb.service';
 import { HttpClientModule } from '@angular/common/http';
-import { StorageManagerService } from './storage-manager.service';
+import { StorageManagerService } from './services/storage-manager.service';
 import { HymnSidebarComponent } from './hymn-sidebar/hymn-sidebar.component';
 import { HymnDisplayMainComponent } from './hymn-display-main/hymn-display-main.component';
 

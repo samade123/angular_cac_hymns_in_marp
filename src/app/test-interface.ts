@@ -99,11 +99,19 @@ export interface SimpleHymn {
   id: string;
   name: string;
   last_edited_time: Date;
-  hymnNumber: number;
+  hymnNumber: string;
 }
 
 
 export interface RequestOptions {
   method: string;
   redirect: RequestRedirect;
+}
+
+export interface SimpleHymnItem {
+  id: string;
+  name: string;
+  last_used_time: Date;
+  hymnNumber: string;
+  marp: string
 }

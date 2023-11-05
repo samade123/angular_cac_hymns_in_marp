@@ -1,6 +1,7 @@
 <header class="header">
   CAC Hymns
   <button (click)="getNotionResponse()">Reload</button>
+  <button type="button" (click)="pushToDb()">push to DB</button>
 </header>
 <aside [ngClass]="{'fullscreen': fullscreen}">
   <app-hymn-sidebar [simpleHymns]="hymnsList" (selectedHymnId)="selectHymnId($event)"></app-hymn-sidebar>

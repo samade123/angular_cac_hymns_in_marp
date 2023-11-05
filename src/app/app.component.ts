@@ -3,6 +3,7 @@ import { GrabNotiondbService } from './services/grab-notiondb.service';
 import { NotionDBQuery, Result, SimpleHymn } from './test-interface';
 import { StorageManagerService } from './services/storage-manager.service';
 import { addHours, isPast } from 'date-fns';
+import { IndexDbManagerService } from './services/index-db-manager.service';
 
 @Component({
   selector: 'app-root',
@@ -78,8 +79,7 @@ export class AppComponent implements OnInit {
       let newExpiry: Date = addHours(new Date(), 1);
       this.storageManagerService.storeData('last-request-date', newExpiry);
       this.hymnsList = this.service.simplifyHymns(this.results);
-
-      console.log(this.hymnsList);
+        this.dbService.storeNewHymnsList(this.hymnsList);
     });
   }
 }

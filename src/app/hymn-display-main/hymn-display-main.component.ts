@@ -1,8 +1,10 @@
 import {
   AfterViewInit,
   Component,
+  EventEmitter,
   Input,
   OnInit,
+  Output,
   SecurityContext,
   SimpleChanges,
 } from '@angular/core';
@@ -25,6 +27,10 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
     private storageService: StorageManagerService
   ) {}
   @Input() hymn: Result;
+  @Input() fullscreenState: Boolean;
+
+  @Output() fullscreenEmitter = new EventEmitter<boolean>();
+  // fullscreenState = false;
   url = '';
   hymnNumber = '';
   file = '';
@@ -99,6 +105,20 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
         }
       }
     }
+
+    if (changes.fullscreenState && !changes.fullscreenState.firstChange) {
+      if (this.fullscreenState) {
+        this.presentationService.openFullscreen();
+      } else {
+        this.presentationService.closeFullscreen();
+      }
+      this.updateSize();
+      this.renderMarp();
+    }
+  }
+
+  fullscreen(): void {
+    this.fullscreenEmitter.emit(!this.fullscreenState);
   }
 
   appendSvgToDivWithImportNode = (
@@ -135,7 +155,7 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
 /* @theme my-second-theme */
 section {
   width: ${main ? Math.floor((main.offsetWidth * 9) / 10) : '640'}px;
-  height: ${main ? Math.floor((window.innerHeight * 7) / 10) : '640'}px;
+  height: ${main ? Math.floor((window.innerHeight * 7.6) / 10) : '640'}px;
 }
 
 section :is(h1) {

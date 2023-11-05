@@ -16,6 +16,7 @@ export class AppComponent implements OnInit {
   results: Result[]; //define it here
   selectedHymnId: string = '';
   selectedHymnObject: Result;
+  fullscreen = false;
 
   constructor(
     private service: GrabNotiondbService,

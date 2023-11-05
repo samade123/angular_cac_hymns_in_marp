@@ -3,8 +3,8 @@
 :host {
   display: grid;
   grid-template-columns: minmax(150px, 1fr) 2fr;
-  grid-template-rows: 120px auto;
-  gap: 0 35px;
+  grid-template-rows: 45px 1fr;
+  gap: 10px 20px;
 
   width: 100%;
   max-width: 95vw;
@@ -12,14 +12,35 @@
   box-sizing: border-box;
   margin-block: auto;
   place-items: center stretch;
+  padding: 10px;
 
   border-radius: 10px;
   header {
     grid-column: span 2;
+
+    padding: 11px;
+    box-sizing: border-box;
+    height: 100%;
+    display: flex;
+    align-items: center;
   }
 
   aside, main {
     @extend .card-div;
-    place-self: start stretch;
+    place-self: stretch;
+  }
+
+  aside.fullscreen {
+    display: none;
+  }
+
+  main {
+    min-height: 60vh;
+    min-height: 60dvh;
+    min-height: 60svh;
+  &.fullscreen {
+    grid-column: span 2;
+    place-self: stretch;
+  }
   }
 }

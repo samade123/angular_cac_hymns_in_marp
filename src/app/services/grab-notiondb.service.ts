@@ -43,9 +43,7 @@ export class GrabNotiondbService {
           id: result.id,
           name,
           last_edited_time: result.last_edited_time,
-          hymnNumber: Number(
-            result.properties['Number']['title'][0]['plain_text']
-          ),
+          hymnNumber: result.properties['Number']['title'][0]['plain_text'],
         };
       });
   }

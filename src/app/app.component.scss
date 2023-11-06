@@ -2,7 +2,7 @@
 
 :host {
   display: grid;
-  grid-template-columns: minmax(150px, 1fr) 2fr;
+  grid-template-columns: auto 2fr;
   grid-template-rows: 45px 1fr;
   gap: 10px 20px;
 
@@ -16,7 +16,7 @@
 
   border-radius: 10px;
   header {
-    grid-column: span 2;
+    // grid-column: span 2;
 
     padding: 11px;
     box-sizing: border-box;
@@ -24,10 +24,20 @@
     display: flex;
     align-items: center;
   }
-
-  aside, main {
-    @extend .card-div;
+   main, aside {
+    // @extend .card-div;
     place-self: stretch;
+    padding: var(--padding-spacing), 5px;
+
+  }
+  aside {
+    width: clamp(150px, 25vw, 300px);
+    place-self: stretch;
+    // padding: var(--padding-spacing);
+    display: grid;
+    place-items: stretch;
+    grid-row: 1/span 2;
+    padding: 11px 0 0 0;
   }
 
   aside.fullscreen {
@@ -38,6 +48,9 @@
     min-height: 60vh;
     min-height: 60dvh;
     min-height: 60svh;
+    display: grid;
+
+    place-items: stretch;
   &.fullscreen {
     grid-column: span 2;
     place-self: stretch;

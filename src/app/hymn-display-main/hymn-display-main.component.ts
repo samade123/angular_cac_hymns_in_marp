@@ -14,6 +14,7 @@ import { Marpit } from '@marp-team/marpit';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { StorageManagerService } from '../services/storage-manager.service';
 import { PresentationToolsService } from '../services/presentation-tools.service';
+import { IndexDbManagerService } from '../services/index-db-manager.service';
 
 @Component({
   selector: 'app-hymn-display-main',
@@ -24,7 +25,9 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
   constructor(
     private service: GrabNotiondbService,
     private sanitizer: DomSanitizer,
-    private storageService: StorageManagerService
+    private storageService: StorageManagerService,
+    private presentationService: PresentationToolsService,
+    private dbStorageService: IndexDbManagerService
   ) {}
   @Input() hymn: Result;
   @Input() fullscreenState: Boolean;
@@ -39,7 +42,7 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
     inlineSVG: false,
   });
   html: string | Array<any> | string[] = '';
-  data: SafeHtml[] =[];
+  data: SafeHtml[] = [];
   css: string;
   sheet = document.createElement('style');
   theme: Marpit.Theme;
@@ -59,26 +62,12 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
         this.hymnDict = Object.assign(hymnDict);
       }
     }
-    this.themeString = `
-  /* @theme my-first-theme */
-  section {
-    width: 640px;
-    height: 360px;
-  }
-   section {
-    width: 640px;
-    height: 360px;
-  }
-  section :is(h1, h2) {
-    font-size: 1.4rem;
-  }
-  `;
+    this.themeString = this.presentationService.themeValueOne;
     this.theme = this.marpit.themeSet.add(this.themeString);
     this.marpit.themeSet.default = this.theme;
   }
-  ngOnChanges(changes: SimpleChanges) {
-    // console.log(changes)
-    if (!changes.hymn.firstChange) {
+  async ngOnChanges(changes: SimpleChanges) {
+    if (changes.hymn && !changes.hymn.firstChange) {
       this.url =
         changes.hymn.currentValue.properties['Files & media']['files'][0][
           'file'
@@ -88,9 +77,15 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
           'plain_text'
         ];
       if (this.url) {
-        if (this.hymnDict[this.hymnNumber]) {
-          this.file = this.hymnDict[this.hymnNumber];
+        // if (this.hymnDict[this.hymnNumber]) {
+        if (await this.dbStorageService.doesHymnExist(this.hymnNumber)) {
+          // this.file = this.hymnDict[this.hymnNumber];
+          this.dbStorageService.getHymnItem(this.hymnNumber).then((hymnItem)=> {
+            this.file = hymnItem.marp
+            hymnItem.last_used_time = new Date();
+            this.dbStorageService.storeData('simpleHymnItems', hymnItem);
           this.renderMarp();
+          })
         } else {
           this.service
             .getMarp(this.url)
@@ -98,7 +93,12 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
               this.file = file;
               this.hymnDict[this.hymnNumber] = this.file;
               this.renderMarp();
-              this.storageService.storeData('hymn-dict', this.hymnDict);
+              // this.storageService.storeData('hymn-dict', this.hymnDict);
+              let hymnItem = this.service.simplifyHymnItem(
+                this.hymn,
+                this.file
+              );
+              this.dbStorageService.storeData('simpleHymnItems', hymnItem);
             })
             .catch((err) => {
               console.log(err);

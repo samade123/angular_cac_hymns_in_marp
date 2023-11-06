@@ -47,4 +47,22 @@ export class HymnSidebarComponent implements OnInit {
   pickHymn(hymnId: string): void {
     this.selectedHymnId.emit(hymnId);
   }
+
+  focusInput():void {
+    animate({
+      from: '21deg',
+      to: '180deg',
+      duration: 600,
+      onUpdate: latest => this.inputFocusBgDeg = latest
+    })
+  }
+
+  loseFocus(): void {
+    animate({
+      from: '180deg',
+      to: '21deg',
+      duration: 600,
+      onUpdate: latest => this.inputFocusBgDeg = latest
+    })
+  }
 }

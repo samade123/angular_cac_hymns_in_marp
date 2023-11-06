@@ -1,6 +1,7 @@
 <fieldset [style.--background-grad-degree]="inputFocusBgDeg">
   <label for="hymn-search-input"></label>
-  <input type="text" id="hymn-search-input" placeholder="Search through hymns here">
+  <input type="text" id="hymn-search-input" placeholder="Search through hymns here" (focus)="focusInput()" (blur)="loseFocus()">
+  <!-- <div class="blank"></div> -->
 </fieldset>
 
 <section>
@@ -34,3 +35,6 @@
   </ng-template>
 </section>
 
+<section class="marp-controls">
+
+</section>

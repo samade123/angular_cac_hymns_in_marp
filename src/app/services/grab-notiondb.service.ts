@@ -1,7 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, catchError, throwError } from 'rxjs';
-import { Result, SimpleHymn, RequestOptions } from '../test-interface';
+import {
+  Result,
+  SimpleHymn,
+  RequestOptions,
+  SimpleHymnItem,
+} from '../test-interface';
 
 @Injectable({
   providedIn: 'root',
@@ -25,6 +30,22 @@ export class GrabNotiondbService {
   }
   simpleHymnsTrackByFn(index: number, hymn: SimpleHymn): string {
     return hymn.id;
+  }
+  simpleHymnItemsTrackByFn(index: number, hymn: SimpleHymnItem): string {
+    return hymn.id;
+  }
+
+  simplifyHymnItem(result: Result, marp: string): SimpleHymnItem {
+    const name: string = result.properties['Name']['rich_text'][0]
+      ? result.properties['Name']['rich_text'][0]['plain_text']
+      : 'n/a';
+    return {
+      id: result.id,
+      name,
+      last_used_time: new Date(),
+      marp,
+      hymnNumber: result.properties['Number']['title'][0]['plain_text'],
+    };
   }
 
   simplifyHymns(results: Result[]): SimpleHymn[] {

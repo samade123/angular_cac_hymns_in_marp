@@ -1,5 +1,5 @@
-@import './card-div.scss';
+// @import './card-div.scss';
 .header {
-  @extend .card-div;
-
+  // @extend .card-div;
+padding: var(--padding-spacing);
 }

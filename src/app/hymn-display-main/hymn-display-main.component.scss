@@ -1,0 +1,19 @@
+@use './../styles/card-div.scss'as *;
+
+div.marpit,
+div.marpit-placeholder {
+  @extend .card-div;
+
+}
+
+.marp-wrapper {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: stretch;
+
+  &.not-placeholder {
+    grid-template-rows: auto 1fr;
+
+  }
+}

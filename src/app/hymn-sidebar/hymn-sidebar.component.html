@@ -4,17 +4,33 @@
 </fieldset>
 
 <section>
-  <div class="hymn-list-wrapper">
-    <div class="hymn-select-item" *ngFor="let hymn of simpleHymns; index as i; trackBy: hymnTrackbyFn"
+  <div class="hymn-list-filter-wrapper">
+    <div class="hymn-list-filter" role="button" *ngFor="let button of buttonFilters"
+      [ngClass]="{'selected': button.selected}" (click)='filterHymns(button)'>{{button.name}}</div>
+  </div>
+  <div class="hymn-list-wrapper" *ngIf="buttonFilters[0].selected else allHymns">
+    <div class="hymn-select-item" *ngFor="let hymn of hymnItemsArr; index as i; trackBy: simpleHymnItemsTrackByFn"
       [style]="'--hymn-number: '+hymn.hymnNumber" [attr.data-number]="hymn.hymnNumber" (click)="pickHymn(hymn.id)">
-      <div class="hymn-select-item__circle">
+      <div class="hymn-select-item__number">
         {{hymn.hymnNumber}}
       </div>
       <h3 class="hymn-select-item__title">
         {{hymn.name}}
       </h3>
     </div>
-
   </div>
+  <ng-template #allHymns>
+    <div class="hymn-list-wrapper">
+      <div class="hymn-select-item" *ngFor="let hymn of allSimpleHymns; index as i; trackBy: hymnTrackbyFn"
+        [style]="'--hymn-number: '+hymn.hymnNumber" [attr.data-number]="hymn.hymnNumber" (click)="pickHymn(hymn.id)">
+        <div class="hymn-select-item__number">
+          {{hymn.hymnNumber}}
+        </div>
+        <h3 class="hymn-select-item__title">
+          {{hymn.name}}
+        </h3>
+      </div>
+    </div>
+  </ng-template>
 </section>
 

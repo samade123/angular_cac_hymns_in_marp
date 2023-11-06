@@ -39,13 +39,90 @@ fieldset input {
 }
 
 section {
-  border-top: 1px solid #3333;
+    // border-top: 1px solid #3333;
+
+    // min-height: 25vh;
+    // &:first-of-type {
+    // }
+
+    &:nth-of-type(2) {
+      // @extend .card-div;
+      place-self: end stretch;
+      min-height: 25vh;
+
+    }
 
 
+    .hymn-list-filter-wrapper {
+      display: flex;
+      justify-content: flex-start;
+      gap: 5px;
+      padding: 4px;
+      font-size: 1.1rem;
+
+      .hymn-list-filter {
+        padding: 1px 3px;
+        border-radius: var(--main-border-radius);
+
+        background-color: #f8f9fa;
+        border: 1px solid #f8f9fa;
+        border-radius: 4px;
+        color: #3c4043;
+        cursor: pointer;
+        font-family: arial, sans-serif;
+        font-size: 14px;
+        // height: 36px;
+        line-height: 27px;
+        // min-width: 54px;
+        // padding: 0 16px;
+        text-align: center;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+        white-space: pre;
+
+        &:hover,
+        &.selected {
+          cursor: pointer;
+          background: white;
+          color: color-mix(in srgb, var(--background-color), #130c0c 70%);
+
+          // box-shadow: rgba(0, 0, 0, .1) 0 1px 1px;
+          color: #202124;
+          border-color: #dadce0;
+        }
+
+        &:hover {
+
+          box-shadow: rgba(0, 0, 0, .1) 0 1px 1px;
+
+        }
+
+        &:focus {
+          border-color: #4285f4;
+          outline: none;
+        }
+      }
+
+      // &.selected {
+      //   background: white;
+      //   color: color-mix(in srgb, var(--background-color), #333 70%);
+      // }
+    }
+  }
 }
 
+
+
+
+
+
+
+
+
+
 li::marker {
-  content: " (" attr(data-number) ") - ";
+  content: " ("attr(data-number) ") - ";
   /* content: " (" attr(data-number) ") "; */
 
 }
@@ -54,10 +131,11 @@ div.hymn-select-item {
   display: grid;
   grid-template-columns: auto 1fr;
   place-items: center stretch;
-  gap: 0 5px;
-  padding-block: 3px;
+  gap: 6px 5px;
+  padding-block: 8px;
   padding-inline: 4px;
-  border-radius: 15px;
+  border-radius: 6px;
+  font-size: 1.2rem;
 }
 
 div.hymn-select-item:hover {
@@ -65,14 +143,20 @@ div.hymn-select-item:hover {
   background-color: #3331;
 }
 
-.hymn-select-item__circle {
-  background: black;
-  color: #f7f7f7;
-  border-radius: 50%;
-  padding: 11px 10px;
+.hymn-select-item__number {
   font-weight: 800;
+  font-size: 0.9em;
 }
+
+.hymn-select-item__date {}
 
 .hymn-select-item__title {
   text-align: center;
+  text-overflow: ellipsis;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  font-weight: 500;
+  margin: 0;
+  font-size: 0.8em;
 }

@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { SimpleHymn } from './../test-interface';
 import { GrabNotiondbService } from '../services/grab-notiondb.service';
+import { animate } from "popmotion"
 
 @Component({
   selector: 'app-hymn-sidebar',

@@ -30,11 +30,12 @@ fieldset input {
   z-index: 1;
   width: 100%;
   min-height: 25px;
-}
 
-input:focus {
+      &:focus {
   opacity: 1;
   transform: scale(1);
+      }
+    }
 }
 
 section {

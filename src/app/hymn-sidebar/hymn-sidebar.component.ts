@@ -9,7 +9,10 @@ import { animate } from "popmotion"
   styleUrls: ['./hymn-sidebar.component.scss'],
 })
 export class HymnSidebarComponent implements OnInit {
-  constructor(private notionService: GrabNotiondbService) {}
+  constructor(
+    private notionService: GrabNotiondbService,
+    private dBstorageServie: IndexDbManagerService
+  ) {}
   @Input() simpleHymns: SimpleHymn[];
   @Output() selectedHymnId = new EventEmitter<string>();
   hymnTrackbyFn = this.notionService.simpleHymnsTrackByFn;

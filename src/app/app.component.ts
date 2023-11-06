@@ -21,7 +21,8 @@ export class AppComponent implements OnInit {
 
   constructor(
     private service: GrabNotiondbService,
-    private storageManagerService: StorageManagerService
+    private storageManagerService: StorageManagerService,
+    private dbService: IndexDbManagerService
   ) {}
 
   notionPageTrackByFn = this.service.notionPageTrackByFn;
@@ -40,7 +41,6 @@ export class AppComponent implements OnInit {
       this.results = [...notionResponse.results];
       this.hymnsList = this.service.simplifyHymns(this.results);
 
-      console.log(this.results);
 
       if (!this.storageManagerService.doesDataExist('last-request-date')) {
         let newExpiry: Date = addHours(new Date(), 1);
@@ -59,6 +59,10 @@ export class AppComponent implements OnInit {
     }
   }
 
+  pushToDb():void {
+    this.dbService.storeNewHymnsList(this.hymnsList)
+  }
+
   selectHymnId(id: string): void {
     this.results.every((result) => {
       // console.log(result, id, result.id === id);
@@ -71,15 +75,17 @@ export class AppComponent implements OnInit {
   }
 
   getNotionResponse(): void {
-    this.service.getFunctionData('api/getNotionQuery.js').subscribe((response) => {
-      const notionResponse = response as NotionDBQuery;
-      this.data = notionResponse;
-      this.results = [...notionResponse.results];
-      this.storageManagerService.storeData('last-request', notionResponse);
-      let newExpiry: Date = addHours(new Date(), 1);
-      this.storageManagerService.storeData('last-request-date', newExpiry);
-      this.hymnsList = this.service.simplifyHymns(this.results);
+    this.service
+      .getFunctionData('api/getNotionQuery.js')
+      .subscribe((response) => {
+        const notionResponse = response as NotionDBQuery;
+        this.data = notionResponse;
+        this.results = [...notionResponse.results];
+        this.storageManagerService.storeData('last-request', notionResponse);
+        let newExpiry: Date = addHours(new Date(), 1);
+        this.storageManagerService.storeData('last-request-date', newExpiry);
+        this.hymnsList = this.service.simplifyHymns(this.results);
         this.dbService.storeNewHymnsList(this.hymnsList);
-    });
+      });
   }
 }

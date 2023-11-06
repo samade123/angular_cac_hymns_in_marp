@@ -29,6 +29,10 @@ export class IndexDbManagerService {
       console.log(hymn);
     });
   }
+  async returnAll(): Promise<SimpleHymn[]> {
+    const hymns = await db.table('simpleHymns').orderBy('hymnNumber').toArray()
+    return hymns
+  }
 
   async getLastFiveHymns(): Promise<SimpleHymnItem[]> {
     await db.on('ready', () => {});

@@ -31,6 +31,7 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
 
   @Output() fullscreenEmitter = new EventEmitter<boolean>();
   // fullscreenState = false;
+
   url = '';
   hymnNumber = '';
   file = '';

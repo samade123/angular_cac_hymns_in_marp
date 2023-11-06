@@ -8,12 +8,13 @@ import { HttpClientModule } from '@angular/common/http';
 import { StorageManagerService } from './services/storage-manager.service';
 import { HymnSidebarComponent } from './hymn-sidebar/hymn-sidebar.component';
 import { HymnDisplayMainComponent } from './hymn-display-main/hymn-display-main.component';
+import { IndexDbManagerService } from './services/index-db-manager.service';
 
 @NgModule({
   declarations: [AppComponent, HymnSidebarComponent, HymnDisplayMainComponent],
   // imports: [BrowserModule, AppRoutingModule],
   imports: [BrowserModule, HttpClientModule],
-  providers: [GrabNotiondbService, StorageManagerService],
+  providers: [GrabNotiondbService, StorageManagerService, IndexDbManagerService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

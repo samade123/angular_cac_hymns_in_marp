@@ -84,7 +84,7 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
             this.file = hymnItem.marp
             hymnItem.last_used_time = new Date();
             this.dbStorageService.storeData('simpleHymnItems', hymnItem);
-          this.renderMarp();
+            this.renderMarp();
           })
         } else {
           this.service
@@ -172,10 +172,11 @@ section li, section p {
   font-size: 0.85em;
 }
 section footer {
-  place-self: start end;
-  font-size: 0.8em;
+  place-self: self-end;
+  font-size: 0.55em;
   color: #3333;
   grid-column: span 2;
+  width: 100%;
 }
 section header {
   display: none;
@@ -206,15 +207,13 @@ section header {
     this.css = css;
     this.html = html;
 
-
-    this.html.forEach((page,index)=>{
-
+    this.html.forEach((page, index) => {
       let safeHtml = this.sanitizer.sanitize(SecurityContext.HTML, html[index]);
 
       if (typeof safeHtml == 'string') {
         this.data.push(safeHtml);
       }
-    })
+    });
 
     let tempDiv = document.getElementById('template-div');
 

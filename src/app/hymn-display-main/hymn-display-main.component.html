@@ -1,12 +1,20 @@
 <!-- <p>{{file}}</p> -->
 <!-- <div class="marp-wrapper" *ngIf="html.length > 0"> -->
-<div class="marp-wrapper">
+<div class="marp-wrapper" [ngClass]="{'not-placeholder': html[0]}">
   <!--  -->
-  <div id="template-div" *ngIf="html[0]" [innerHTML]='data[index]' class='marpit'>
+  <div id="template-div" *ngIf="html[0] else marpitPlcHldr" [innerHTML]='data[index]' class='marpit'>
   </div>
+
+  <ng-template #marpitPlcHldr>
+
+    <div class="marpit-placeholder">
+      <div class="marpit-placeholder__image"></div>
+    </div>
+  </ng-template>
+
   <div class="buttons " *ngIf="html[0]">
-    <button type="button" class="fullscreen"
-      (click)="fullscreen()">{{fullscreenState ? 'maximise' : 'minimise'}}</button>
+    <button type="button" class="fullscreen" (click)="fullscreen()">{{!fullscreenState ? 'maximise' :
+      'minimise'}}</button>
 
     <button type="button" class="previous" [disabled]="index == 0"
       (click)="index = (index-1) % (data.length)">&larr;-</button>
@@ -60,5 +68,4 @@
   .buttons h4 {
     margin: 0;
   }
-
 </style>

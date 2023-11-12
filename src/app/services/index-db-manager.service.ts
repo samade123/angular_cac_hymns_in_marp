@@ -29,29 +29,12 @@ export class IndexDbManagerService {
       console.log(hymn);
     });
   }
-  async returnAll(): Promise<SimpleHymn[]> {
-    const hymns = await db.table('simpleHymns').orderBy('hymnNumber').toArray()
-    return hymns
-  }
-
-  async getLastFiveHymns(): Promise<SimpleHymnItem[]> {
-    await db.on('ready', () => {});
-    const hymns = await db
-      .table('simpleHymnItems')
-      .orderBy('last_used_time')
-      .reverse()
-      .limit(5)
-      .toArray();
-    return hymns;
-  }
 
   async getHymnItem(
     hymnNumber: string,
     table: string = 'simpleHymnItems'
   ): Promise<SimpleHymnItem> {
-    const hymnItem = await db
-      .table(table)
-      .get({ hymnNumber: hymnNumber });
+    const hymnItem = await db.table(table).get({ hymnNumber: hymnNumber });
     if (hymnItem) {
       return hymnItem;
     } else {
@@ -87,12 +70,41 @@ export class IndexDbManagerService {
       .count();
     return count > 0;
   }
+
+  async doesHymnbyIdExist(id: string): Promise<boolean> {
+    await db.on('ready', () => {});
+    const count = await db
+      .table('simpleHymnItems')
+      .where('id')
+      .equals(id)
+      .count();
+    return count > 0;
+  }
+
   async listSimpleHymns(hymnNumber: string): Promise<SimpleHymn[]> {
     await db.on('ready', () => {});
     return await db
       .table('simpleHymns')
       .filter((hymn) => hymn.hymnNumber.includes(hymnNumber))
       .toArray();
+  }
+
+  async getLastFiveHymns(): Promise<SimpleHymnItem[]> {
+    await db.on('ready', () => {});
+    return await db
+      .table('simpleHymnItems')
+      .orderBy('last_used_time')
+      .reverse()
+      .limit(5)
+      .toArray() as SimpleHymnItem[];
+
+      // return hymns as SimpleHymnItem[];
+
+  }
+
+  async returnAll(): Promise<SimpleHymn[]> {
+    await db.on('ready', () => {});
+    return await db.table('simpleHymns').orderBy('hymnNumber').toArray();
   }
 
   // async clearAll(): Promise<void> {

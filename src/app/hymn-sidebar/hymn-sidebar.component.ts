@@ -35,14 +35,28 @@ export class HymnSidebarComponent implements OnInit {
   friends$ = liveQuery(() =>
     this.dBstorageServie.listSimpleHymns(this.searchQuery)
   );
+  allSimpleHymns$ = liveQuery(async () => {
+    return await this.dBstorageServie.returnAll();
+  });
+  hymnItemsArr$ = liveQuery(async () => {
+    return await this.dBstorageServie.getLastFiveHymns();
+    // return await db.table('simpleHymnItems')
+    //   .orderBy('last_used_time')
+    //   .reverse()
+    //   .limit(5)
+    //   .toArray() as SimpleHymnItem[];
+  });
 
   ngOnInit(): void {
     console.log('here');
-    this.dBstorageServie.getLastFiveHymns().then((arr) => {
-      this.hymnItemsArr = [...arr];
-    });
-    this.dBstorageServie.returnAll().then((arr) => {
-      this.allSimpleHymns = [...arr];
+
+    this.dBstorageServie.returnAll().then(async (arr) => {
+      if (arr.length == 0) {
+        await db.on('ready', () => {});
+        setTimeout(() => {
+          this.filterHymns(this.buttonFilters[1]);
+        }, 1000);
+      }
     });
   }
   filterHymns(buttonFilter: ButtonFilters): void {

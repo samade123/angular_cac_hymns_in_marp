@@ -3,7 +3,15 @@
 div.marpit,
 div.marpit-placeholder {
   @extend .card-div;
+  height: 55vh;
+  aspect-ratio: 4 / 3;
+  margin: auto;
 
+  &.fullscreen {
+    min-height: 75vh;
+    width: 85vw;
+    aspect-ratio: auto;
+  }
 }
 
 .marp-wrapper {

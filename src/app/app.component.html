@@ -1,4 +1,4 @@
-<header class="header">
+<header class="header" [ngClass]="{'fullscreen': fullscreen}" >
   CAC Hymns
   <button (click)="getNotionResponse()">Reload</button>
   <button type="button" (click)="pushToDb()">push to DB</button>

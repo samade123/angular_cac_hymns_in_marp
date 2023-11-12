@@ -151,29 +151,46 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
   }
 
   updateSize(): void {
-    let main = document.getElementById('main');
+    let main = document.getElementById('template-div');
+    let scale = 0.7;
+
     this.themeString = `
 /* @theme my-second-theme */
 section {
-  width: ${main ? Math.floor((main.offsetWidth * 9) / 10) : '640'}px;
-  height: ${main ? Math.floor((window.innerHeight * 7.6) / 10) : '640'}px;
+  width: ${
+    !this.fullscreenState
+      ? Math.floor(((scale + 0.3) * (window.innerHeight * 0.5 * 4)) / 3)
+      : Math.floor((scale + 0.1) * (window.innerWidth * 0.85))
+    // : Math.floor(((scale + 0.3) * (window.innerHeight * 0.8 * 4)) / 3)
+  }px;
+  height: ${
+    !this.fullscreenState
+      ? Math.floor((scale + 0.3) * (window.innerHeight * 0.5))
+      : Math.floor((scale + 0.3) * (window.innerHeight * 0.85))
+  }px;
+  display: grid;
 }
 
 section :is(h1) {
-  font-size: 1.2em;
+  font-size: ${!this.fullscreenState ? 1.2 * scale : '1.25'}em;
   margin: 0;
 }
 
 section :is(h2) {
-  font-size: 1em;
+  font-size: ${!this.fullscreenState ? 1 * scale : '1.05'}em;
+  margin: 0;
+}
+
+section :is(h3) {
+  font-size: ${!this.fullscreenState ? 0.9 * scale : '0.95'}em;
   margin: 0;
 }
 section li, section p {
-  font-size: 0.85em;
+  font-size: ${!this.fullscreenState ? 0.85 * scale : '0.93'}em;
 }
 section footer {
   place-self: self-end;
-  font-size: 0.55em;
+  font-size: ${!this.fullscreenState ? 0.55 * scale : '0.55'}em;
   color: #3333;
   grid-column: span 2;
   width: 100%;

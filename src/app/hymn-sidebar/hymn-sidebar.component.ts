@@ -22,8 +22,8 @@ export class HymnSidebarComponent implements OnInit {
   ) {}
   @Input() simpleHymns: SimpleHymn[];
   @Output() selectedHymnId = new EventEmitter<string>();
-  hymnItemsArr: SimpleHymnItem[];
-  allSimpleHymns: SimpleHymn[];
+  @Output() reload = new EventEmitter<void>();
+
   hymnTrackbyFn = this.notionService.simpleHymnsTrackByFn;
   simpleHymnItemsTrackByFn = this.notionService.simpleHymnItemsTrackByFn;
   buttonFilters: ButtonFilters[] = [

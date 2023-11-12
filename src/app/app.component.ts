@@ -41,7 +41,6 @@ export class AppComponent implements OnInit {
       this.results = [...notionResponse.results];
       this.hymnsList = this.service.simplifyHymns(this.results);
 
-
       if (!this.storageManagerService.doesDataExist('last-request-date')) {
         let newExpiry: Date = addHours(new Date(), 1);
         this.storageManagerService.storeData('last-request-date', newExpiry);

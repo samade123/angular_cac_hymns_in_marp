@@ -2,7 +2,9 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { SimpleHymn, SimpleHymnItem } from './../test-interface';
 import { GrabNotiondbService } from '../services/grab-notiondb.service';
 import { IndexDbManagerService } from '../services/index-db-manager.service';
-import { animate } from "popmotion"
+import { animate } from 'popmotion';
+import { liveQuery } from 'dexie';
+import { db } from './../db'; // You get a db with property table1 attached (because the schema is declared)
 
 export interface ButtonFilters {
   name: string;
@@ -28,7 +30,11 @@ export class HymnSidebarComponent implements OnInit {
     { name: 'Most recent', selected: true },
     { name: 'All Hymns', selected: false },
   ];
-  inputFocusBgDeg = '180deg'
+  inputFocusBgDeg = '180deg';
+  searchQuery: string = '';
+  friends$ = liveQuery(() =>
+    this.dBstorageServie.listSimpleHymns(this.searchQuery)
+  );
 
   ngOnInit(): void {
     console.log('here');
@@ -46,15 +52,16 @@ export class HymnSidebarComponent implements OnInit {
 
   pickHymn(hymnId: string): void {
     this.selectedHymnId.emit(hymnId);
+    this.searchQuery = '';
   }
 
-  focusInput():void {
+  focusInput(): void {
     animate({
       from: '21deg',
       to: '180deg',
       duration: 600,
-      onUpdate: latest => this.inputFocusBgDeg = latest
-    })
+      onUpdate: (latest) => (this.inputFocusBgDeg = latest),
+    });
   }
 
   loseFocus(): void {
@@ -62,7 +69,14 @@ export class HymnSidebarComponent implements OnInit {
       from: '180deg',
       to: '21deg',
       duration: 600,
-      onUpdate: latest => this.inputFocusBgDeg = latest
-    })
+      onUpdate: (latest) => (this.inputFocusBgDeg = latest),
+    });
+  }
+
+  queryDb(): void {
+    this.friends$ = liveQuery(() =>
+      this.dBstorageServie.listSimpleHymns(this.searchQuery)
+    );
+  }
   }
 }

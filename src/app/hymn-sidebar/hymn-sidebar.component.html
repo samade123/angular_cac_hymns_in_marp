@@ -1,7 +1,18 @@
 <fieldset [style.--background-grad-degree]="inputFocusBgDeg">
   <label for="hymn-search-input"></label>
-  <input type="text" id="hymn-search-input" placeholder="Search through hymns here" (focus)="focusInput()" (blur)="loseFocus()">
-  <!-- <div class="blank"></div> -->
+  <input type="text" id="hymn-search-input" placeholder="Search through hymns here" [(ngModel)]="searchQuery"
+    (ngModelChange)="queryDb()" (focus)="focusInput()" (blur)="loseFocus()">
+  <div class="blank" *ngIf="searchQuery.length > 0">
+    <div class="hymn-select-item" *ngFor="let hymn of friends$ | async; index as i; trackBy: hymnTrackbyFn"
+      (click)="pickHymn(hymn.id)">
+      <div class="hymn-select-item__number">
+        {{hymn.hymnNumber}}
+      </div>
+      <h3 class="hymn-select-item__title">
+        {{hymn.name}}
+      </h3>
+    </div>
+  </div>
 </fieldset>
 
 <section>

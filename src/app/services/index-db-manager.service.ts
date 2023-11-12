@@ -87,6 +87,13 @@ export class IndexDbManagerService {
       .count();
     return count > 0;
   }
+  async listSimpleHymns(hymnNumber: string): Promise<SimpleHymn[]> {
+    await db.on('ready', () => {});
+    return await db
+      .table('simpleHymns')
+      .filter((hymn) => hymn.hymnNumber.includes(hymnNumber))
+      .toArray();
+  }
 
   // async clearAll(): Promise<void> {
   //   await this.table('data').clear();

@@ -9,11 +9,12 @@ import { StorageManagerService } from './services/storage-manager.service';
 import { HymnSidebarComponent } from './hymn-sidebar/hymn-sidebar.component';
 import { HymnDisplayMainComponent } from './hymn-display-main/hymn-display-main.component';
 import { IndexDbManagerService } from './services/index-db-manager.service';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [AppComponent, HymnSidebarComponent, HymnDisplayMainComponent],
   // imports: [BrowserModule, AppRoutingModule],
-  imports: [BrowserModule, HttpClientModule],
+  imports: [BrowserModule, HttpClientModule, FormsModule],
   providers: [GrabNotiondbService, StorageManagerService, IndexDbManagerService],
   bootstrap: [AppComponent],
 })

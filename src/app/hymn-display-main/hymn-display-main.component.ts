@@ -33,6 +33,7 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
   @Input() fullscreenState: Boolean;
 
   @Output() fullscreenEmitter = new EventEmitter<boolean>();
+  @Output() failedFetch = new EventEmitter<Boolean>();
   // fullscreenState = false;
 
   url = '';
@@ -80,12 +81,14 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
         // if (this.hymnDict[this.hymnNumber]) {
         if (await this.dbStorageService.doesHymnExist(this.hymnNumber)) {
           // this.file = this.hymnDict[this.hymnNumber];
-          this.dbStorageService.getHymnItem(this.hymnNumber).then((hymnItem)=> {
-            this.file = hymnItem.marp
-            hymnItem.last_used_time = new Date();
-            this.dbStorageService.storeData('simpleHymnItems', hymnItem);
-            this.renderMarp();
-          })
+          this.dbStorageService
+            .getHymnItem(this.hymnNumber)
+            .then((hymnItem) => {
+              this.file = hymnItem.marp;
+              hymnItem.last_used_time = new Date();
+              this.dbStorageService.storeData('simpleHymnItems', hymnItem);
+              this.renderMarp();
+            });
         } else {
           this.service
             .getMarp(this.url)
@@ -102,6 +105,7 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
             })
             .catch((err) => {
               console.log(err);
+              this.failedFetch.emit();
             });
         }
       }

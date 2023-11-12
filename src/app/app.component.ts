@@ -103,4 +103,9 @@ export class AppComponent implements OnInit {
         this.dbService.storeNewHymnsList(this.hymnsList);
       });
   }
+
+  failedFetch(): void {
+    this.getNotionResponse();
+    this.selectHymnId(this.selectedHymnId);
+  }
 }

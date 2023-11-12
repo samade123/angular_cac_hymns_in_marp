@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { GrabNotiondbService } from './services/grab-notiondb.service';
 import { NotionDBQuery, Result, SimpleHymn } from './test-interface';
 import { StorageManagerService } from './services/storage-manager.service';
-import { addHours, isPast } from 'date-fns';
+import { addHours, isPast, isFuture } from 'date-fns';
 import { IndexDbManagerService } from './services/index-db-manager.service';
 
 @Component({
@@ -59,15 +59,30 @@ export class AppComponent implements OnInit {
     }
   }
 
-  pushToDb():void {
-    this.dbService.storeNewHymnsList(this.hymnsList)
+  pushToDb(): void {
+    this.dbService.storeNewHymnsList(this.hymnsList);
   }
 
   selectHymnId(id: string): void {
-    this.results.every((result) => {
-      // console.log(result, id, result.id === id);
+    this.selectedHymnId = id;
 
-      if (result.id === id) {
+    let currentExpiry = this.storageManagerService.getData(
+      'last-request-date'
+    ) as string;
+    this.dbService.doesHymnbyIdExist(this.selectedHymnId).then((exists) => {
+      if (!exists) {
+        if (isFuture(new Date(currentExpiry))) {
+         this.runThroughResults()
+        }
+      } else {
+        this.runThroughResults()
+      }
+    });
+  }
+
+  runThroughResults():void {
+    this.results.every((result) => {
+      if (result.id === this.selectedHymnId) {
         this.selectedHymnObject = result;
         return false;
       } else return true;

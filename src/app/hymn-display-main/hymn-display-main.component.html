@@ -1,7 +1,8 @@
 <!-- <p>{{file}}</p> -->
 <!-- <div class="marp-wrapper" *ngIf="html.length > 0"> -->
-<div class="marp-wrapper" [ngClass]="{'not-placeholder': html[0]}">
+<div class="marp-wrapper" id="marp" [ngClass]="{'not-placeholder': html[0]}">
   <!--  -->
+  <div id="template-div" *ngIf="html[0] else marpitPlcHldr" [innerHTML]='data[index]' class='marpit'
     [ngClass]="{'fullscreen': fullscreenState}">
   </div>
 

@@ -1,10 +1,10 @@
 <header class="header" [ngClass]="{'fullscreen': fullscreen}" >
   CAC Hymns
   <button (click)="getNotionResponse()">Reload</button>
-  <button type="button" (click)="pushToDb()">push to DB</button>
+  <!-- <button type="button" (click)="pushToDb()">push to DB</button> -->
 </header>
 <aside [ngClass]="{'fullscreen': fullscreen}">
-  <app-hymn-sidebar [simpleHymns]="hymnsList" (selectedHymnId)="selectHymnId($event)"></app-hymn-sidebar>
+  <app-hymn-sidebar [simpleHymns]="hymnsList" (selectedHymnId)="selectHymnId($event)" (reload)="getNotionResponse()"></app-hymn-sidebar>
 </aside>
 <main id="main" [ngClass]="{'fullscreen': fullscreen}">
   <app-hymn-display-main [hymn]="selectedHymnObject" [fullscreenState]="fullscreen" (fullscreenEmitter)="fullscreen = !fullscreen"></app-hymn-display-main>

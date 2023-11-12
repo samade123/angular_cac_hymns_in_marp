@@ -19,6 +19,7 @@
   <div class="hymn-list-filter-wrapper">
     <div class="hymn-list-filter" role="button" *ngFor="let button of buttonFilters"
       [ngClass]="{'selected': button.selected}" (click)='filterHymns(button)'>{{button.name}}</div>
+    <!-- <div class="reload-btn" (click)="reloadDb()"></div> -->
   </div>
   <div class="hymn-list-wrapper" *ngIf="buttonFilters[0].selected else allHymns">
     <div class="hymn-select-item" *ngFor="let hymn of hymnItemsArr; index as i; trackBy: simpleHymnItemsTrackByFn"

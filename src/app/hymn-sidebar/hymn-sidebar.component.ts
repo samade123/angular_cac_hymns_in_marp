@@ -78,5 +78,7 @@ export class HymnSidebarComponent implements OnInit {
       this.dBstorageServie.listSimpleHymns(this.searchQuery)
     );
   }
+  reloadDb(): void {
+    this.reload.emit();
   }
 }

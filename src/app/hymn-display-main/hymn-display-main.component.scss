@@ -6,6 +6,7 @@ div.marpit-placeholder {
   height: 55vh;
   aspect-ratio: 4 / 3;
   margin: auto;
+  border-radius: 2px;
 
   &.fullscreen {
     min-height: 75vh;
@@ -22,6 +23,57 @@ div.marpit-placeholder {
 
   &.not-placeholder {
     grid-template-rows: auto 1fr;
+    gap: 15px;
 
+  }
+
+  .marp-details {
+    border: 1px solid rgba(34, 34, 34, 0.1333333333);
+    background: #fff;
+    border-radius: 2px;
+    padding: 10px;
+    place-self: center;
+    display: grid;
+    gap: 10px;
+    place-items: start;
+
+
+    .buttons {
+      position: relative;
+    }
+
+    div[title="fullscreen"],
+    div[title="previous"],
+    .button-num-text,
+    div[title="next"],div[title="download"] {
+      display: grid;
+      place-items: center;
+      padding: 2px 3px;
+      border-radius: 2px;
+
+      &:hover:not(h4) {
+        cursor: pointer;
+        background: #3331;
+      }
+
+      &[aria-disabled="true"] {
+        opacity: 0.2;
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+
+      img {
+        width: 30px;
+        transition: width 0.2s ease-in;
+
+        &:hover {
+          width: 31px;
+        }
+      }
+    }
+  }
+
+  .marp-details.fullscreen {
+    display: none;
   }
 }

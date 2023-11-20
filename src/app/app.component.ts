@@ -4,6 +4,9 @@ import { NotionDBQuery, Result, SimpleHymn } from './test-interface';
 import { StorageManagerService } from './services/storage-manager.service';
 import { addHours, isPast, isFuture } from 'date-fns';
 import { IndexDbManagerService } from './services/index-db-manager.service';
+import { CommsService } from './services/comms.service';
+import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-root',
@@ -22,7 +25,9 @@ export class AppComponent implements OnInit {
   constructor(
     private service: GrabNotiondbService,
     private storageManagerService: StorageManagerService,
-    private dbService: IndexDbManagerService
+    private dbService: IndexDbManagerService,
+    private commService: CommsService,
+    private router: Router
   ) {}
 
   notionPageTrackByFn = this.service.notionPageTrackByFn;
@@ -83,6 +88,9 @@ export class AppComponent implements OnInit {
     this.results.every((result) => {
       if (result.id === this.selectedHymnId) {
         this.selectedHymnObject = result;
+        let number = this.selectedHymnObject.properties['Number']['title'][0]['plain_text']
+        this.router.navigate(['/home'], {queryParams: {number: number}});
+        this.commService.emitHymnData(this.selectedHymnObject)
         return false;
       } else return true;
     });

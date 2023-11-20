@@ -8,13 +8,14 @@ import {
   SecurityContext,
   SimpleChanges,
 } from '@angular/core';
-import { Result } from './../test-interface';
+import { Properties, Result, SimpleHymnItem } from './../test-interface';
 import { GrabNotiondbService } from '../services/grab-notiondb.service';
 import { Marpit } from '@marp-team/marpit';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { StorageManagerService } from '../services/storage-manager.service';
 import { PresentationToolsService } from '../services/presentation-tools.service';
 import { IndexDbManagerService } from '../services/index-db-manager.service';
+import { CommsService } from '../services/comms.service';
 
 @Component({
   selector: 'app-hymn-display-main',
@@ -27,7 +28,8 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
     private sanitizer: DomSanitizer,
     private storageService: StorageManagerService,
     private presentationService: PresentationToolsService,
-    private dbStorageService: IndexDbManagerService
+    private dbStorageService: IndexDbManagerService,
+    private commService: CommsService
   ) {}
   @Input() hymn: Result;
   @Input() fullscreenState: Boolean;
@@ -35,7 +37,7 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
   @Output() fullscreenEmitter = new EventEmitter<boolean>();
   @Output() failedFetch = new EventEmitter<Boolean>();
   // fullscreenState = false;
-
+  hymnItem: SimpleHymnItem;
   url = '';
   hymnNumber = '';
   file = '';
@@ -52,6 +54,16 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
   index = 0;
 
   ngOnInit(): void {
+    this.commService.subscriber$.subscribe((data: any) => {
+      if (typeof data === 'object' && 'properties' in data) {
+        // Since 'properties' exists, we know 'data' is of type 'Result'
+        const resultData: Result = data;
+        this.getHymn(resultData.properties);
+      } else {
+        // If 'properties' isn't there, 'data' isn't of type 'Result'
+        console.error('Invalid data received');
+      }
+    });
     document.body.appendChild(this.sheet);
     if (this.storageService.doesDataExist('hymn-dict')) {
       let hymnDict = this.storageService.getData('hymn-dict');
@@ -69,46 +81,49 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
   }
   async ngOnChanges(changes: SimpleChanges) {
     if (changes.hymn && !changes.hymn.firstChange) {
-      this.url =
-        changes.hymn.currentValue.properties['Files & media']['files'][0][
-          'file'
-        ]['url'];
-      this.hymnNumber =
-        changes.hymn.currentValue.properties['Number']['title'][0][
-          'plain_text'
-        ];
-      if (this.url) {
-        // if (this.hymnDict[this.hymnNumber]) {
-        if (await this.dbStorageService.doesHymnExist(this.hymnNumber)) {
-          // this.file = this.hymnDict[this.hymnNumber];
-          this.dbStorageService
-            .getHymnItem(this.hymnNumber)
-            .then((hymnItem) => {
-              this.file = hymnItem.marp;
-              hymnItem.last_used_time = new Date();
-              this.dbStorageService.storeData('simpleHymnItems', hymnItem);
-              this.renderMarp();
-            });
-        } else {
-          this.service
-            .getMarp(this.url)
-            .then((file) => {
-              this.file = file;
-              this.hymnDict[this.hymnNumber] = this.file;
-              this.renderMarp();
-              // this.storageService.storeData('hymn-dict', this.hymnDict);
-              let hymnItem = this.service.simplifyHymnItem(
-                this.hymn,
-                this.file
-              );
-              this.dbStorageService.storeData('simpleHymnItems', hymnItem);
-            })
-            .catch((err) => {
-              console.log(err);
-              this.failedFetch.emit();
-            });
-        }
-      }
+      this.getHymn(changes.hymn.currentValue.properties);
+      // this.url =
+      //   changes.hymn.currentValue.properties['Files & media']['files'][0][
+      //     'file'
+      //   ]['url'];
+      // this.hymnNumber =
+      //   changes.hymn.currentValue.properties['Number']['title'][0][
+      //     'plain_text'
+      //   ];
+      // if (this.url) {
+      //   // if (this.hymnDict[this.hymnNumber]) {
+      //   if (await this.dbStorageService.doesHymnExist(this.hymnNumber)) {
+      //     // this.file = this.hymnDict[this.hymnNumber];
+      //     this.dbStorageService
+      //       .getHymnItem(this.hymnNumber)
+      //       .then((hymnItem) => {
+      //         this.file = hymnItem.marp;
+      //         hymnItem.last_used_time = new Date();
+      //         this.dbStorageService.storeData('simpleHymnItems', hymnItem);
+      //         this.hymnItem = hymnItem;
+      //         this.renderMarp();
+      //       });
+      //   } else {
+      //     this.service
+      //       .getMarp(this.url)
+      //       .then((file) => {
+      //         this.file = file;
+      //         this.hymnDict[this.hymnNumber] = this.file;
+      //         this.renderMarp();
+      //         // this.storageService.storeData('hymn-dict', this.hymnDict);
+      //         let hymnItem = this.service.simplifyHymnItem(
+      //           this.hymn,
+      //           this.file
+      //         );
+      //         this.hymnItem = hymnItem;
+      //         this.dbStorageService.storeData('simpleHymnItems', hymnItem);
+      //       })
+      //       .catch((err) => {
+      //         console.log(err);
+      //         this.failedFetch.emit();
+      //       });
+      //   }
+      // }
     }
 
     if (changes.fullscreenState && !changes.fullscreenState.firstChange) {
@@ -119,6 +134,41 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
       }
       this.updateSize();
       this.renderMarp();
+    }
+  }
+
+  async getHymn(properties: Properties) {
+    this.url = properties['Files & media']['files'][0]['file']['url'];
+    this.hymnNumber = properties['Number']['title'][0]['plain_text'];
+    if (this.url) {
+      // if (this.hymnDict[this.hymnNumber]) {
+      if (await this.dbStorageService.doesHymnExist(this.hymnNumber)) {
+        // this.file = this.hymnDict[this.hymnNumber];
+        this.dbStorageService.getHymnItem(this.hymnNumber).then((hymnItem) => {
+          this.file = hymnItem.marp;
+          hymnItem.last_used_time = new Date();
+          this.dbStorageService.storeData('simpleHymnItems', hymnItem);
+          this.hymnItem = hymnItem;
+          this.renderMarp();
+        });
+      } else {
+        this.service
+          .getMarp(this.url)
+          .then((file) => {
+            this.file = file;
+            this.hymnDict[this.hymnNumber] = this.file;
+            this.renderMarp();
+            // this.storageService.storeData('hymn-dict', this.hymnDict);
+            let hymnItem = this.service.simplifyHymnItem(this.hymn, this.file);
+            this.hymnItem = hymnItem;
+
+            this.dbStorageService.storeData('simpleHymnItems', hymnItem);
+          })
+          .catch((err) => {
+            console.log(err);
+            this.failedFetch.emit();
+          });
+      }
     }
   }
 
@@ -173,6 +223,16 @@ section {
       : Math.floor((scale + 0.3) * (window.innerHeight * 0.85))
   }px;
   display: grid;
+  gap: 0.5rem 1.5em;
+  grid-template-columns: 1fr 1fr;
+}
+
+section:has(ol) {
+  grid-template-columns: 1fr 1fr;
+}
+
+section:has(ol) ol+p{
+  max-width: 45vw;
 }
 
 section :is(h1) {
@@ -201,6 +261,18 @@ section footer {
 }
 section header {
   display: none;
+}
+section:has(ol li:only-of-type) ol {
+  grid-column: span 1;
+}
+section p:only-of-type {
+  grid-column: span 2;
+}
+section ol:has(li:only-of-type) + p{
+  grid-column: span 1;
+}
+section ol:has(li:nth-of-type(2)) + p, section ol:has(li:nth-of-type(2)){
+  grid-column: span 2;
 }
 `;
 

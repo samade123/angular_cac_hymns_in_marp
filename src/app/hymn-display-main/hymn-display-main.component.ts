@@ -61,11 +61,11 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
       if (
         !('type' in data) &&
         typeof data === 'object' &&
-        'properties' in data
+        'properties' in data && 'id' in data
       ) {
         // Since 'properties' exists, we know 'data' is of type 'Result'
         const resultData: Result = data;
-        this.getHymn(resultData.properties);
+        this.getHymn(resultData.properties, resultData.id);
       } else {
         // If 'properties' isn't there, 'data' isn't of type 'Result'
         console.error('Invalid data received');
@@ -103,9 +103,9 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
     }
   }
 
-  async getHymn(properties: Properties) {
-    this.url = properties['Files & media']['files'][0]['file']['url'];
-    this.hymnNumber = properties['Number']['title'][0]['plain_text'];
+  async getHymn(hymnProperty: Properties, id: string = '') {
+    this.url = hymnProperty['Files & media']['files'][0]['file']['url'];
+    this.hymnNumber = hymnProperty['Number']['title'][0]['plain_text'];
     if (this.url) {
       // if (this.hymnDict[this.hymnNumber]) {
       if (await this.dbStorageService.doesHymnExist(this.hymnNumber)) {
@@ -125,7 +125,7 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
             this.hymnDict[this.hymnNumber] = this.file;
             this.renderMarp();
             // this.storageService.storeData('hymn-dict', this.hymnDict);
-            let hymnItem = this.service.simplifyHymnItem(this.hymn, this.file);
+            let hymnItem = this.service.simplifyHymnItem(hymnProperty, this.file, id);
             this.hymnItem = hymnItem;
 
             this.dbStorageService.storeData('simpleHymnItems', hymnItem);

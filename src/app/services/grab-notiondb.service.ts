@@ -6,6 +6,7 @@ import {
   SimpleHymn,
   RequestOptions,
   SimpleHymnItem,
+  Properties,
 } from '../test-interface';
 
 @Injectable({
@@ -35,16 +36,16 @@ export class GrabNotiondbService {
     return hymn.id;
   }
 
-  simplifyHymnItem(result: Result, marp: string): SimpleHymnItem {
-    const name: string = result.properties['Name']['rich_text'][0]
-      ? result.properties['Name']['rich_text'][0]['plain_text']
+  simplifyHymnItem(hymnProperties: Properties, marp: string, id:string): SimpleHymnItem {
+    const name: string = hymnProperties['Name']['rich_text'][0]
+      ? hymnProperties['Name']['rich_text'][0]['plain_text']
       : 'n/a';
     return {
-      id: result.id,
+      id: id,
       name,
       last_used_time: new Date(),
       marp,
-      hymnNumber: result.properties['Number']['title'][0]['plain_text'],
+      hymnNumber: hymnProperties['Number']['title'][0]['plain_text'],
     };
   }
 

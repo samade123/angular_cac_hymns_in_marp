@@ -3,8 +3,8 @@ import { RouterModule, Routes, provideRouter, withComponentInputBinding } from '
 import { HymnDisplayMainComponent } from './hymn-display-main/hymn-display-main.component';
 
 const routes: Routes = [
-  { path: 'home', component: HymnDisplayMainComponent },
-  { path: '', redirectTo: '/home', pathMatch: 'full' },
+  { path: '', component: HymnDisplayMainComponent },
+  { path: 'home', redirectTo: '', pathMatch: 'full' },
 ];
 
 @NgModule({

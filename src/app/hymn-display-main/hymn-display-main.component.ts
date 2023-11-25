@@ -16,6 +16,7 @@ import { StorageManagerService } from '../services/storage-manager.service';
 import { PresentationToolsService } from '../services/presentation-tools.service';
 import { IndexDbManagerService } from '../services/index-db-manager.service';
 import { CommsService } from '../services/comms.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-hymn-display-main',
@@ -29,7 +30,8 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
     private storageService: StorageManagerService,
     private presentationService: PresentationToolsService,
     private dbStorageService: IndexDbManagerService,
-    private commService: CommsService
+    private commService: CommsService,
+    private activatedRoute: ActivatedRoute
   ) {}
   @Input() hymn: Result;
   @Input() fullscreenState: Boolean;
@@ -52,10 +54,15 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
   themeString: string;
   hymnDict: { [hymnNumber: string]: string } = {};
   index = 0;
+  routerMode: Boolean = true;
 
   ngOnInit(): void {
     this.commService.subscriber$.subscribe((data: any) => {
-      if (typeof data === 'object' && 'properties' in data) {
+      if (
+        !('type' in data) &&
+        typeof data === 'object' &&
+        'properties' in data
+      ) {
         // Since 'properties' exists, we know 'data' is of type 'Result'
         const resultData: Result = data;
         this.getHymn(resultData.properties);
@@ -78,52 +85,11 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
     this.themeString = this.presentationService.themeValueOne;
     this.theme = this.marpit.themeSet.add(this.themeString);
     this.marpit.themeSet.default = this.theme;
+    this.initCheckRouter();
   }
   async ngOnChanges(changes: SimpleChanges) {
     if (changes.hymn && !changes.hymn.firstChange) {
       this.getHymn(changes.hymn.currentValue.properties);
-      // this.url =
-      //   changes.hymn.currentValue.properties['Files & media']['files'][0][
-      //     'file'
-      //   ]['url'];
-      // this.hymnNumber =
-      //   changes.hymn.currentValue.properties['Number']['title'][0][
-      //     'plain_text'
-      //   ];
-      // if (this.url) {
-      //   // if (this.hymnDict[this.hymnNumber]) {
-      //   if (await this.dbStorageService.doesHymnExist(this.hymnNumber)) {
-      //     // this.file = this.hymnDict[this.hymnNumber];
-      //     this.dbStorageService
-      //       .getHymnItem(this.hymnNumber)
-      //       .then((hymnItem) => {
-      //         this.file = hymnItem.marp;
-      //         hymnItem.last_used_time = new Date();
-      //         this.dbStorageService.storeData('simpleHymnItems', hymnItem);
-      //         this.hymnItem = hymnItem;
-      //         this.renderMarp();
-      //       });
-      //   } else {
-      //     this.service
-      //       .getMarp(this.url)
-      //       .then((file) => {
-      //         this.file = file;
-      //         this.hymnDict[this.hymnNumber] = this.file;
-      //         this.renderMarp();
-      //         // this.storageService.storeData('hymn-dict', this.hymnDict);
-      //         let hymnItem = this.service.simplifyHymnItem(
-      //           this.hymn,
-      //           this.file
-      //         );
-      //         this.hymnItem = hymnItem;
-      //         this.dbStorageService.storeData('simpleHymnItems', hymnItem);
-      //       })
-      //       .catch((err) => {
-      //         console.log(err);
-      //         this.failedFetch.emit();
-      //       });
-      //   }
-      // }
     }
 
     if (changes.fullscreenState && !changes.fullscreenState.firstChange) {
@@ -174,6 +140,14 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
 
   fullscreen(): void {
     this.fullscreenEmitter.emit(!this.fullscreenState);
+    this.commService.emitFullscreen({
+      type: 'fullscreen',
+      value: !this.fullscreenState,
+    });
+
+    if (this.routerMode) {
+      this.fullscreenState = !this.fullscreenState;
+    }
   }
 
   appendSvgToDivWithImportNode = (
@@ -197,6 +171,20 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.updateSize();
+  }
+
+  private async initCheckRouter(): Promise<void> {
+    let routeHymnNumber: string | null =
+      this.activatedRoute.snapshot.queryParams.number;
+    if (typeof routeHymnNumber === 'string' && routeHymnNumber !== null) {
+      if (await this.dbStorageService.doesHymnExist(routeHymnNumber)) {
+        let hymn = await this.dbStorageService.getHymnItem(routeHymnNumber);
+        this.commService.emitHymnId({
+          type: 'hymnId',
+          value: hymn.id,
+        });
+      }
+    }
   }
 
   windowChanged(): void {

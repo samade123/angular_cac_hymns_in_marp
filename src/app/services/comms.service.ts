@@ -2,9 +2,8 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Result, SimpleHymnItem } from './../test-interface';
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CommsService {
   observer = new Subject();
@@ -13,5 +12,18 @@ export class CommsService {
   emitHymnData(data: Result) {
     this.observer.next(data);
   }
-  constructor() { }
+
+  emitFullscreen(screenState: { type: string; value: Boolean }) {
+    this.observer.next(screenState);
+  }
+
+  emitHymnId(
+    hymnId: { type: string; value: string } = {
+      type: 'hymnId',
+      value: '',
+    }
+  ) {
+    this.observer.next(hymnId);
+  }
+  constructor() {}
 }

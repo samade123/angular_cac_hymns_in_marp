@@ -27,40 +27,31 @@ export class AppComponent implements OnInit {
     private storageManagerService: StorageManagerService,
     private dbService: IndexDbManagerService,
     private commService: CommsService,
-    private router: Router
+    private router: Router,
   ) {}
 
   notionPageTrackByFn = this.service.notionPageTrackByFn;
 
   ngOnInit(): void {
-    if (!this.storageManagerService.doesDataExist('last-request')) {
-      this.getNotionResponse();
-      console.log('data not exists, requesting new');
-    } else {
-      console.log('using stored data');
+    this.initFullScreen();
+    this.initHymnNumberComms();
+    this.initHymnsDb();
+  }
 
-      const notionResponse = this.storageManagerService.getData(
-        'last-request'
-      ) as NotionDBQuery;
-      this.data = notionResponse;
-      this.results = [...notionResponse.results];
-      this.hymnsList = this.service.simplifyHymns(this.results);
-
-      if (!this.storageManagerService.doesDataExist('last-request-date')) {
-        let newExpiry: Date = addHours(new Date(), 1);
-        this.storageManagerService.storeData('last-request-date', newExpiry);
+  initFullScreen(): void {
+    this.commService.subscriber$.subscribe((data: any) => {
+      if (data.type && data.type == 'fullscreen') {
+        this.fullscreen = !this.fullscreen
       }
-    }
+    });
+  }
 
-    if (this.storageManagerService.doesDataExist('last-request-date')) {
-      let currentExpiry = this.storageManagerService.getData(
-        'last-request-date'
-      ) as string;
-      if (isPast(addHours(new Date(currentExpiry), 1))) {
-        this.getNotionResponse();
-        console.log('data expired, requesting new', currentExpiry);
+  initHymnNumberComms(): void {
+    this.commService.subscriber$.subscribe((data: any) => {
+      if (data.type && data.type == 'hymnId') {
+        this.selectHymnId(data.value)
       }
-    }
+    });
   }
 
   pushToDb(): void {
@@ -114,5 +105,36 @@ export class AppComponent implements OnInit {
   failedFetch(): void {
     this.getNotionResponse();
     this.selectHymnId(this.selectedHymnId);
+  }
+
+  private initHymnsDb(): void {
+    if (!this.storageManagerService.doesDataExist('last-request')) {
+      this.getNotionResponse();
+      console.log('data not exists, requesting new');
+    } else {
+      console.log('using stored data');
+
+      const notionResponse = this.storageManagerService.getData(
+        'last-request'
+      ) as NotionDBQuery;
+      this.data = notionResponse;
+      this.results = [...notionResponse.results];
+      this.hymnsList = this.service.simplifyHymns(this.results);
+
+      if (!this.storageManagerService.doesDataExist('last-request-date')) {
+        let newExpiry: Date = addHours(new Date(), 1);
+        this.storageManagerService.storeData('last-request-date', newExpiry);
+      }
+    }
+
+    if (this.storageManagerService.doesDataExist('last-request-date')) {
+      let currentExpiry = this.storageManagerService.getData(
+        'last-request-date'
+      ) as string;
+      if (isPast(addHours(new Date(currentExpiry), 1))) {
+        this.getNotionResponse();
+        console.log('data expired, requesting new', currentExpiry);
+      }
+    }
   }
 }

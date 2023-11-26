@@ -1,6 +1,8 @@
 const axios = require("axios");
 module.exports = async (req, res) => {
-  res.setHeader("Cache-Control", "max-age=0, s-maxage=86400");
+  // res.setHeader("Cache-Control", "max-age=0, s-maxage=86400");
+  res.setHeader("Cache-Control", "no-cache, no-store, private"); // Updated Cache-Control header
+
   var databaseId = process.env.DATABASE_ID;
   var notionApiToken = process.env.NOTION_API_KEY;
 

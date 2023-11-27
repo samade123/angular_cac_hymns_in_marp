@@ -7,7 +7,6 @@ import { IndexDbManagerService } from './services/index-db-manager.service';
 import { CommsService } from './services/comms.service';
 import { Router } from '@angular/router';
 
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -28,7 +27,7 @@ export class AppComponent implements OnInit {
     private storageManagerService: StorageManagerService,
     private dbService: IndexDbManagerService,
     private commService: CommsService,
-    private router: Router,
+    private router: Router
   ) {}
 
   notionPageTrackByFn = this.service.notionPageTrackByFn;
@@ -42,7 +41,7 @@ export class AppComponent implements OnInit {
   initFullScreen(): void {
     this.commService.subscriber$.subscribe((data: any) => {
       if (data.type && data.type == 'fullscreen') {
-        this.fullscreen = !this.fullscreen
+        this.fullscreen = !this.fullscreen;
       }
     });
   }
@@ -50,7 +49,7 @@ export class AppComponent implements OnInit {
   initHymnNumberComms(): void {
     this.commService.subscriber$.subscribe((data: any) => {
       if (data.type && data.type == 'hymnId') {
-        this.selectHymnId(data.value)
+        this.selectHymnId(data.value);
       }
     });
   }
@@ -68,10 +67,10 @@ export class AppComponent implements OnInit {
     this.dbService.doesHymnbyIdExist(this.selectedHymnId).then((exists) => {
       if (!exists) {
         if (isFuture(new Date(currentExpiry))) {
-         this.runThroughResults()
+          this.runThroughResults();
         }
       } else {
-        this.runThroughResults()
+        this.runThroughResults();
       }
     });
   }

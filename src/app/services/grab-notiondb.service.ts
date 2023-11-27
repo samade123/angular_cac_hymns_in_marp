@@ -36,16 +36,16 @@ export class GrabNotiondbService {
     return hymn.id;
   }
 
-  simplifyHymnItem(hymnProperties: Properties, marp: string, id:string): SimpleHymnItem {
-    const name: string = hymnProperties['Name']['rich_text'][0]
-      ? hymnProperties['Name']['rich_text'][0]['plain_text']
+  simplifyHymnItem(simpleHymn: SimpleHymn, marp: string,): SimpleHymnItem {
+    const name: string = simpleHymn.name
+      ? simpleHymn.name
       : 'n/a';
     return {
-      id: id,
+      id: simpleHymn.id,
       name,
       last_used_time: new Date(),
       marp,
-      hymnNumber: hymnProperties['Number']['title'][0]['plain_text'],
+      hymnNumber: simpleHymn.hymnNumber,
     };
   }
 
@@ -66,6 +66,7 @@ export class GrabNotiondbService {
           name,
           last_edited_time: result.last_edited_time,
           hymnNumber: result.properties['Number']['title'][0]['plain_text'],
+          url:  result.properties['Files & media']['files'][0]['file']['url']
         };
       });
   }

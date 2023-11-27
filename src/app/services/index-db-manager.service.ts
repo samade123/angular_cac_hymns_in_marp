@@ -48,6 +48,36 @@ export class IndexDbManagerService {
     }
   }
 
+  async getHymnItembyId(
+    id: string,
+    table: string = 'simpleHymns'
+  ): Promise<SimpleHymn> {
+    const hymnItem = await db.table(table).get(id);
+    if (hymnItem) {
+      return hymnItem;
+    } else {
+      // if (table == 'simpleHymns') {
+
+      return {
+        id: 'na',
+        name: 'na',
+        last_edited_time: new Date(),
+        hymnNumber: 'na',
+        url: '',
+      };
+      // }
+      // else {
+      //   return {
+      //     id: 'na',
+      //     name: 'na',
+      //     last_used_time: new Date(),
+      //     hymnNumber: 'na',
+      //     marp: ''
+      //   }
+      // }
+    }
+  }
+
   async updateHymnLastUsed(hymnItem: SimpleHymnItem): Promise<void> {
     hymnItem.last_used_time = new Date();
     await db.table('simpleHymnItems').put(hymnItem);
@@ -71,13 +101,12 @@ export class IndexDbManagerService {
     return count > 0;
   }
 
-  async doesHymnbyIdExist(id: string): Promise<boolean> {
+  async doesHymnbyIdExist(
+    id: string,
+    table: string = 'simpleHymnItems'
+  ): Promise<boolean> {
     await db.on('ready', () => {});
-    const count = await db
-      .table('simpleHymnItems')
-      .where('id')
-      .equals(id)
-      .count();
+    const count = await db.table(table).where('id').equals(id).count();
     return count > 0;
   }
 
@@ -91,15 +120,14 @@ export class IndexDbManagerService {
 
   async getLastFiveHymns(): Promise<SimpleHymnItem[]> {
     await db.on('ready', () => {});
-    return await db
+    return (await db
       .table('simpleHymnItems')
       .orderBy('last_used_time')
       .reverse()
       .limit(5)
-      .toArray() as SimpleHymnItem[];
+      .toArray()) as SimpleHymnItem[];
 
-      // return hymns as SimpleHymnItem[];
-
+    // return hymns as SimpleHymnItem[];
   }
 
   async returnAll(): Promise<SimpleHymn[]> {

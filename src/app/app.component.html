@@ -7,7 +7,7 @@
   <app-hymn-sidebar [simpleHymns]="hymnsList" (selectedHymnId)="selectHymnId($event)" (reload)="getNotionResponse()"></app-hymn-sidebar>
 </aside>
 <main id="main" [ngClass]="{'fullscreen': fullscreen}">
-  <!-- <app-hymn-display-main [hymn]="selectedHymnObject" [fullscreenState]="fullscreen" (fullscreenEmitter)="fullscreen = !fullscreen"></app-hymn-display-main> -->
+  <!-- <app-hymn-display-main [hymn]="selectedSimpleHymn" [fullscreenState]="fullscreen" (fullscreenEmitter)="fullscreen = !fullscreen"></app-hymn-display-main> -->
 
   <router-outlet ></router-outlet>
 

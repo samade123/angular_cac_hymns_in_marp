@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
-import { Result, SimpleHymnItem } from './../test-interface';
+import { Result, SimpleHymn, SimpleHymnItem } from './../test-interface';
 
 @Injectable({
   providedIn: 'root',
@@ -10,6 +10,10 @@ export class CommsService {
   public subscriber$ = this.observer.asObservable();
 
   emitHymnData(data: Result) {
+    this.observer.next(data);
+  }
+
+  emitSimpleHymnData(data: { type: string; value: SimpleHymn }){
     this.observer.next(data);
   }
 

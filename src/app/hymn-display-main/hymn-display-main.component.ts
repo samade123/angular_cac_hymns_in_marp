@@ -8,7 +8,7 @@ import {
   SecurityContext,
   SimpleChanges,
 } from '@angular/core';
-import { Properties, Result, SimpleHymnItem } from './../test-interface';
+import { Properties, Result, SimpleHymn, SimpleHymnItem } from './../test-interface';
 import { GrabNotiondbService } from '../services/grab-notiondb.service';
 import { Marpit } from '@marp-team/marpit';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -33,7 +33,7 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
     private commService: CommsService,
     private activatedRoute: ActivatedRoute
   ) {}
-  @Input() hymn: Result;
+  @Input() hymn: SimpleHymn;
   @Input() fullscreenState: Boolean;
 
   @Output() fullscreenEmitter = new EventEmitter<boolean>();
@@ -57,20 +57,7 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
   routerMode: Boolean = true;
 
   ngOnInit(): void {
-    this.commService.subscriber$.subscribe((data: any) => {
-      if (
-        !('type' in data) &&
-        typeof data === 'object' &&
-        'properties' in data && 'id' in data
-      ) {
-        // Since 'properties' exists, we know 'data' is of type 'Result'
-        const resultData: Result = data;
-        this.getHymn(resultData.properties, resultData.id);
-      } else {
-        // If 'properties' isn't there, 'data' isn't of type 'Result'
-        console.error('Invalid data received');
-      }
-    });
+    this.initSimpleHymn()
     document.body.appendChild(this.sheet);
     if (this.storageService.doesDataExist('hymn-dict')) {
       let hymnDict = this.storageService.getData('hymn-dict');
@@ -103,9 +90,31 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
     }
   }
 
-  async getHymn(hymnProperty: Properties, id: string = '') {
-    this.url = hymnProperty['Files & media']['files'][0]['file']['url'];
-    this.hymnNumber = hymnProperty['Number']['title'][0]['plain_text'];
+  initSimpleHymn() {
+    this.commService.subscriber$.subscribe((data: any) => {
+      if (
+        !('type' in data) &&
+        typeof data === 'object' &&
+        'properties' in data && 'id' in data
+      ) {
+        // Since 'properties' exists, we know 'data' is of type 'Result'
+        const resultData: Result = data;
+        let simpleHymn = this.service.simplifyHymns([resultData])[0]
+        this.getHymn(simpleHymn);
+      } else
+      if ('type' in data && data.type=='simpleHymn' ){
+        console.log(data)
+        let simpleHymn = data.value as SimpleHymn;
+        this.getHymn(simpleHymn)
+      }
+    });
+
+
+  }
+
+  async getHymn(simpleHymn: SimpleHymn) {
+    this.url = simpleHymn.url;
+    this.hymnNumber = simpleHymn.hymnNumber;
     if (this.url) {
       // if (this.hymnDict[this.hymnNumber]) {
       if (await this.dbStorageService.doesHymnExist(this.hymnNumber)) {
@@ -125,7 +134,7 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
             this.hymnDict[this.hymnNumber] = this.file;
             this.renderMarp();
             // this.storageService.storeData('hymn-dict', this.hymnDict);
-            let hymnItem = this.service.simplifyHymnItem(hymnProperty, this.file, id);
+            let hymnItem = this.service.simplifyHymnItem(simpleHymn, this.file);
             this.hymnItem = hymnItem;
 
             this.dbStorageService.storeData('simpleHymnItems', hymnItem);

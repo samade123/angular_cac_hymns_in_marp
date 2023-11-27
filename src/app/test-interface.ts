@@ -100,6 +100,7 @@ export interface SimpleHymn {
   name: string;
   last_edited_time: Date;
   hymnNumber: string;
+  url: string;
 }
 
 

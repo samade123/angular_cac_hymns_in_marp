@@ -20,6 +20,7 @@ export class AppComponent implements OnInit {
   results: Result[]; //define it here
   selectedHymnId: string = '';
   selectedHymnObject: Result;
+  selectedSimpleHymn: SimpleHymn;
   fullscreen = false;
 
   constructor(
@@ -75,16 +76,29 @@ export class AppComponent implements OnInit {
     });
   }
 
-  runThroughResults():void {
-    this.results.every((result) => {
-      if (result.id === this.selectedHymnId) {
-        this.selectedHymnObject = result;
-        let number = this.selectedHymnObject.properties['Number']['title'][0]['plain_text']
-        this.router.navigate(['/home'], {queryParams: {number: number}});
-        this.commService.emitHymnData(this.selectedHymnObject)
-        return false;
-      } else return true;
-    });
+  async runThroughResults(): Promise<void> {
+    // this.results.every((result) => {
+    //   if (result.id === this.selectedHymnId) {
+    //     this.selectedHymnObject = result;
+    //     return false;
+    //   } else return true;
+    // });
+
+    if (
+      await this.dbService.doesHymnbyIdExist(this.selectedHymnId, 'simpleHymns')
+    ) {
+      this.selectedSimpleHymn = await this.dbService.getHymnItembyId(
+        this.selectedHymnId,
+        'simpleHymns'
+      );
+      this.router.navigate(['/'], { queryParams: { number: this.selectedSimpleHymn.hymnNumber } });
+      this.commService.emitSimpleHymnData({
+        type: 'simpleHymn',
+        value: this.selectedSimpleHymn,
+      });
+    }
+
+    // this.commService.emitHymnData(this.selectedHymnObject);
   }
 
   getNotionResponse(): void {
@@ -108,23 +122,18 @@ export class AppComponent implements OnInit {
   }
 
   private initHymnsDb(): void {
-    if (!this.storageManagerService.doesDataExist('last-request')) {
+    if (!this.storageManagerService.doesDataExist('last-request-date')) {
       this.getNotionResponse();
       console.log('data not exists, requesting new');
     } else {
       console.log('using stored data');
 
-      const notionResponse = this.storageManagerService.getData(
-        'last-request'
-      ) as NotionDBQuery;
-      this.data = notionResponse;
-      this.results = [...notionResponse.results];
-      this.hymnsList = this.service.simplifyHymns(this.results);
-
-      if (!this.storageManagerService.doesDataExist('last-request-date')) {
-        let newExpiry: Date = addHours(new Date(), 1);
-        this.storageManagerService.storeData('last-request-date', newExpiry);
-      }
+      // const notionResponse = this.storageManagerService.getData(
+      //   'last-request'
+      // ) as NotionDBQuery;
+      // this.data = notionResponse;
+      // this.results = [...notionResponse.results];
+      // this.hymnsList = this.service.simplifyHymns(this.results);
     }
 
     if (this.storageManagerService.doesDataExist('last-request-date')) {

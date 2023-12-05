@@ -8,7 +8,12 @@ import {
   SecurityContext,
   SimpleChanges,
 } from '@angular/core';
-import { Properties, Result, SimpleHymn, SimpleHymnItem } from './../test-interface';
+import {
+  Properties,
+  Result,
+  SimpleHymn,
+  SimpleHymnItem,
+} from './../test-interface';
 import { GrabNotiondbService } from '../services/grab-notiondb.service';
 import { Marpit } from '@marp-team/marpit';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -17,6 +22,7 @@ import { PresentationToolsService } from '../services/presentation-tools.service
 import { IndexDbManagerService } from '../services/index-db-manager.service';
 import { CommsService } from '../services/comms.service';
 import { ActivatedRoute } from '@angular/router';
+import { RouterManagerService } from '../services/router-manager.service';
 
 @Component({
   selector: 'app-hymn-display-main',
@@ -31,8 +37,11 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
     private presentationService: PresentationToolsService,
     private dbStorageService: IndexDbManagerService,
     private commService: CommsService,
-    private activatedRoute: ActivatedRoute
-  ) {}
+    private activatedRoute: ActivatedRoute,
+    private routerManagerService: RouterManagerService
+  ) {
+    // trackNavigation = this.routerManagerService.trackNavigation;
+  }
   @Input() hymn: SimpleHymn;
   @Input() fullscreenState: Boolean;
 
@@ -55,9 +64,10 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
   hymnDict: { [hymnNumber: string]: string } = {};
   index = 0;
   routerMode: Boolean = true;
+  trackNavigation = this.routerManagerService.trackNavigation;
 
   ngOnInit(): void {
-    this.initSimpleHymn()
+    this.initSimpleHymn();
     document.body.appendChild(this.sheet);
     if (this.storageService.doesDataExist('hymn-dict')) {
       let hymnDict = this.storageService.getData('hymn-dict');
@@ -73,6 +83,13 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
     this.theme = this.marpit.themeSet.add(this.themeString);
     this.marpit.themeSet.default = this.theme;
     this.initCheckRouter();
+
+    this.routerManagerService.trackNavigation(()=>{
+      setTimeout(() => {
+        this.initCheckRouter();
+      }, 0);
+    });
+    // this.trackNavigation(()=>this.initCheckRouter);
   }
   async ngOnChanges(changes: SimpleChanges) {
     if (changes.hymn && !changes.hymn.firstChange) {
@@ -95,21 +112,20 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
       if (
         !('type' in data) &&
         typeof data === 'object' &&
-        'properties' in data && 'id' in data
+        'properties' in data &&
+        'id' in data
       ) {
         // Since 'properties' exists, we know 'data' is of type 'Result'
         const resultData: Result = data;
-        let simpleHymn = this.service.simplifyHymns([resultData])[0]
+        let simpleHymn = this.service.simplifyHymns([resultData])[0];
         this.getHymn(simpleHymn);
-      } else
-      if ('type' in data && data.type=='simpleHymn' ){
-        console.log(data)
+      } else if ('type' in data && data.type == 'simpleHymn') {
+        // console.log(data);
         let simpleHymn = data.value as SimpleHymn;
-        this.getHymn(simpleHymn)
+        this.getHymn(simpleHymn);
       }
     });
-
-
+    // this.routerManagerService.trackNavigation(this.initCheckRouter);
   }
 
   async getHymn(simpleHymn: SimpleHymn) {
@@ -156,6 +172,8 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
 
     if (this.routerMode) {
       this.fullscreenState = !this.fullscreenState;
+      this.updateSize();
+      this.renderMarp();
     }
   }
 
@@ -182,7 +200,8 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
     this.updateSize();
   }
 
-  private async initCheckRouter(): Promise<void> {
+   async initCheckRouter(): Promise<void> {
+    console.log('running')
     let routeHymnNumber: string | null =
       this.activatedRoute.snapshot.queryParams.number;
     if (typeof routeHymnNumber === 'string' && routeHymnNumber !== null) {

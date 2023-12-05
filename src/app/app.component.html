@@ -1,15 +1,17 @@
-<header class="header" [ngClass]="{'fullscreen': fullscreen}" >
+<header class="header" [ngClass]="{'fullscreen': fullscreen}">
+  <button type="button" title="go Back"><i class="pi pi-times"></i></button>
   CAC Hymns
   <!-- <button (click)="getNotionResponse()">Reload</button> -->
   <!-- <button type="button" (click)="pushToDb()">push to DB</button> -->
 </header>
 <aside [ngClass]="{'fullscreen': fullscreen}">
-  <app-hymn-sidebar [simpleHymns]="hymnsList" (selectedHymnId)="selectHymnId($event)" (reload)="getNotionResponse()"></app-hymn-sidebar>
+  <app-hymn-sidebar [simpleHymns]="hymnsList" (selectedHymnId)="selectHymnId($event)"
+    (reload)="getNotionResponse()"></app-hymn-sidebar>
 </aside>
 <main id="main" [ngClass]="{'fullscreen': fullscreen}">
-  <!-- <app-hymn-display-main [hymn]="selectedSimpleHymn" [fullscreenState]="fullscreen" (fullscreenEmitter)="fullscreen = !fullscreen"></app-hymn-display-main> -->
+<router-outlet/>
 
-  <router-outlet ></router-outlet>
+  <!-- </router-outlet> -->
 
 </main>
 <!-- <div *ngFor="let result of results; index as i; trackBy: notionPageTrackByFn">

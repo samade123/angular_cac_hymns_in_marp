@@ -28,6 +28,9 @@
     background: #fff;
     border-radius: 2px;
     padding: 10px;
+    button:first-child {
+      display: none;
+    }
 
     &.fullscreen {
       display: none;
@@ -62,7 +65,7 @@
     min-height: 60svh;
     display: grid;
 
-    place-items: stretch;
+    place-items: center stretch;
   &.fullscreen {
     min-height: 97vh;
     min-height: 97dvh;
@@ -73,4 +76,22 @@
     place-self: stretch;
   }
   }
+}
+
+@media only screen and (max-width: 600px) {
+  :host {
+    grid-template-rows: auto 1fr;
+    grid-template-columns: auto;
+
+    header {
+      button:first-child {
+        display: block;
+      }
+    }
+
+    aside {
+      display: none;
+    }
+  }
+
 }

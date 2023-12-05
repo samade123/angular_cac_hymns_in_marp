@@ -45,7 +45,8 @@ div.marpit-placeholder {
     div[title="fullscreen"],
     div[title="previous"],
     .button-num-text,
-    div[title="next"],div[title="download"] {
+    div[title="next"],
+    div[title="download"] {
       display: grid;
       place-items: center;
       padding: 2px 3px;
@@ -76,4 +77,22 @@ div.marpit-placeholder {
   .marp-details.fullscreen {
     display: none;
   }
+}
+
+
+@media only screen and (max-width: 600px) {
+
+  div.marpit,
+  div.marpit-placeholder {
+    height: auto;
+    width: 75vw;
+    // aspect-ratio: 4 / 3;
+    // margin: auto;
+    &.fullscreen {
+      min-height: 75vh;
+      width: 85vw;
+      aspect-ratio: auto;
+    }
+  }
+
 }

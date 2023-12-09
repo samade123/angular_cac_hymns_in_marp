@@ -9,6 +9,10 @@ export class CommsService {
   observer = new Subject();
   public subscriber$ = this.observer.asObservable();
 
+  mainAppObserver = new Subject();
+  public mainAppSubscriber$ = this.mainAppObserver.asObservable();
+
+
   emitHymnData(data: Result) {
     this.observer.next(data);
   }
@@ -28,6 +32,16 @@ export class CommsService {
     }
   ) {
     this.observer.next(hymnId);
+  }
+
+  emitHymnIdFromSidebar(
+    hymnId: { type: string; value: string } = {
+      type: 'hymnId',
+      value: '',
+    }
+  ) {
+    console.log('emiiing from sidebar')
+    this.mainAppObserver.next(hymnId);
   }
   constructor() {}
 }

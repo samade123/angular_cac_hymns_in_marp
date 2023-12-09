@@ -1,5 +1,7 @@
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
@@ -24,10 +26,13 @@ import { CommsService } from '../services/comms.service';
 import { ActivatedRoute } from '@angular/router';
 import { RouterManagerService } from '../services/router-manager.service';
 
+// import Marp from '@marp-team/marp-core';
+
 @Component({
   selector: 'app-hymn-display-main',
   templateUrl: './hymn-display-main.component.html',
   styleUrls: ['./hymn-display-main.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
   constructor(
@@ -38,7 +43,8 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
     private dbStorageService: IndexDbManagerService,
     private commService: CommsService,
     private activatedRoute: ActivatedRoute,
-    private routerManagerService: RouterManagerService
+    private routerManagerService: RouterManagerService,
+    private ref: ChangeDetectorRef
   ) {
     // trackNavigation = this.routerManagerService.trackNavigation;
   }
@@ -53,10 +59,12 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
   hymnNumber = '';
   file = '';
   marpit = new Marpit({
-    inlineSVG: false,
+    inlineSVG: true,
+    markdown: { breaks: true },
   });
   html: string | Array<any> | string[] = '';
   data: SafeHtml[] = [];
+  page: SafeHtml;
   css: string;
   sheet = document.createElement('style');
   theme: Marpit.Theme;
@@ -65,9 +73,12 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
   index = 0;
   routerMode: Boolean = true;
   trackNavigation = this.routerManagerService.trackNavigation;
+  subscribeOnceFlag: Boolean = false;
+  showHymns: Boolean = false;
 
   ngOnInit(): void {
     this.initSimpleHymn();
+    // this.renderMarp();
     document.body.appendChild(this.sheet);
     if (this.storageService.doesDataExist('hymn-dict')) {
       let hymnDict = this.storageService.getData('hymn-dict');
@@ -82,30 +93,34 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
     this.themeString = this.presentationService.themeValueOne;
     this.theme = this.marpit.themeSet.add(this.themeString);
     this.marpit.themeSet.default = this.theme;
+    // if(this.)
     this.initCheckRouter();
 
-    this.routerManagerService.trackNavigation(()=>{
-      setTimeout(() => {
-        this.initCheckRouter();
-      }, 0);
+    this.routerManagerService.trackNavigation(() => {
+      // if (!this.subscribeOnceFlag) {
+        this.subscribeOnceFlag = true;
+        setTimeout(() => {
+          this.initCheckRouter();
+        }, 0);
+      // }
     });
     // this.trackNavigation(()=>this.initCheckRouter);
   }
-  async ngOnChanges(changes: SimpleChanges) {
-    if (changes.hymn && !changes.hymn.firstChange) {
-      this.getHymn(changes.hymn.currentValue.properties);
-    }
+  // async ngOnChanges(changes: SimpleChanges) {
+  //   if (changes.hymn && !changes.hymn.firstChange) {
+  //     this.getHymn(changes.hymn.currentValue.properties);
+  //   }
 
-    if (changes.fullscreenState && !changes.fullscreenState.firstChange) {
-      if (this.fullscreenState) {
-        this.presentationService.openFullscreen();
-      } else {
-        this.presentationService.closeFullscreen();
-      }
-      this.updateSize();
-      this.renderMarp();
-    }
-  }
+  //   if (changes.fullscreenState && !changes.fullscreenState.firstChange) {
+  //     if (this.fullscreenState) {
+  //       this.presentationService.openFullscreen();
+  //     } else {
+  //       this.presentationService.closeFullscreen();
+  //     }
+  //     // this.updateSize();
+  //     // this.renderMarp();
+  //   }
+  // }
 
   initSimpleHymn() {
     this.commService.subscriber$.subscribe((data: any) => {
@@ -120,9 +135,11 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
         let simpleHymn = this.service.simplifyHymns([resultData])[0];
         this.getHymn(simpleHymn);
       } else if ('type' in data && data.type == 'simpleHymn') {
-        // console.log(data);
+        // console.log('testing can we receieve this', data.value)
         let simpleHymn = data.value as SimpleHymn;
-        this.getHymn(simpleHymn);
+        // if (simpleHymn.hymnNumber != this.hymnNumber) {
+          this.getHymn(simpleHymn);
+        // }
       }
     });
     // this.routerManagerService.trackNavigation(this.initCheckRouter);
@@ -130,6 +147,10 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
 
   async getHymn(simpleHymn: SimpleHymn) {
     this.url = simpleHymn.url;
+    if (simpleHymn.hymnNumber === this.hymnNumber) {
+      return;
+    }
+    console.log('checking');
     this.hymnNumber = simpleHymn.hymnNumber;
     if (this.url) {
       // if (this.hymnDict[this.hymnNumber]) {
@@ -139,6 +160,7 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
           this.file = hymnItem.marp;
           hymnItem.last_used_time = new Date();
           this.dbStorageService.storeData('simpleHymnItems', hymnItem);
+          this.showHymns = true;
           this.hymnItem = hymnItem;
           this.renderMarp();
         });
@@ -146,8 +168,10 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
         this.service
           .getMarp(this.url)
           .then((file) => {
+            // console.log(file, 'file for this hymn')
             this.file = file;
             this.hymnDict[this.hymnNumber] = this.file;
+            this.showHymns = true;
             this.renderMarp();
             // this.storageService.storeData('hymn-dict', this.hymnDict);
             let hymnItem = this.service.simplifyHymnItem(simpleHymn, this.file);
@@ -156,7 +180,7 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
             this.dbStorageService.storeData('simpleHymnItems', hymnItem);
           })
           .catch((err) => {
-            console.log(err);
+            console.error(err);
             this.failedFetch.emit();
           });
       }
@@ -172,8 +196,8 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
 
     if (this.routerMode) {
       this.fullscreenState = !this.fullscreenState;
-      this.updateSize();
-      this.renderMarp();
+      // this.updateSize();
+      // this.renderMarp();
     }
   }
 
@@ -200,44 +224,32 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
     this.updateSize();
   }
 
-   async initCheckRouter(): Promise<void> {
-    console.log('running')
+  async initCheckRouter(): Promise<void> {
+    // console.log('running');
     let routeHymnNumber: string | null =
       this.activatedRoute.snapshot.queryParams.number;
     if (typeof routeHymnNumber === 'string' && routeHymnNumber !== null) {
-      if (await this.dbStorageService.doesHymnExist(routeHymnNumber)) {
-        let hymn = await this.dbStorageService.getHymnItem(routeHymnNumber);
-        this.commService.emitHymnId({
-          type: 'hymnId',
-          value: hymn.id,
-        });
+      // if (await this.dbStorageService.doesHymnExist(routeHymnNumber)) {
+      //   let hymn = await this.dbStorageService.getHymnItem(routeHymnNumber);
+      //   this.commService.emitHymnId({
+      //     type: 'hymnId',
+      //     value: hymn.id,
+      //   });
+      // }
+      // else
+      if (await this.dbStorageService.doesHymnExist(routeHymnNumber, 'simpleHymns')){
+        let simpleHymn = await this.dbStorageService.getSimpleHymnByNumber(routeHymnNumber) as SimpleHymn;
+        if (simpleHymn) {
+          this.getHymn(simpleHymn)
+        }
       }
     }
   }
 
-  windowChanged(): void {
-    this.updateSize();
-    this.renderMarp();
-  }
-
   updateSize(): void {
-    let main = document.getElementById('template-div');
-    let scale = 0.7;
-
     this.themeString = `
 /* @theme my-second-theme */
 section {
-  width: ${
-    !this.fullscreenState
-      ? Math.floor(((scale + 0.3) * (window.innerHeight * 0.5 * 4)) / 3)
-      : Math.floor((scale + 0.1) * (window.innerWidth * 0.85))
-    // : Math.floor(((scale + 0.3) * (window.innerHeight * 0.8 * 4)) / 3)
-  }px;
-  height: ${
-    !this.fullscreenState
-      ? Math.floor((scale + 0.3) * (window.innerHeight * 0.5))
-      : Math.floor((scale + 0.3) * (window.innerHeight * 0.85))
-  }px;
   display: grid;
   gap: 0.5rem 1.5em;
   grid-template-columns: 1fr 1fr;
@@ -247,30 +259,20 @@ section:has(ol) {
   grid-template-columns: 1fr 1fr;
 }
 
-section:has(ol) ol+p{
-  max-width: 45vw;
-}
-
 section :is(h1) {
-  font-size: ${!this.fullscreenState ? 1.2 * scale : '1.25'}em;
   margin: 0;
 }
 
 section :is(h2) {
-  font-size: ${!this.fullscreenState ? 1 * scale : '1.05'}em;
   margin: 0;
 }
 
 section :is(h3) {
-  font-size: ${!this.fullscreenState ? 0.9 * scale : '0.95'}em;
   margin: 0;
 }
-section li, section p {
-  font-size: ${!this.fullscreenState ? 0.85 * scale : '0.93'}em;
-}
+
 section footer {
   place-self: self-end;
-  font-size: ${!this.fullscreenState ? 0.55 * scale : '0.55'}em;
   color: #3333;
   grid-column: span 2;
   width: 100%;
@@ -291,22 +293,19 @@ section ol:has(li:nth-of-type(2)) + p, section ol:has(li:nth-of-type(2)){
   grid-column: span 2;
 }
 `;
-
     if (this.marpit.themeSet) {
       this.marpit.themeSet.clear();
     }
     this.theme = this.marpit.themeSet.add(this.themeString);
     this.marpit.themeSet.default = this.theme;
-    window.addEventListener(
-      'resize',
-      () => {
-        this.windowChanged();
-      },
-      { once: true }
-    );
+  }
+
+  checkHtml(): Boolean {
+    return this.file.length > 0 || this.html[0] || this.url.length > 0;
   }
 
   renderMarp(): void {
+    this.updateSize();
     this.html = [];
     this.data = [];
     this.index = 0;
@@ -316,20 +315,25 @@ section ol:has(li:nth-of-type(2)) + p, section ol:has(li:nth-of-type(2)){
     this.css = css;
     this.html = html;
 
-    this.html.forEach((page, index) => {
-      let safeHtml = this.sanitizer.sanitize(SecurityContext.HTML, html[index]);
+    // console.log(this.html, this.css, 'are the css and html files working')
 
-      if (typeof safeHtml == 'string') {
+    this.html.forEach((page, index) => {
+      // let safeHtml = this.sanitizer.sanitize(SecurityContext.HTML, html[index]);
+      let safeHtml = this.sanitizer.bypassSecurityTrustHtml(html[index]) as {
+        changingThisBreaksApplicationSecurity: String;
+      };
+
+      // console.log(typeof safeHtml['changingThisBreaksApplicationSecurity'] )
+      if (
+        typeof safeHtml['changingThisBreaksApplicationSecurity'] == 'string'
+      ) {
         this.data.push(safeHtml);
+        // console.log(this.data)
       }
     });
-
-    let tempDiv = document.getElementById('template-div');
-
-    // if (tempDiv instanceof HTMLElement) {
-    //   this.appendSvgToDivWithImportNode(this.html[0], tempDiv);
-    // }
-
     this.sheet.innerHTML = css;
+    console.log(this.data);
+    this.ref.markForCheck();
+    console.log('finished render');
   }
 }

@@ -6,6 +6,7 @@ import { addHours, isPast, isFuture } from 'date-fns';
 import { IndexDbManagerService } from './services/index-db-manager.service';
 import { CommsService } from './services/comms.service';
 import { Router } from '@angular/router';
+import { RouterManagerService } from './services/router-manager.service';
 
 @Component({
   selector: 'app-root',
@@ -27,10 +28,12 @@ export class AppComponent implements OnInit {
     private storageManagerService: StorageManagerService,
     private dbService: IndexDbManagerService,
     private commService: CommsService,
-    private router: Router
+    private router: Router,
+    private routerManagerService: RouterManagerService,
   ) {}
 
   notionPageTrackByFn = this.service.notionPageTrackByFn;
+  isHymnPage = this.routerManagerService.isHymnPage;
 
   ngOnInit(): void {
     this.initFullScreen();
@@ -49,9 +52,23 @@ export class AppComponent implements OnInit {
   initHymnNumberComms(): void {
     this.commService.subscriber$.subscribe((data: any) => {
       if (data.type && data.type == 'hymnId') {
-        this.selectHymnId(data.value);
+        // console.log(this.router.url, this.router.url.includes('?number'));
+
+        if (this.router.url.includes('?number')){
+          this.selectHymnId(data.value);
+        }
       }
     });
+
+    this.commService.mainAppSubscriber$.subscribe((data: any) => {
+      if (data.type && data.type == 'hymnIdFromSidebar') {
+        console.log(data.value, 'worked')
+          this.selectHymnId(data.value);
+      }
+    });
+
+
+
   }
 
   pushToDb(): void {
@@ -76,13 +93,6 @@ export class AppComponent implements OnInit {
   }
 
   async runThroughResults(): Promise<void> {
-    // this.results.every((result) => {
-    //   if (result.id === this.selectedHymnId) {
-    //     this.selectedHymnObject = result;
-    //     return false;
-    //   } else return true;
-    // });
-
     if (
       await this.dbService.doesHymnbyIdExist(this.selectedHymnId, 'simpleHymns')
     ) {
@@ -90,15 +100,21 @@ export class AppComponent implements OnInit {
         this.selectedHymnId,
         'simpleHymns'
       );
-      this.router.navigate(['/'], { queryParams: { number: this.selectedSimpleHymn.hymnNumber } });
-      this.commService.emitSimpleHymnData({
-        type: 'simpleHymn',
-        value: this.selectedSimpleHymn,
+      // await this.service.getHymn(this.selectedSimpleHymn)
+
+      // console.log('bnaviagaetinf to hymn number etc');
+      this.router.navigate(['/'], {
+        queryParams: { number: this.selectedSimpleHymn.hymnNumber },
       });
+      // this.commService.emitSimpleHymnData({
+      //   type: 'simpleHymn',
+      //   value: this.selectedSimpleHymn,
+      // });
     }
 
     // this.commService.emitHymnData(this.selectedHymnObject);
   }
+
   backToHymnsList(): void {
     this.router.navigate(['/hymns']);
   }
@@ -129,13 +145,6 @@ export class AppComponent implements OnInit {
       console.log('data not exists, requesting new');
     } else {
       console.log('using stored data');
-
-      // const notionResponse = this.storageManagerService.getData(
-      //   'last-request'
-      // ) as NotionDBQuery;
-      // this.data = notionResponse;
-      // this.results = [...notionResponse.results];
-      // this.hymnsList = this.service.simplifyHymns(this.results);
     }
 
     if (this.storageManagerService.doesDataExist('last-request-date')) {

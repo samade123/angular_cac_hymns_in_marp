@@ -1,20 +1,18 @@
-<!-- <p>{{file}}</p> -->
-<!-- <div class="marp-wrapper" *ngIf="html.length > 0"> -->
 <div class="marp-wrapper" id="marp" [ngClass]="{'not-placeholder': html[0]}">
-  <!--  -->
-  <div id="template-div" *ngIf="html[0] else marpitPlcHldr" [innerHTML]='data[index]' class='marpit'
-    [ngClass]="{'fullscreen': fullscreenState}">
+  <!-- <div id="template-div" *ngIf="showHymns else marpitPlcHldr" [innerHTML]='data[index]' class='marpit' -->
+    <div id="template-div" [innerHTML]='data[index]' class='marpit' [ngClass]="{'fullscreen': fullscreenState}">
+
   </div>
 
-  <ng-template #marpitPlcHldr>
+  <!-- <ng-template #marpitPlcHldr>
 
     <div class="marpit-placeholder">
       <div class="marpit-placeholder__image"></div>
     </div>
-  </ng-template>
+  </ng-template> -->
 
   <div class="buttons" *ngIf="fullscreenState" [ngClass]="{'fullscreen': fullscreenState}">
-    <button type="button" class="fullscreen"  title='minimise'(click)="fullscreen()">
+    <button type="button" class="fullscreen" title='minimise' (click)="fullscreen()">
       <i class="pi pi-window-minimize"></i>
     </button>
 
@@ -28,14 +26,14 @@
 
   <div class="marp-details" [ngClass]="{'fullscreen': fullscreenState}">
 
-    <div *ngIf="hymnItem" class="details-bottom">
+    <div *ngIf="showHymns" class="details-bottom">
       <div class="details-bottom--title">
         {{hymnItem.hymnNumber}} - {{hymnItem.name}}
       </div>
 
 
     </div>
-    <div class="buttons" [ngClass]="{'fullscreen': fullscreenState}" *ngIf="html[0]">
+    <div class="buttons" [ngClass]="{'fullscreen': fullscreenState}" *ngIf="showHymns">
       <div role="button" title="fullscreen" class="fullscreen" (click)="fullscreen()">
         <!-- <img width="30" src="../../assets/maximise.svg" alt=""> -->
         <i class="pi pi-window-maximize"></i>

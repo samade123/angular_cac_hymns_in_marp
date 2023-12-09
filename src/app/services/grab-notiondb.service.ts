@@ -8,13 +8,15 @@ import {
   SimpleHymnItem,
   Properties,
 } from '../test-interface';
+import { IndexDbManagerService } from './index-db-manager.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GrabNotiondbService {
   constructor(
-    private http: HttpClient // private storageManagerService: StorageManagerService
+    private http: HttpClient, // private storageManagerService: StorageManagerService
+    private dbStorageService: IndexDbManagerService
   ) {}
 
   getFunctionData(functionName: string) {
@@ -36,10 +38,8 @@ export class GrabNotiondbService {
     return hymn.id;
   }
 
-  simplifyHymnItem(simpleHymn: SimpleHymn, marp: string,): SimpleHymnItem {
-    const name: string = simpleHymn.name
-      ? simpleHymn.name
-      : 'n/a';
+  simplifyHymnItem(simpleHymn: SimpleHymn, marp: string): SimpleHymnItem {
+    const name: string = simpleHymn.name ? simpleHymn.name : 'n/a';
     return {
       id: simpleHymn.id,
       name,
@@ -66,7 +66,7 @@ export class GrabNotiondbService {
           name,
           last_edited_time: result.last_edited_time,
           hymnNumber: result.properties['Number']['title'][0]['plain_text'],
-          url:  result.properties['Files & media']['files'][0]['file']['url']
+          url: result.properties['Files & media']['files'][0]['file']['url'],
         };
       });
   }
@@ -116,6 +116,31 @@ export class GrabNotiondbService {
       return result;
     } catch (error) {
       throw error;
+    }
+  }
+
+  async getHymn(simpleHymn: SimpleHymn) {
+    console.log('checking');
+    simpleHymn.hymnNumber;
+    if (simpleHymn.url) {
+      // if (this.hymnDict[simpleHymn.hymnNumber]) {
+      // console.log('does the hymnexists',await this.dbStorageService.doesHymnExist(simpleHymn.hymnNumber))
+      if (await this.dbStorageService.doesHymnExist(simpleHymn.hymnNumber)) {
+        return;
+      } else {
+        this.getMarp(simpleHymn.url)
+          .then(async (file) => {
+            // console.log(file, 'file for this hymn')
+            // this.renderMarp();
+            // this.storageService.storeData('hymn-dict', this.hymnDict);
+            let hymnItem = this.simplifyHymnItem(simpleHymn, file);
+            await this.dbStorageService.storeData('simpleHymnItems', hymnItem);
+          })
+          .catch((err) => {
+            console.error(err);
+            // this.failedFetch.emit();
+          });
+      }
     }
   }
 }

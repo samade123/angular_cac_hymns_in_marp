@@ -5,6 +5,7 @@ import { IndexDbManagerService } from '../services/index-db-manager.service';
 import { animate } from 'popmotion';
 import { liveQuery } from 'dexie';
 import { db } from './../db'; // You get a db with property table1 attached (because the schema is declared)
+import { CommsService } from '../services/comms.service';
 
 export interface ButtonFilters {
   name: string;
@@ -18,7 +19,9 @@ export interface ButtonFilters {
 export class HymnSidebarComponent implements OnInit {
   constructor(
     private notionService: GrabNotiondbService,
-    private dBstorageServie: IndexDbManagerService
+    private dBstorageServie: IndexDbManagerService,
+    private commService: CommsService,
+
   ) {}
   @Input() simpleHymns: SimpleHymn[];
   @Output() selectedHymnId = new EventEmitter<string>();
@@ -65,8 +68,12 @@ export class HymnSidebarComponent implements OnInit {
   }
 
   pickHymn(hymnId: string): void {
-    this.selectedHymnId.emit(hymnId);
+    // this.selectedHymnId.emit(hymnId);
     this.searchQuery = '';
+    this.commService.emitHymnIdFromSidebar({
+      type: 'hymnIdFromSidebar',
+      value: hymnId,
+    });
   }
 
   focusInput(): void {

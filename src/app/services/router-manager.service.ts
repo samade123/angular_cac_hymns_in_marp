@@ -9,11 +9,19 @@ export class RouterManagerService {
 
   trackNavigation(onNavigationCallback: () => void) {
     this.router.events.subscribe(async (event) => {
+      // console.log(event, 'sdasd');
+
       if (event instanceof NavigationEnd) {
-        console.log(event, 'sdasd');
+        // console.log(event, 'sdasd');
         const currentUrl = event.url;
         await onNavigationCallback();
       }
     });
+  }
+
+  isHymnPage(): Boolean {
+    if (this.router.url.includes('number')) {
+      return true;
+    } else return false;
   }
 }

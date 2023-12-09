@@ -65,16 +65,28 @@ export class IndexDbManagerService {
         hymnNumber: 'na',
         url: '',
       };
-      // }
-      // else {
-      //   return {
-      //     id: 'na',
-      //     name: 'na',
-      //     last_used_time: new Date(),
-      //     hymnNumber: 'na',
-      //     marp: ''
-      //   }
-      // }
+    }
+  }
+
+  async getSimpleHymnByNumber(
+    hymnNumber: string,
+    table: string = 'simpleHymns'
+  ): Promise<SimpleHymn> {
+    const hymnItem = await db
+      .table(table)
+      .get({'hymnNumber': hymnNumber})
+    if (hymnItem) {
+      return hymnItem;
+    } else {
+      // if (table == 'simpleHymns') {
+
+      return {
+        id: 'na',
+        name: 'na',
+        last_edited_time: new Date(),
+        hymnNumber: 'na',
+        url: '',
+      };
     }
   }
 
@@ -91,10 +103,13 @@ export class IndexDbManagerService {
   //   await this.table('data').delete(key);
   // }
 
-  async doesHymnExist(hymnNumber: string): Promise<boolean> {
+  async doesHymnExist(
+    hymnNumber: string,
+    table: string = 'simpleHymnItems'
+  ): Promise<boolean> {
     await db.on('ready', () => {});
     const count = await db
-      .table('simpleHymnItems')
+      .table(table)
       .where('hymnNumber')
       .equals(hymnNumber)
       .count();

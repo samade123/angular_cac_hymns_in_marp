@@ -99,6 +99,9 @@ export class AppComponent implements OnInit {
 
     // this.commService.emitHymnData(this.selectedHymnObject);
   }
+  backToHymnsList(): void {
+    this.router.navigate(['/hymns']);
+  }
 
   getNotionResponse(): void {
     this.service

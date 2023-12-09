@@ -1,5 +1,5 @@
 <header class="header" [ngClass]="{'fullscreen': fullscreen}">
-  <button type="button" title="go Back"><i class="pi pi-times"></i></button>
+  <p-button [rounded]="true" icon="pi pi-chevron-left" [text]="true" *ngIf="isHymnPage()" type="button" title="go Back" class="p-button-success" (onClick)="backToHymnsList()"></p-button>
   CAC Hymns
   <!-- <button (click)="getNotionResponse()">Reload</button> -->
   <!-- <button type="button" (click)="pushToDb()">push to DB</button> -->
@@ -9,7 +9,7 @@
     (reload)="getNotionResponse()"></app-hymn-sidebar>
 </aside>
 <main id="main" [ngClass]="{'fullscreen': fullscreen}">
-<router-outlet/>
+  <router-outlet />
 
   <!-- </router-outlet> -->
 

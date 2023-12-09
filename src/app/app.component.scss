@@ -23,6 +23,7 @@
     height: 100%;
     display: flex;
     align-items: center;
+    gap: 10px;
 
     border: 1px solid rgba(34, 34, 34, 0.1333333333);
     background: #fff;
@@ -30,6 +31,10 @@
     padding: 10px;
     button:first-child {
       display: none;
+    }
+    button {
+      height: auto;
+      padding: 0;
     }
 
     &.fullscreen {
@@ -87,6 +92,8 @@
       button:first-child {
         display: block;
       }
+
+      min-height: calc(3rem + (2 * 10px)); // padding of p-button + padding in header
     }
 
     aside {

@@ -10,12 +10,22 @@ import { HymnSidebarComponent } from './hymn-sidebar/hymn-sidebar.component';
 import { HymnDisplayMainComponent } from './hymn-display-main/hymn-display-main.component';
 import { IndexDbManagerService } from './services/index-db-manager.service';
 import { FormsModule } from '@angular/forms';
+import { ButtonModule } from 'primeng/button';
 
 @NgModule({
   declarations: [AppComponent, HymnSidebarComponent, HymnDisplayMainComponent],
-  // imports: [BrowserModule, AppRoutingModule],
-  imports: [BrowserModule, HttpClientModule, FormsModule, AppRoutingModule],
-  providers: [GrabNotiondbService, StorageManagerService, IndexDbManagerService],
+  imports: [
+    BrowserModule,
+    HttpClientModule,
+    FormsModule,
+    AppRoutingModule,
+    ButtonModule,
+  ],
+  providers: [
+    GrabNotiondbService,
+    StorageManagerService,
+    IndexDbManagerService,
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

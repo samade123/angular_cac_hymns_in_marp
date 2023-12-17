@@ -15,6 +15,7 @@
   padding: 5px 10px;
 
   border-radius: 10px;
+
   header {
     // grid-column: span 2;
 
@@ -29,9 +30,11 @@
     background: #fff;
     border-radius: 2px;
     padding: 10px;
+
     button:first-child {
       display: none;
     }
+
     button {
       height: auto;
       padding: 0;
@@ -41,12 +44,15 @@
       display: none;
     }
   }
-   main, aside {
+
+  main,
+  aside {
     // @extend .card-div;
     place-self: stretch;
     padding: var(--padding-spacing), 5px;
 
   }
+
   aside {
     width: clamp(150px, 25vw, 300px);
     place-self: stretch;
@@ -71,22 +77,29 @@
     display: grid;
 
     place-items: center stretch;
-  &.fullscreen {
-    min-height: 97vh;
-    min-height: 97dvh;
-    min-height: 97svh;
-    grid-column: span 2;
-    place-items: center stretch;
 
-    place-self: stretch;
+    &.fullscreen {
+      min-height: 97vh;
+      min-height: 97dvh;
+      min-height: 97svh;
+      grid-column: span 2;
+      place-items: center stretch;
+
+      place-self: stretch;
+    }
+
+    &>::ng-deep router-outlet+app-hymn-sidebar {
+      display: none;
+    }
   }
-  }
+
 }
 
 @media only screen and (max-width: 600px) {
   :host {
     grid-template-rows: auto 1fr;
     grid-template-columns: auto;
+    // place-self: start;
 
     header {
       button:first-child {
@@ -94,6 +107,14 @@
       }
 
       min-height: calc(3rem + (2 * 10px)); // padding of p-button + padding in header
+    }
+
+    main {
+      &> ::ng-deep router-outlet+app-hymn-sidebar {
+        place-self: start stretch;
+        display: block;
+
+      }
     }
 
     aside {

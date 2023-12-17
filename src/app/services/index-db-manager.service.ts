@@ -3,6 +3,7 @@ import { SimpleHymnItem, SimpleHymn } from './../test-interface';
 
 import Dexie, { Table } from 'dexie';
 import { db } from './../db'; // You get a db with property table1 attached (because the schema is declared)
+import { CommsService } from './comms.service';
 
 @Injectable({
   providedIn: 'root',
@@ -14,7 +15,7 @@ export class IndexDbManagerService {
   //   new URL('../web-workers/db-web-worker.worker.ts', import.meta.url)
   // );
 
-  constructor() {}
+  constructor(private commService: CommsService) {}
 
   async storeData(
     table: string,
@@ -72,9 +73,7 @@ export class IndexDbManagerService {
     hymnNumber: string,
     table: string = 'simpleHymns'
   ): Promise<SimpleHymn> {
-    const hymnItem = await db
-      .table(table)
-      .get({'hymnNumber': hymnNumber})
+    const hymnItem = await db.table(table).get({ hymnNumber: hymnNumber });
     if (hymnItem) {
       return hymnItem;
     } else {
@@ -162,6 +161,21 @@ export class IndexDbManagerService {
   storeNewHymnsList(hymnList: SimpleHymn[]): void {
     let worker = new Worker(
       new URL('../web-workers/db-web-worker.worker.ts', import.meta.url)
+    );
+    worker.addEventListener(
+      'message',
+      (e: MessageEvent<{ type: string; value: any }>) => {
+        // set type on data property
+        if (e.data.type && e.data.type == 'successPut') {
+          console.log(' sending com0lete ');
+          this.commService.emitFromWebWorker({
+            type: 'webworker',
+            status: `Hymns Uploaded ${e.data} last id`,
+          });
+        }
+        console.log('Message received from worker', e);
+      },
+      { once: true }
     );
     worker.postMessage({ data: hymnList, type: 'bulkPut' });
   }

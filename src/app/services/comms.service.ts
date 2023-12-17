@@ -43,5 +43,14 @@ export class CommsService {
     console.log('emiiing from sidebar')
     this.mainAppObserver.next(hymnId);
   }
+
+
+  emitFromWebWorker(webWorkerStatus: {
+    type: String,
+    status: String,
+  }): void {
+    this.mainAppObserver.next(webWorkerStatus);
+
+  }
   constructor() {}
 }

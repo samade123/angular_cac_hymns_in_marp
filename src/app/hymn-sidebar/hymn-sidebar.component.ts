@@ -20,8 +20,7 @@ export class HymnSidebarComponent implements OnInit {
   constructor(
     private notionService: GrabNotiondbService,
     private dBstorageServie: IndexDbManagerService,
-    private commService: CommsService,
-
+    private commService: CommsService
   ) {}
   @Input() simpleHymns: SimpleHymn[];
   @Output() selectedHymnId = new EventEmitter<string>();
@@ -52,6 +51,20 @@ export class HymnSidebarComponent implements OnInit {
 
   ngOnInit(): void {
     console.log('here');
+
+    this.commService.mainAppSubscriber$.subscribe((data: any) => {
+      if ((data.type = 'webworker')) {
+        this.friends$ = liveQuery(() =>
+          this.dBstorageServie.listSimpleHymns(this.searchQuery)
+        );
+        this.allSimpleHymns$ = liveQuery(async () => {
+          return await this.dBstorageServie.returnAll();
+        });
+        this.hymnItemsArr$ = liveQuery(async () => {
+          return await this.dBstorageServie.getLastFiveHymns();
+        });
+      }
+    });
 
     this.dBstorageServie.returnAll().then(async (arr) => {
       if (arr.length == 0) {

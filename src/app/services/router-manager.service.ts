@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 
+
 @Injectable({
   providedIn: 'root',
 })
@@ -23,5 +24,13 @@ export class RouterManagerService {
     if (this.router.url.includes('number')) {
       return true;
     } else return false;
+  }
+
+  setPageToMobileHome(): void {
+    if (!this.router.url.includes('number')) {
+      if (window.innerWidth < 600) {
+        this.router.navigate(['/hymns']);
+      }
+    }
   }
 }

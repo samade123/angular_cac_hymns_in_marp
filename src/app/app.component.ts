@@ -29,13 +29,14 @@ export class AppComponent implements OnInit {
     private dbService: IndexDbManagerService,
     private commService: CommsService,
     private router: Router,
-    private routerManagerService: RouterManagerService,
+    private routerManagerService: RouterManagerService
   ) {}
 
   notionPageTrackByFn = this.service.notionPageTrackByFn;
   isHymnPage = this.routerManagerService.isHymnPage;
 
   ngOnInit(): void {
+    this.routerManagerService.setPageToMobileHome()
     this.initFullScreen();
     this.initHymnNumberComms();
     this.initHymnsDb();
@@ -54,7 +55,7 @@ export class AppComponent implements OnInit {
       if (data.type && data.type == 'hymnId') {
         // console.log(this.router.url, this.router.url.includes('?number'));
 
-        if (this.router.url.includes('?number')){
+        if (this.router.url.includes('?number')) {
           this.selectHymnId(data.value);
         }
       }
@@ -62,13 +63,10 @@ export class AppComponent implements OnInit {
 
     this.commService.mainAppSubscriber$.subscribe((data: any) => {
       if (data.type && data.type == 'hymnIdFromSidebar') {
-        console.log(data.value, 'worked')
-          this.selectHymnId(data.value);
+        console.log(data.value, 'worked');
+        this.selectHymnId(data.value);
       }
     });
-
-
-
   }
 
   pushToDb(): void {

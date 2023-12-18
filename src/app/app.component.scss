@@ -3,7 +3,7 @@
 :host {
   display: grid;
   grid-template-columns: auto 2fr;
-  grid-template-rows: 45px 1fr;
+  grid-template-rows: calc(1lh + 4 * var(--header-padding, 10px));
   gap: 10px 1px;
 
   width: 100%;
@@ -18,22 +18,23 @@
 
   header {
     // grid-column: span 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
 
-    padding: 11px;
-    box-sizing: border-box;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    gap: 10px;
 
-    border: 1px solid rgba(34, 34, 34, 0.1333333333);
-    background: #fff;
-    border-radius: 2px;
-    padding: 10px;
-
-    button:first-child {
-      display: none;
+    h1.header__title {
+      font-size: 1em;
+      margin: 0;
     }
+
+    .header__left {
+
+      >button:first-child,
+      > :first-child {
+      display: none;
+      }
+    }
+
 
     button {
       height: auto;
@@ -86,6 +87,26 @@
       place-items: center stretch;
 
       place-self: stretch;
+
+      &::ng-deep router-outlet+app-hymn-display-main {
+        .marpit {
+          &-scrollable {
+            display: none;
+          }
+
+          &-present {
+            display: block;
+            max-height: 96vh;
+            height: 100%;
+            width: auto;
+          }
+
+        }
+
+        .marp-wrapper .marp-details {
+          display: block;
+        }
+      }
     }
 
     &>::ng-deep router-outlet+app-hymn-sidebar {
@@ -102,9 +123,23 @@
     // place-self: start;
 
     header {
-      button:first-child {
+      grid-template-columns: auto;
+
+      .header__left {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        place-items: center;
+
+        >button:first-child,
+        > :first-child {
         display: block;
+        }
       }
+
+      .header__right {
+        display: none;
+      }
+
 
       min-height: calc(3rem + (2 * 10px)); // padding of p-button + padding in header
     }

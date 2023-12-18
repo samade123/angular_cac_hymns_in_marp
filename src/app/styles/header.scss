@@ -1,5 +1,17 @@
 // @import './card-div.scss';
 .header {
   // @extend .card-div;
-padding: var(--padding-spacing);
+  padding: 0 var(--padding-spacing);
+
+  box-sizing: border-box;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  border: 1px solid rgba(34, 34, 34, 0.1333333333);
+  background: #fff;
+  border-radius: 2px;
+  font-size: 0.9em;
+
 }

@@ -122,6 +122,15 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
   //   }
   // }
 
+  initFullScreen(): void {
+    this.commService.subscriber$.subscribe((data: any) => {
+      if ('type' in data && data.type == 'fullScreen') {
+        alert('fullscreen')
+        this.fullscreen()
+      }
+    });
+  }
+
   initSimpleHymn() {
     this.commService.subscriber$.subscribe((data: any) => {
       if (
@@ -188,17 +197,17 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
   }
 
   fullscreen(): void {
-    this.fullscreenEmitter.emit(!this.fullscreenState);
-    this.commService.emitFullscreen({
-      type: 'fullscreen',
-      value: !this.fullscreenState,
-    });
+    // this.fullscreenEmitter.emit(!this.fullscreenState);
+    // this.commService.emitFullscreen({
+    //   type: 'fullscreen',
+    //   value: !this.fullscreenState,
+    // });
 
-    if (this.routerMode) {
-      this.fullscreenState = !this.fullscreenState;
-      // this.updateSize();
-      // this.renderMarp();
-    }
+    // if (this.routerMode) {
+    //   this.fullscreenState = !this.fullscreenState;
+    //   // this.updateSize();
+    //   // this.renderMarp();
+    // }
   }
 
   appendSvgToDivWithImportNode = (

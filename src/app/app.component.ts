@@ -42,12 +42,21 @@ export class AppComponent implements OnInit {
     this.initHymnsDb();
   }
 
-  initFullScreen(): void {
-    this.commService.subscriber$.subscribe((data: any) => {
-      if (data.type && data.type == 'fullscreen') {
+  // initFullScreen(): void {
+  //   this.commService.subscriber$.subscribe((data: any) => {
+  //     if (data.type && data.type == 'fullscreen') {
+  //       this.fullscreen = !this.fullscreen;
+  //     }
+  //   });
+  // }
+  setFullScreen(): void {
         this.fullscreen = !this.fullscreen;
-      }
+
+     this.commService.emitFullscreen({
+        type: 'fullScreen',
+        value: true,
     });
+
   }
 
   initHymnNumberComms(): void {
@@ -61,10 +70,15 @@ export class AppComponent implements OnInit {
       }
     });
 
+
+    // 'hymnIdFromMain'
+
     this.commService.mainAppSubscriber$.subscribe((data: any) => {
       if (data.type && data.type == 'hymnIdFromSidebar') {
-        console.log(data.value, 'worked');
+        // console.log(data.value, 'worked');
         this.selectHymnId(data.value);
+      } else if (data.type && data.type == 'hymnIdFromMain') {
+        this.setCurrentHymn(data.value);
       }
     });
   }
@@ -73,8 +87,23 @@ export class AppComponent implements OnInit {
     this.dbService.storeNewHymnsList(this.hymnsList);
   }
 
-  selectHymnId(id: string): void {
+  async setCurrentHymn(id: string): Promise<void> {
     this.selectedHymnId = id;
+
+    if (
+      await this.dbService.doesHymnbyIdExist(this.selectedHymnId, 'simpleHymns')
+    ) {
+      this.selectedSimpleHymn = await this.dbService.getHymnItembyId(
+        this.selectedHymnId,
+        'simpleHymns'
+      );
+    }
+  }
+
+  selectHymnId(id: string): void {
+    // this.selectedHymnId = id;
+
+    this.setCurrentHymn(id);
 
     let currentExpiry = this.storageManagerService.getData(
       'last-request-date'
@@ -94,10 +123,10 @@ export class AppComponent implements OnInit {
     if (
       await this.dbService.doesHymnbyIdExist(this.selectedHymnId, 'simpleHymns')
     ) {
-      this.selectedSimpleHymn = await this.dbService.getHymnItembyId(
-        this.selectedHymnId,
-        'simpleHymns'
-      );
+      // this.selectedSimpleHymn = await this.dbService.getHymnItembyId(
+      //   this.selectedHymnId,
+      //   'simpleHymns'
+      // );
       // await this.service.getHymn(this.selectedSimpleHymn)
 
       // console.log('bnaviagaetinf to hymn number etc');

@@ -1,6 +1,18 @@
 <header class="header" [ngClass]="{'fullscreen': fullscreen}">
-  <p-button [rounded]="true" icon="pi pi-chevron-left" [text]="true" *ngIf="isHymnPage()" type="button" title="go Back" class="p-button-success" (onClick)="backToHymnsList()"></p-button>
-  CAC Hymns
+
+  <div class="header__left">
+    <p-button [rounded]="true" icon="pi pi-chevron-left" size='small' [text]="true" *ngIf="isHymnPage()" type="button"
+      title="go Back" class="p-button-success" (onClick)="backToHymnsList()"></p-button>
+    <h1 class="header__title">
+      CAC Hymns <span>{{selectedSimpleHymn ? " - "  + selectedSimpleHymn.hymnNumber + ' - ' + selectedSimpleHymn.name : ''}}</span>
+    </h1>
+
+  </div>
+  <div class="header__right">
+
+    <p-button [rounded]="false" icon="pi pi-play" [text]="false" size='small' iconPos="right" *ngIf="isHymnPage()"
+      type="button" title="Present" label="Present" class="p-button-success" (onClick)="setFullScreen()"></p-button>
+  </div>
   <!-- <button (click)="getNotionResponse()">Reload</button> -->
   <!-- <button type="button" (click)="pushToDb()">push to DB</button> -->
 </header>

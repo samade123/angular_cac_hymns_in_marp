@@ -34,6 +34,7 @@ export class HymnSidebarComponent implements OnInit {
   ];
   inputFocusBgDeg = '180deg';
   searchQuery: string = '';
+  zeroHymns: boolean = true;
   friends$ = liveQuery(() =>
     this.dBstorageServie.listSimpleHymns(this.searchQuery)
   );
@@ -68,10 +69,14 @@ export class HymnSidebarComponent implements OnInit {
 
     this.dBstorageServie.returnAll().then(async (arr) => {
       if (arr.length == 0) {
+        this.zeroHymns = true;
         await db.on('ready', () => {});
         setTimeout(() => {
           this.filterHymns(this.buttonFilters[1]);
         }, 1000);
+      } else {
+        this.zeroHymns = false;
+
       }
     });
   }

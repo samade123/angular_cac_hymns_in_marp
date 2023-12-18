@@ -22,6 +22,9 @@
     <!-- <div class="reload-btn" (click)="reloadDb()"></div> -->
   </div>
   <div class="hymn-list-wrapper" *ngIf="buttonFilters[0].selected else allHymns">
+    <div class="zero-hymns" *ngIf="zeroHymns">
+      <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+    </div>
     <div class="hymn-select-item"
       *ngFor="let hymn of hymnItemsArr$ | async; index as i; trackBy: simpleHymnItemsTrackByFn"
       [style]="'--hymn-number: '+hymn.hymnNumber" [attr.data-number]="hymn.hymnNumber" (click)="pickHymn(hymn.id)">
@@ -35,6 +38,9 @@
   </div>
   <ng-template #allHymns>
     <div class="hymn-list-wrapper">
+      <div class="zero-hymns" *ngIf="zeroHymns">
+        <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+      </div>
       <div class="hymn-select-item" *ngFor="let hymn of allSimpleHymns$ | async; index as i; trackBy: hymnTrackbyFn"
         [style]="'--hymn-number: '+hymn.hymnNumber" [attr.data-number]="hymn.hymnNumber" (click)="pickHymn(hymn.id)">
         <div class="hymn-select-item__number">

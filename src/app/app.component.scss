@@ -8,7 +8,7 @@
 
   width: 100%;
   // max-width: 99vw;
-  height: 100%;
+  height: clamp(96vh, calc(97vh + 10px), 99vh);
   box-sizing: border-box;
   margin-block: auto;
   place-items: center stretch;
@@ -31,7 +31,7 @@
 
       >button:first-child,
       > :first-child {
-      display: none;
+        display: none;
       }
     }
 
@@ -65,6 +65,7 @@
     background: #fff;
     border-radius: 2px;
     padding: 10px;
+    height: 100%;
   }
 
   aside.fullscreen {
@@ -75,6 +76,7 @@
     min-height: 60vh;
     min-height: 60dvh;
     min-height: 60svh;
+    height: 100%;
     display: grid;
 
     place-items: center stretch;
@@ -102,7 +104,6 @@
           }
 
         }
-
         .marp-wrapper .marp-details {
           display: block;
         }
@@ -132,7 +133,7 @@
 
         >button:first-child,
         > :first-child {
-        display: block;
+          display: block;
         }
       }
 

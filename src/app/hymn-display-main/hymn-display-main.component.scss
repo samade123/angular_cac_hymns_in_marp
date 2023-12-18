@@ -4,28 +4,28 @@ div.marpit,
 svg.marpit,
 div.marpit-placeholder {
   @extend .card-div;
-  max-height: 90%;
-  width: 97%;
-  aspect-ratio: 4 / 3;
+  // max-height: 90%;
+  width: calc(100% - 6px);
+  aspect-ratio: 16 / 10;
   margin: auto;
   border-radius: 2px;
 
-  &.fullscreen {
-    min-height: 75vh;
-    width: 85vw;
-    aspect-ratio: auto;
+  &-present {
+    display: none;
   }
+
 }
 
 .marp-wrapper {
   position: relative;
   isolation: isolate;
-  display: grid;
+  display: flex;
+  flex-direction: column;
   place-items: stretch;
 
   &.not-placeholder {
     grid-template-rows: auto 1fr;
-    gap: 15px;
+    gap: 7px;
 
   }
 
@@ -38,6 +38,12 @@ div.marpit-placeholder {
     display: grid;
     gap: 10px;
     place-items: start;
+    display: none;
+
+    position: absolute;
+
+    bottom: 40px;
+    margin: 0 auto;
 
 
     .buttons {
@@ -76,9 +82,9 @@ div.marpit-placeholder {
     }
   }
 
-  .marp-details.fullscreen {
-    display: none;
-  }
+  // .marp-details.fullscreen {
+  //   display: none;
+  // }
 }
 
 

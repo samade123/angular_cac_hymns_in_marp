@@ -1,8 +1,16 @@
 <div class="marp-wrapper" id="marp" [ngClass]="{'not-placeholder': html[0]}">
   <!-- <div id="template-div" *ngIf="showHymns else marpitPlcHldr" [innerHTML]='data[index]' class='marpit' -->
-    <div id="template-div" [innerHTML]='data[index]' class='marpit' [ngClass]="{'fullscreen': fullscreenState}">
+
+
+  <div id="template-div" *ngFor="let page of data; index as i;" [innerHTML]='data[i]' class='marpit marpit-scrollable'
+    [ngClass]="{'fullscreen': fullscreenState}">
 
   </div>
+
+  <div id="template-div" [innerHTML]='data[index]' class='marpit marpit-present'
+    [ngClass]="{'fullscreen': fullscreenState}">
+  </div>
+
 
   <!-- <ng-template #marpitPlcHldr>
 
@@ -11,7 +19,7 @@
     </div>
   </ng-template> -->
 
-  <div class="buttons" *ngIf="fullscreenState" [ngClass]="{'fullscreen': fullscreenState}">
+  <!-- <div class="buttons" *ngIf="fullscreenState" [ngClass]="{'fullscreen': fullscreenState}">
     <button type="button" class="fullscreen" title='minimise' (click)="fullscreen()">
       <i class="pi pi-window-minimize"></i>
     </button>
@@ -22,7 +30,7 @@
     <button type="button" class="previous" [disabled]="index == data.length-1"
       (click)="index = (index+1) % (data.length)">&rarr;</button>
 
-  </div>
+  </div> -->
 
   <div class="marp-details" [ngClass]="{'fullscreen': fullscreenState}">
 
@@ -35,31 +43,23 @@
     </div>
     <div class="buttons" [ngClass]="{'fullscreen': fullscreenState}" *ngIf="showHymns">
       <div role="button" title="fullscreen" class="fullscreen" (click)="fullscreen()">
-        <!-- <img width="30" src="../../assets/maximise.svg" alt=""> -->
-        <i class="pi pi-window-maximize"></i>
-
-        <!-- <label style="display: none;"> Fullscreen</label> -->
+        <i class="pi pi-window-minimize"></i>
       </div>
 
-      <!-- <div role="button" title="previous" class="previous" [disabled]="index == 0" -->
       <div role="button" title="previous" class="previous" (click)="index = (index-1) % (data.length)"
         [attr.aria-disabled]="index == 0">
-        <!-- <object data="../../assets/left-arrow.svg" type=""></object> -->
         <i class="pi pi-arrow-left"></i>
 
       </div>
       <h4 class="button-num-text">{{index +1}} of {{data.length}}</h4>
-      <!-- <div type="button" class="previous" [disabled]="index == data.length-1" -->
       <div role="button" title="next" type="button" class="next" (click)="index = (index+1) % (data.length)"
         [attr.aria-disabled]="index == data.length-1">
-        <!-- <object data="../../assets/left-arrow.svg" type=""></object> -->
         <i class="pi pi-arrow-right"></i>
 
       </div>
 
       <div role="button" title="download" type="button" class="download" (click)="index = (index+1) % (data.length)"
         [attr.aria-disabled]="index == data.length-1">
-        <!-- <img src="../../assets/download-icon.svg" alt=""> -->
         <i class="pi pi-download"></i>
 
       </div>
@@ -76,6 +76,8 @@
 
     display: grid;
     place-items: stretch;
+    height: 100%;
+    overflow: scroll;
   }
 
 

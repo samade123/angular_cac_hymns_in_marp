@@ -79,6 +79,7 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.initSimpleHymn();
     // this.renderMarp();
+    // this.initFullScreen();
     document.body.appendChild(this.sheet);
     if (this.storageService.doesDataExist('hymn-dict')) {
       let hymnDict = this.storageService.getData('hymn-dict');
@@ -250,6 +251,7 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
         let simpleHymn = await this.dbStorageService.getSimpleHymnByNumber(routeHymnNumber) as SimpleHymn;
         if (simpleHymn) {
           this.getHymn(simpleHymn)
+          this.commService.emitIdFromMainChild({type: 'hymnIdFromMain', value: simpleHymn.id})
         }
       }
     }

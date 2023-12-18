@@ -52,5 +52,12 @@ export class CommsService {
     this.mainAppObserver.next(webWorkerStatus);
 
   }
+  emitIdFromMainChild(id: {
+    type: String,
+    value: String,
+  }): void {
+    this.mainAppObserver.next(id);
+
+  }
   constructor() {}
 }

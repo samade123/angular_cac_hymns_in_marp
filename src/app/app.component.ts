@@ -36,8 +36,8 @@ export class AppComponent implements OnInit {
   isHymnPage = this.routerManagerService.isHymnPage;
 
   ngOnInit(): void {
-    this.routerManagerService.setPageToMobileHome()
-    this.initFullScreen();
+    this.routerManagerService.setPageToMobileHome();
+    // this.initFullScreen();
     this.initHymnNumberComms();
     this.initHymnsDb();
   }
@@ -50,12 +50,12 @@ export class AppComponent implements OnInit {
   //   });
   // }
   setFullScreen(): void {
-        this.fullscreen = !this.fullscreen;
+    this.fullscreen = !this.fullscreen;
 
      this.commService.emitFullscreen({
         type: 'fullScreen',
         value: true,
-    });
+      });
 
   }
 
@@ -158,6 +158,9 @@ export class AppComponent implements OnInit {
         this.storageManagerService.storeData('last-request-date', newExpiry);
         this.hymnsList = this.service.simplifyHymns(this.results);
         this.dbService.storeNewHymnsList(this.hymnsList);
+      }, (error) => {
+        console.error('Error fetching notion data:', error);
+        // Handle the error here
       });
   }
 

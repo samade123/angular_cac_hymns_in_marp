@@ -58,11 +58,11 @@
 
       </div>
 
-      <div role="button" title="download" type="button" class="download" (click)="index = (index+1) % (data.length)"
+      <!-- <div role="button" title="download" type="button" class="download" (click)="index = (index+1) % (data.length)"
         [attr.aria-disabled]="index == data.length-1">
         <i class="pi pi-download"></i>
 
-      </div>
+      </div> -->
 
     </div>
   </div>
@@ -80,6 +80,14 @@
     overflow: scroll;
   }
 
+  :host .marp-wrapper:empty::before {
+    content: 'please Select a hymn';
+    font-size: 4em;
+    height: 100%;
+    width: 100%;
+    text-align: center;
+  }
+
 
   .marpit {
     display: grid;
@@ -88,13 +96,21 @@
 
   }
 
+  .marpit:empty::before {
+    content: 'please Select a hymn';
+    font-size: 4em;
+    height: 100%;
+    width: 100%;
+    text-align: center;
+  }
+
 
   .buttons {
     position: absolute;
     bottom: 5px;
 
     display: flex;
-    justify-content: start;
+    justify-content: center;
     gap: 10px;
     width: 100%;
 
@@ -104,6 +120,17 @@
     padding: 0;
     border-radius: 10px;
     z-index: 50;
+
+    i {
+
+      font-size: 1.5rem;
+      transition: font-size 0.2s ease;
+    }
+
+    i:hover {
+      font-size: 1.4rem;
+
+    }
 
   }
 

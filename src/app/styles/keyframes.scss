@@ -4,12 +4,14 @@
     // padding: 0;
     transform: scale(1,0.2);
   }
-  50% {
+  90% {
     // max-height: 125%;
   }
 
   100% {
     // max-height: 150%;
     transform: scale(1,1);
+    color: inherit;
+
   }
 }

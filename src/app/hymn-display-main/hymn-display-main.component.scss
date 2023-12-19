@@ -20,6 +20,7 @@ div.marpit-placeholder {
   position: relative;
   isolation: isolate;
   display: flex;
+  justify-content: flex-start;
   flex-direction: column;
   place-items: stretch;
 
@@ -47,8 +48,16 @@ div.marpit-placeholder {
 
 
     .buttons {
+      @extend .card-div;
       position: relative;
+      box-shadow: none;
+      padding: 0.5rem;
+      width: -moz-fit-content;
+      width: fit-content;
+      border: solid 2px #000a;
+      background: #fffa
     }
+
 
     div[title="fullscreen"],
     div[title="previous"],

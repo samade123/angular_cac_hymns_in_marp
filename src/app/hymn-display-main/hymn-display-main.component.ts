@@ -99,35 +99,20 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
 
     this.routerManagerService.trackNavigation(() => {
       // if (!this.subscribeOnceFlag) {
-        this.subscribeOnceFlag = true;
-        setTimeout(() => {
-          this.initCheckRouter();
-        }, 0);
+      this.subscribeOnceFlag = true;
+      setTimeout(() => {
+        this.initCheckRouter();
+      }, 0);
       // }
     });
     // this.trackNavigation(()=>this.initCheckRouter);
   }
-  // async ngOnChanges(changes: SimpleChanges) {
-  //   if (changes.hymn && !changes.hymn.firstChange) {
-  //     this.getHymn(changes.hymn.currentValue.properties);
-  //   }
-
-  //   if (changes.fullscreenState && !changes.fullscreenState.firstChange) {
-  //     if (this.fullscreenState) {
-  //       this.presentationService.openFullscreen();
-  //     } else {
-  //       this.presentationService.closeFullscreen();
-  //     }
-  //     // this.updateSize();
-  //     // this.renderMarp();
-  //   }
-  // }
 
   initFullScreen(): void {
     this.commService.subscriber$.subscribe((data: any) => {
       if ('type' in data && data.type == 'fullScreen') {
-        alert('fullscreen')
-        this.fullscreen()
+        // alert('fullscreen');
+        this.fullscreen();
       }
     });
   }
@@ -148,7 +133,7 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
         // console.log('testing can we receieve this', data.value)
         let simpleHymn = data.value as SimpleHymn;
         // if (simpleHymn.hymnNumber != this.hymnNumber) {
-          this.getHymn(simpleHymn);
+        this.getHymn(simpleHymn);
         // }
       }
     });
@@ -237,21 +222,41 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
     // console.log('running');
     let routeHymnNumber: string | null =
       this.activatedRoute.snapshot.queryParams.number;
-    if (typeof routeHymnNumber === 'string' && routeHymnNumber !== null) {
-      // if (await this.dbStorageService.doesHymnExist(routeHymnNumber)) {
-      //   let hymn = await this.dbStorageService.getHymnItem(routeHymnNumber);
-      //   this.commService.emitHymnId({
-      //     type: 'hymnId',
-      //     value: hymn.id,
-      //   });
-      // }
-      // else
-      if (await this.dbStorageService.doesHymnExist(routeHymnNumber, 'simpleHymns')){
-        let simpleHymn = await this.dbStorageService.getSimpleHymnByNumber(routeHymnNumber) as SimpleHymn;
-        if (simpleHymn) {
-          this.getHymn(simpleHymn)
-          this.commService.emitIdFromMainChild({type: 'hymnIdFromMain', value: simpleHymn.id})
+
+    this.dbStorageService.returnAll().then(async (arr) => {
+      // check if database is loaded
+      if (arr.length == 0) {
+        this.commService.mainAppSubscriber$.subscribe((data: any) => {
+          if ((data.type = 'webworker')) {
+            if (
+              typeof routeHymnNumber === 'string' &&
+              routeHymnNumber !== null
+            ) {
+              this.checkForHymn(routeHymnNumber);
+            }
+          }
+        });
+      } else if (arr.length > 0) {
+        if (typeof routeHymnNumber === 'string' && routeHymnNumber !== null) {
+          this.checkForHymn(routeHymnNumber);
         }
+      }
+    });
+  }
+
+  async checkForHymn(routeHymnNumber: string): Promise<void> {
+    if (
+      await this.dbStorageService.doesHymnExist(routeHymnNumber, 'simpleHymns')
+    ) {
+      let simpleHymn = (await this.dbStorageService.getSimpleHymnByNumber(
+        routeHymnNumber
+      )) as SimpleHymn;
+      if (simpleHymn) {
+        this.getHymn(simpleHymn);
+        this.commService.emitIdFromMainChild({
+          type: 'hymnIdFromMain',
+          value: simpleHymn.id,
+        });
       }
     }
   }

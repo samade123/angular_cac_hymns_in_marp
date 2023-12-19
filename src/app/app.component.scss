@@ -1,4 +1,6 @@
 @import './styles/card-div.scss';
+// @import './styles/variables.scss';
+
 
 :host {
   display: grid;
@@ -29,9 +31,19 @@
 
     .header__left {
 
-      >button:first-child,
-      > :first-child {
+      ::ng-deep .p-button{
         display: none;
+        font-size: 0.875rem;
+        padding: 0.45625rem 0.9375rem;
+      }
+    }
+
+    .header__right {
+      ::ng-deep .p-button.p-button-sm {
+        font-size: 0.875rem;
+        padding: 0.45625rem 0.9375rem;
+        background-color: var( --primary-button-dark);
+
       }
     }
 
@@ -104,6 +116,7 @@
           }
 
         }
+
         .marp-wrapper .marp-details {
           display: block;
         }
@@ -131,9 +144,12 @@
         grid-template-columns: auto 1fr;
         place-items: center;
 
-        >button:first-child,
-        > :first-child {
+        ::ng-deep .p-button {
           display: block;
+
+          &.p-button-icon-only:after{
+            display: none;
+          }
         }
       }
 

@@ -14,4 +14,9 @@
   border-radius: 2px;
   font-size: 0.9em;
 
+  ::ng-deep .p-button.p-button-sm {
+    font-size: 0.875rem;
+    padding: 0.45625rem 0.9375rem;
+}
+
 }

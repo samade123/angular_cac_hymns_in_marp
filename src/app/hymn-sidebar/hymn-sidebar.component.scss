@@ -6,7 +6,8 @@
   display: grid;
   place-items: stretch;
   gap: 11px;
-  grid-template-rows: auto 2fr 1fr;
+  grid-template-rows: auto auto 1fr;
+
   // grid-template-rows: auto 150px 1fr;
 
 
@@ -29,8 +30,8 @@
       z-index: 55;
       background: white;
       height: fit-content;
-      animation: expand-height 0.4s ease-in;
-      transform-origin: top;
+      animation: expand-height 0.2s ease-in;
+      transform-origin: top center;
 
     }
 
@@ -69,6 +70,9 @@
     // min-height: 25vh;
     // &:first-of-type {
     // }
+
+    display: grid;
+    grid-template-rows: auto 1fr;
 
     &:nth-of-type(2) {
       // @extend .card-div;
@@ -144,13 +148,21 @@
 
 
 
-.hymn-list-wrapper{
-
+.hymn-list-wrapper[_ngcontent-ng-c3633805284] {
   position: relative;
+  display: grid;
+  place-items: end start;
+  grid-template-rows: repeat(10, calc(1lh + 16px)) auto;
+  height: 20lh;
+
+
+
+  // flex-direction: column;
+  // justify-content: flex-end;
 
   .zero-hymns {
     position: absolute;
-    z-index:25;
+    z-index: 25;
     width: 100%;
     height: 100%;
     top: 0;
@@ -158,7 +170,30 @@
 
     display: grid;
     place-items: center;
-    background: #10abff22;
+    // background: #10abff22;
+
+  }
+
+  .hymn-paginator {
+    place-self: end center;
+    grid-row: 11;
+    // ::ng-deep > .p-element {
+    //   display: block
+    // }
+
+    &:first-child {
+
+    }
+
+    ::ng-deep .p-paginator, ::ng-deep .p-element  {
+      // width: 100%;
+
+      button.p-link {
+        height: 1.5lh;
+        width: 1.6lh;
+        min-width: auto;
+      }
+    }
 
   }
 }

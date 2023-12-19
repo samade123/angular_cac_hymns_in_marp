@@ -24,6 +24,9 @@
   <div class="hymn-list-wrapper" *ngIf="buttonFilters[0].selected else allHymns">
     <div class="zero-hymns" *ngIf="zeroHymns">
       <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+      <div class="zero-hymns__title">
+        Loading Hymns...
+      </div>
     </div>
     <div class="hymn-select-item"
       *ngFor="let hymn of hymnItemsArr$ | async; index as i; trackBy: simpleHymnItemsTrackByFn"
@@ -40,6 +43,9 @@
     <div class="hymn-list-wrapper">
       <div class="zero-hymns" *ngIf="zeroHymns">
         <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+        <div class="zero-hymns__title">
+          Loading Hymns...
+        </div>
       </div>
       <div class="hymn-select-item" *ngFor="let hymn of allSimpleHymns$ | async; index as i; trackBy: hymnTrackbyFn"
         [style]="'--hymn-number: '+hymn.hymnNumber" [attr.data-number]="hymn.hymnNumber" (click)="pickHymn(hymn.id)">
@@ -49,6 +55,20 @@
         <h3 class="hymn-select-item__title">
           {{hymn.name}}
         </h3>
+      </div>
+      <div class="hymn-paginator">
+        <!-- <div class="hymn-paginator__left">
+          <i class="pi pi-arrow-left"></i>
+        </div>
+        <div class="hymn-paginator__middle">
+
+        </div>
+        <div class="hymn-paginator__right">
+          <i class="pi pi-arrow-right"></i>
+        </div> -->
+
+        <p-paginator (onPageChange)="onPageChange($event)" [first]="offset" [rows]="10" [totalRecords]="hymnsLength" [pageLinkSize]="3"></p-paginator>
+
       </div>
     </div>
   </ng-template>

@@ -11,6 +11,8 @@ import { HymnDisplayMainComponent } from './hymn-display-main/hymn-display-main.
 import { IndexDbManagerService } from './services/index-db-manager.service';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
+import { PaginatorModule } from 'primeng/paginator';
+
 
 @NgModule({
   declarations: [AppComponent, HymnSidebarComponent, HymnDisplayMainComponent],
@@ -20,6 +22,7 @@ import { ButtonModule } from 'primeng/button';
     FormsModule,
     AppRoutingModule,
     ButtonModule,
+    PaginatorModule,
   ],
   providers: [
     GrabNotiondbService,

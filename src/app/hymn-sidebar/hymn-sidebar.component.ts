@@ -6,6 +6,7 @@ import { animate } from 'popmotion';
 import { liveQuery } from 'dexie';
 import { db } from './../db'; // You get a db with property table1 attached (because the schema is declared)
 import { CommsService } from '../services/comms.service';
+import { PaginatorState } from 'primeng/paginator';
 
 export interface ButtonFilters {
   name: string;
@@ -28,44 +29,40 @@ export class HymnSidebarComponent implements OnInit {
 
   hymnTrackbyFn = this.notionService.simpleHymnsTrackByFn;
   simpleHymnItemsTrackByFn = this.notionService.simpleHymnItemsTrackByFn;
+  // hymnsLengthFromDb = this.dBstorageServie.getTableLength
+  hymnsLength: number = 0;
   buttonFilters: ButtonFilters[] = [
     { name: 'Most recent', selected: true },
     { name: 'All Hymns', selected: false },
   ];
   inputFocusBgDeg = '180deg';
   searchQuery: string = '';
-  zeroHymns: boolean = true;
+  zeroHymns: boolean = false;
   friends$ = liveQuery(() =>
     this.dBstorageServie.listSimpleHymns(this.searchQuery)
   );
   allSimpleHymns$ = liveQuery(async () => {
-    return await this.dBstorageServie.returnAll();
+    return await this.dBstorageServie.returnAll(0);
   });
   hymnItemsArr$ = liveQuery(async () => {
     return await this.dBstorageServie.getLastFiveHymns();
-    // return await db.table('simpleHymnItems')
-    //   .orderBy('last_used_time')
-    //   .reverse()
-    //   .limit(5)
-    //   .toArray() as SimpleHymnItem[];
   });
+  offset: number = 0;
 
   ngOnInit(): void {
-    console.log('here');
-
-    this.commService.mainAppSubscriber$.subscribe((data: any) => {
-      if ((data.type = 'webworker')) {
-        this.friends$ = liveQuery(() =>
-          this.dBstorageServie.listSimpleHymns(this.searchQuery)
-        );
-        this.allSimpleHymns$ = liveQuery(async () => {
-          return await this.dBstorageServie.returnAll();
+    this.dBstorageServie.checkForEmptyDb(
+      () => {
+        this.commService.mainAppSubscriber$.subscribe((data: any) => {
+          if ((data.type = 'webworker')) {
+            this.defineLivequeries();
+            this.zeroHymns = false;
+          }
         });
-        this.hymnItemsArr$ = liveQuery(async () => {
-          return await this.dBstorageServie.getLastFiveHymns();
-        });
+      },
+      () => {
+        this.defineLivequeries();
       }
-    });
+    );
 
     this.dBstorageServie.returnAll().then(async (arr) => {
       if (arr.length == 0) {
@@ -76,9 +73,27 @@ export class HymnSidebarComponent implements OnInit {
         }, 1000);
       } else {
         this.zeroHymns = false;
-
       }
     });
+  }
+
+  defineLivequeries(): void {
+    this.friends$ = liveQuery(() =>
+      this.dBstorageServie.listSimpleHymns(this.searchQuery)
+    );
+    this.allSimpleHymns$ = liveQuery(async () => {
+      return await this.dBstorageServie.returnAll(this.offset);
+    });
+    this.hymnItemsArr$ = liveQuery(async () => {
+      return await this.dBstorageServie.getLastFiveHymns();
+    });
+
+    this.dBstorageServie
+      .getTableLength()
+      .then((number) => {
+        this.hymnsLength = number;
+      })
+      .catch(() => (this.hymnsLength = 0));
   }
   filterHymns(buttonFilter: ButtonFilters): void {
     this.buttonFilters.forEach((btn) => (btn.selected = false));
@@ -119,5 +134,14 @@ export class HymnSidebarComponent implements OnInit {
   }
   reloadDb(): void {
     this.reload.emit();
+  }
+
+  onPageChange(event: PaginatorState): void {
+    // console.log(event);
+    if (typeof event.page == 'number') {
+      this.offset = event.page * 10;
+      //  console.log(this.offset)
+      this.defineLivequeries();
+    }
   }
 }

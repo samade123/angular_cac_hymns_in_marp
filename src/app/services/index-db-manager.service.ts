@@ -144,9 +144,19 @@ export class IndexDbManagerService {
     // return hymns as SimpleHymnItem[];
   }
 
-  async returnAll(): Promise<SimpleHymn[]> {
+  async returnAll(offset: number = 0): Promise<SimpleHymn[]> {
     await db.on('ready', () => {});
-    return await db.table('simpleHymns').orderBy('hymnNumber').toArray();
+    return await db
+      .table('simpleHymns')
+      .orderBy('hymnNumber')
+      .offset(offset)
+      .limit(10)
+      .toArray();
+  }
+
+  async getTableLength(table: string = 'simpleHymns'): Promise<number> {
+    await db.on('ready', () => {});
+    return await db.table(table).count();
   }
 
   // async clearAll(): Promise<void> {
@@ -178,6 +188,20 @@ export class IndexDbManagerService {
       { once: true }
     );
     worker.postMessage({ data: hymnList, type: 'bulkPut' });
+  }
+
+  checkForEmptyDb(
+    onEmptyDbFunc: () => void,
+    onNotEmptyDbFunc: () => void
+  ): void {
+    this.returnAll().then(async (arr) => {
+      // check if database is loaded
+      if (arr.length == 0) {
+        await onEmptyDbFunc();
+      } else if (arr.length > 0) {
+        onNotEmptyDbFunc();
+      }
+    });
   }
 }
 // export const db = new IndexDbManagerService();

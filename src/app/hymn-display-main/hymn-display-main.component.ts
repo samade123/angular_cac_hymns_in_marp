@@ -199,11 +199,10 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
 
   fullscreen(): void {
     // this.fullscreenEmitter.emit(!this.fullscreenState);
-    // this.commService.emitFullscreen({
-    //   type: 'fullscreen',
-    //   value: !this.fullscreenState,
-    // });
-
+    this.commService.emitFullscreen({
+      type: 'fullscreen',
+      value: !this.fullscreenState,
+    });
     // if (this.routerMode) {
     //   this.fullscreenState = !this.fullscreenState;
     //   // this.updateSize();

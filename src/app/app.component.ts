@@ -37,18 +37,18 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.routerManagerService.setPageToMobileHome();
-    // this.initFullScreen();
+    this.initFullScreen();
     this.initHymnNumberComms();
     this.initHymnsDb();
   }
 
-  // initFullScreen(): void {
-  //   this.commService.subscriber$.subscribe((data: any) => {
-  //     if (data.type && data.type == 'fullscreen') {
-  //       this.fullscreen = !this.fullscreen;
-  //     }
-  //   });
-  // }
+  initFullScreen(): void {
+    this.commService.subscriber$.subscribe((data: any) => {
+      if (data.type && data.type == 'fullscreen') {
+        this.fullscreen = !this.fullscreen;
+      }
+    });
+  }
   setFullScreen(): void {
     this.fullscreen = !this.fullscreen;
 

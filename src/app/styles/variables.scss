@@ -5,4 +5,8 @@
   --main-border-radius: 6px;
 
   --header-padding: 10px;
+
+  --primary-blue:  #3B82F6;
+
+  --primary-button-dark: color-mix(in srgb, var(--primary-blue,  #3B82F6), #000000)
 }

@@ -7,6 +7,7 @@ import { liveQuery } from 'dexie';
 import { db } from './../db'; // You get a db with property table1 attached (because the schema is declared)
 import { CommsService } from '../services/comms.service';
 import { PaginatorState } from 'primeng/paginator';
+import { first, take } from 'rxjs';
 
 export interface ButtonFilters {
   name: string;
@@ -38,29 +39,38 @@ export class HymnSidebarComponent implements OnInit {
   inputFocusBgDeg = '180deg';
   searchQuery: string = '';
   zeroHymns: boolean = false;
+  offset: number = 0;
   friends$ = liveQuery(() =>
     this.dBstorageServie.listSimpleHymns(this.searchQuery)
   );
   allSimpleHymns$ = liveQuery(async () => {
-    return await this.dBstorageServie.returnAll(0);
+    return await this.dBstorageServie.returnAll(this.offset);
   });
   hymnItemsArr$ = liveQuery(async () => {
     return await this.dBstorageServie.getLastFiveHymns();
   });
-  offset: number = 0;
 
   ngOnInit(): void {
     this.dBstorageServie.checkForEmptyDb(
       () => {
-        this.commService.mainAppSubscriber$.subscribe((data: any) => {
-          if ((data.type = 'webworker')) {
-            this.defineLivequeries();
-            this.zeroHymns = false;
-          }
-        });
+        this.commService.mainAppSubscriber$
+          .pipe(take(1))
+          .subscribe((data: any) => {
+            if ((data.type = 'webworker')) {
+              this.defineLivequeries();
+              this.zeroHymns = false;
+            }
+          });
       },
       () => {
-        this.defineLivequeries();
+        console.log('db ready');
+        // this.defineLivequeries(true);
+        this.dBstorageServie
+          .getTableLength()
+          .then((number) => {
+            this.hymnsLength = number;
+          })
+          .catch(() => (this.hymnsLength = 0));
       }
     );
 
@@ -77,23 +87,28 @@ export class HymnSidebarComponent implements OnInit {
     });
   }
 
-  defineLivequeries(): void {
-    this.friends$ = liveQuery(() =>
-      this.dBstorageServie.listSimpleHymns(this.searchQuery)
-    );
-    this.allSimpleHymns$ = liveQuery(async () => {
-      return await this.dBstorageServie.returnAll(this.offset);
-    });
-    this.hymnItemsArr$ = liveQuery(async () => {
-      return await this.dBstorageServie.getLastFiveHymns();
-    });
-
-    this.dBstorageServie
-      .getTableLength()
-      .then((number) => {
-        this.hymnsLength = number;
-      })
-      .catch(() => (this.hymnsLength = 0));
+  defineLivequeries(pageChange: Boolean = false): void {
+    if (!pageChange) {
+      this.friends$ = liveQuery(() =>
+        this.dBstorageServie.listSimpleHymns(this.searchQuery)
+      );
+      this.allSimpleHymns$ = liveQuery(async () => {
+        return await this.dBstorageServie.returnAll(this.offset);
+      });
+      this.hymnItemsArr$ = liveQuery(async () => {
+        return await this.dBstorageServie.getLastFiveHymns();
+      });
+      this.dBstorageServie
+        .getTableLength()
+        .then((number) => {
+          this.hymnsLength = number;
+        })
+        .catch(() => (this.hymnsLength = 0));
+    } else {
+      this.allSimpleHymns$ = liveQuery(async () => {
+        return await this.dBstorageServie.returnAll(this.offset);
+      });
+    }
   }
   filterHymns(buttonFilter: ButtonFilters): void {
     this.buttonFilters.forEach((btn) => (btn.selected = false));
@@ -133,7 +148,12 @@ export class HymnSidebarComponent implements OnInit {
     );
   }
   reloadDb(): void {
-    this.reload.emit();
+    // this.reload.emit();
+
+    this.commService.emitHymnIdFromSidebar({
+      type: 'reloadDb',
+      value: 'db',
+    });
   }
 
   onPageChange(event: PaginatorState): void {
@@ -141,7 +161,7 @@ export class HymnSidebarComponent implements OnInit {
     if (typeof event.page == 'number') {
       this.offset = event.page * 10;
       //  console.log(this.offset)
-      this.defineLivequeries();
+      this.defineLivequeries(true);
     }
   }
 }

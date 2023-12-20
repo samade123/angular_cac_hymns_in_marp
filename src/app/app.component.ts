@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { GrabNotiondbService } from './services/grab-notiondb.service';
 import { NotionDBQuery, Result, SimpleHymn } from './test-interface';
 import { StorageManagerService } from './services/storage-manager.service';
-import { addHours, isPast, isFuture } from 'date-fns';
+import { addHours, isPast, isFuture, addMinutes } from 'date-fns';
 import { IndexDbManagerService } from './services/index-db-manager.service';
 import { CommsService } from './services/comms.service';
 import { Router } from '@angular/router';
@@ -52,11 +52,10 @@ export class AppComponent implements OnInit {
   setFullScreen(): void {
     this.fullscreen = !this.fullscreen;
 
-     this.commService.emitFullscreen({
-        type: 'fullScreen',
-        value: true,
-      });
-
+    this.commService.emitFullscreen({
+      type: 'fullScreen',
+      value: true,
+    });
   }
 
   initHymnNumberComms(): void {
@@ -70,15 +69,18 @@ export class AppComponent implements OnInit {
       }
     });
 
-
     // 'hymnIdFromMain'
 
     this.commService.mainAppSubscriber$.subscribe((data: any) => {
       if (data.type && data.type == 'hymnIdFromSidebar') {
         // console.log(data.value, 'worked');
         this.selectHymnId(data.value);
+      } else if (data.type && data.type == 'reloadDb') {
+        this.getNotionResponse();
       } else if (data.type && data.type == 'hymnIdFromMain') {
-        this.setCurrentHymn(data.value);
+        if (this.selectedHymnId == '') { // only change if empty
+          this.setCurrentHymn(data.value);
+        }
       }
     });
   }
@@ -87,35 +89,54 @@ export class AppComponent implements OnInit {
     this.dbService.storeNewHymnsList(this.hymnsList);
   }
 
-  async setCurrentHymn(id: string): Promise<void> {
+  setCurrentHymn(id: string): Promise<void> {
     this.selectedHymnId = id;
 
-    if (
-      await this.dbService.doesHymnbyIdExist(this.selectedHymnId, 'simpleHymns')
-    ) {
-      this.selectedSimpleHymn = await this.dbService.getHymnItembyId(
-        this.selectedHymnId,
-        'simpleHymns'
-      );
-    }
+    return new Promise((resolve, reject) => {
+      this.dbService
+        .doesHymnbyIdExist(this.selectedHymnId, 'simpleHymns')
+        .then(() => {
+          this.dbService
+            .getHymnItembyId(this.selectedHymnId, 'simpleHymns')
+            .then((simpleHymn) => {
+              this.selectedSimpleHymn = {
+                id: '',
+                name: '',
+                last_edited_time: new Date(),
+                hymnNumber: '',
+                url: '',
+              };
+              this.selectedSimpleHymn = simpleHymn;
+              setTimeout(() => {
+                resolve();
+              });
+            })
+            .catch((err) => reject(err));
+        })
+        .catch((err) => reject(err));
+    });
   }
 
   selectHymnId(id: string): void {
     // this.selectedHymnId = id;
 
-    this.setCurrentHymn(id);
+    this.setCurrentHymn(id).then(() => {
+      let currentExpiry = this.storageManagerService.getData(
+        'last-request-date'
+      ) as string;
 
-    let currentExpiry = this.storageManagerService.getData(
-      'last-request-date'
-    ) as string;
-    this.dbService.doesHymnbyIdExist(this.selectedHymnId).then((exists) => {
-      if (!exists) {
-        if (isFuture(new Date(currentExpiry))) {
+      // console.log(isFuture(new Date(currentExpiry)), new Date(currentExpiry));
+
+      this.dbService.doesHymnbyIdExist(this.selectedHymnId).then((exists) => {
+        if (!exists) {
+          console.log(isFuture(new Date(currentExpiry)));
+          if (isFuture(new Date(currentExpiry))) {
+            this.runThroughResults();
+          } else this.getNotionResponse(true);
+        } else {
           this.runThroughResults();
         }
-      } else {
-        this.runThroughResults();
-      }
+      });
     });
   }
 
@@ -123,45 +144,38 @@ export class AppComponent implements OnInit {
     if (
       await this.dbService.doesHymnbyIdExist(this.selectedHymnId, 'simpleHymns')
     ) {
-      // this.selectedSimpleHymn = await this.dbService.getHymnItembyId(
-      //   this.selectedHymnId,
-      //   'simpleHymns'
-      // );
-      // await this.service.getHymn(this.selectedSimpleHymn)
-
-      // console.log('bnaviagaetinf to hymn number etc');
       this.router.navigate(['/'], {
         queryParams: { number: this.selectedSimpleHymn.hymnNumber },
       });
-      // this.commService.emitSimpleHymnData({
-      //   type: 'simpleHymn',
-      //   value: this.selectedSimpleHymn,
-      // });
     }
-
-    // this.commService.emitHymnData(this.selectedHymnObject);
   }
 
   backToHymnsList(): void {
     this.router.navigate(['/hymns']);
   }
 
-  getNotionResponse(): void {
-    this.service
-      .getFunctionData('api/getNotionQuery.js')
-      .subscribe((response) => {
+  getNotionResponse(runAndThenSelectHymn: Boolean = false): void {
+    this.service.getFunctionData('api/getNotionQuery.js').subscribe(
+      (response) => {
         const notionResponse = response as NotionDBQuery;
         this.data = notionResponse;
         this.results = [...notionResponse.results];
         this.storageManagerService.storeData('last-request', notionResponse);
         let newExpiry: Date = addHours(new Date(), 1);
+        // let newExpiry: Date = addMinutes(new Date(), 1);
+
         this.storageManagerService.storeData('last-request-date', newExpiry);
         this.hymnsList = this.service.simplifyHymns(this.results);
         this.dbService.storeNewHymnsList(this.hymnsList);
-      }, (error) => {
+        if (runAndThenSelectHymn) {
+          this.runThroughResults();
+        }
+      },
+      (error) => {
         console.error('Error fetching notion data:', error);
         // Handle the error here
-      });
+      }
+    );
   }
 
   failedFetch(): void {
@@ -181,7 +195,13 @@ export class AppComponent implements OnInit {
       let currentExpiry = this.storageManagerService.getData(
         'last-request-date'
       ) as string;
+      console.log(
+        isPast(addMinutes(new Date(currentExpiry), 1)),
+        addMinutes(new Date(currentExpiry), 1)
+      );
+
       if (isPast(addHours(new Date(currentExpiry), 1))) {
+        // if (isPast(addMinutes(new Date(currentExpiry), 1))) {
         this.getNotionResponse();
         console.log('data expired, requesting new', currentExpiry);
       }

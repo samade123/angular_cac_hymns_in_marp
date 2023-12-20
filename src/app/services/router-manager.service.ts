@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-
+import { first } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -27,10 +27,19 @@ export class RouterManagerService {
   }
 
   setPageToMobileHome(): void {
-    if (!this.router.url.includes('number')) {
-      if (window.innerWidth < 600) {
-        this.router.navigate(['/hymns']);
+    // this.router.events.pipe(first()).subscribe(async (event) => {
+    let subscription = this.router.events.subscribe(async (event) => {
+      if (event instanceof NavigationEnd) {
+        const currentUrl = event.url;
+        // console.log(event.url);
+
+        if (!event.url.includes('number')) {
+          if (window.innerWidth < 600) {
+            this.router.navigate(['/hymns']);
+          }
+        }
+        subscription.unsubscribe();
       }
-    }
+    });
   }
 }

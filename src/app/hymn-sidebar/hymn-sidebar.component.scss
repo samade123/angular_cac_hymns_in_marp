@@ -91,7 +91,7 @@
       border-bottom: 1px solid #2222;
 
 
-      .hymn-list-filter {
+      .hymn-list-filter, .hymn-list-filter__refresh {
         padding: 1px 3px;
         border-radius: var(--main-border-radius);
 
@@ -135,6 +135,19 @@
         }
       }
 
+      .hymn-list-filter__refresh {
+        color: color-mix(in srgb, green, #0006);
+        font-weight: 700;
+
+        &:hover {
+          filter: brightness(1.05);
+          color: color-mix(in srgb, green, #0004);
+          // background: #f8f9fa;
+          // border-color: none;
+
+        }
+      }
+
       // &.selected {
       //   background: white;
       //   color: color-mix(in srgb, var(--background-color), #333 70%);
@@ -148,7 +161,7 @@
 
 
 
-.hymn-list-wrapper[_ngcontent-ng-c3633805284] {
+.hymn-list-wrapper {
   position: relative;
   display: grid;
   place-items: end start;
@@ -181,11 +194,10 @@
     //   display: block
     // }
 
-    &:first-child {
+    &:first-child {}
 
-    }
-
-    ::ng-deep .p-paginator, ::ng-deep .p-element  {
+    ::ng-deep .p-paginator,
+    ::ng-deep .p-element {
       // width: 100%;
 
       button.p-link {

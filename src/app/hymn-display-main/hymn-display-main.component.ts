@@ -151,21 +151,71 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
       // if (this.hymnDict[this.hymnNumber]) {
       if (await this.dbStorageService.doesHymnExist(this.hymnNumber)) {
         // this.file = this.hymnDict[this.hymnNumber];
-        this.dbStorageService.getHymnItem(this.hymnNumber).then((hymnItem) => {
-          this.file = hymnItem.marp;
-          hymnItem.last_used_time = new Date();
-          this.dbStorageService.storeData('simpleHymnItems', hymnItem);
-          this.showHymns = true;
-          this.hymnItem = hymnItem;
-          this.renderMarp();
-        });
+        this.dbStorageService
+          .getHymnItem(this.hymnNumber)
+          .then(async (hymnItem) => {
+            this.file = hymnItem.marp;
+
+            hymnItem.last_used_time = new Date();
+            this.dbStorageService.storeData('simpleHymnItems', hymnItem);
+            this.showHymns = true;
+            this.hymnItem = hymnItem;
+            this.renderMarp();
+            this.diffMarp(simpleHymn, hymnItem.marp);
+
+            // if (await this.diffMarp(simpleHymn, hymnItem.marp)) {
+            //   console.log('ran diff should download a new file');
+            //   this.fetchMarp(simpleHymn);
+            // }
+          });
       } else {
-        this.service
-          .getMarp(this.url)
-          .then((file) => {
-            // console.log(file, 'file for this hymn')
-            this.file = file;
-            this.hymnDict[this.hymnNumber] = this.file;
+        this.fetchMarp(simpleHymn);
+      }
+    }
+  }
+  diffMarp(simpleHymn: SimpleHymn, localMarpFile: string): void {
+    this.fetchMarp(simpleHymn, true)
+      .then(async () => {
+        if (
+          localMarpFile.includes('AccessDenied') &&
+          this.file.includes('AccessDenied') || this.file.includes('AccessDenied')  // if both files failed there's no intenet or something funny happening with fetch servers
+        ) {
+          return;
+        } else if (localMarpFile.includes('AccessDenied')) { // if localfails we don't want to use that file
+          console.log('trying becasue file has access denied');
+          try {
+            let testMarp = await fetch(simpleHymn.url); // check if fetch works then replace file to prevent storing another faied file
+            const testMarpString = await testMarp.text();
+            if (!testMarpString.includes('AccessDenied')) {
+              this.fetchMarp(simpleHymn);
+            }
+            return;
+          } catch (error) {
+            return;
+          }
+        } else if (localMarpFile === this.file) { // if files are the same don't do nothing
+          return;
+        } else if (localMarpFile != this.file) { // if files are different update doing this last means we shouldn't have a bad file
+          if (!this.file.includes('AccessDenied')) {
+            this.fetchMarp(simpleHymn);
+          }
+          return;
+        } else return;
+      })
+      .catch(() => {
+        return;
+      });
+  }
+
+  fetchMarp(simpleHymn: SimpleHymn, diff: boolean = false): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.service
+        .getMarp(this.url)
+        .then((file) => {
+          // console.log(file, 'file for this hymn');
+          this.file = file;
+          this.hymnDict[this.hymnNumber] = this.file;
+          if (!diff) {
             this.showHymns = true;
             this.renderMarp();
             // this.storageService.storeData('hymn-dict', this.hymnDict);
@@ -173,13 +223,15 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
             this.hymnItem = hymnItem;
 
             this.dbStorageService.storeData('simpleHymnItems', hymnItem);
-          })
-          .catch((err) => {
-            console.error(err);
-            this.failedFetch.emit();
-          });
-      }
-    }
+          }
+          resolve();
+        })
+        .catch((err) => {
+          console.error(err);
+          reject();
+          this.failedFetch.emit();
+        });
+    });
   }
 
   fullscreen(): void {

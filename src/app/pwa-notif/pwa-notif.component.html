@@ -1,0 +1,15 @@
+<div class="app-container">
+  <!-- <ng-template *ngIf="(showUserPrompt && NewVersionReady)"> -->
+    <!-- <ng-template *ngIf="true"> -->
+
+    <div class="modal-overlay" *ngIf="showUserPrompt && NewVersionReady" (click)="hideModal()">
+      <div class="modal" role="dialog">
+        <p>This app has an update available. Would you like to refresh now?</p>
+        <button class="buttons" (click)="refresh()">Yes! Update App</button>
+        <button class="buttons white" (click)="hideModal()">
+          No. Update Later
+        </button>
+      </div>
+    </div>
+  <!-- </ng-template> -->
+</div>

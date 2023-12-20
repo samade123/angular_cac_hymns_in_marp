@@ -12,6 +12,9 @@ export class CommsService {
   mainAppObserver = new Subject();
   public mainAppSubscriber$ = this.mainAppObserver.asObservable();
 
+  pwaObserver = new Subject();
+  public pwaSuscriber$ = this.pwaObserver.asObservable();
+
 
   emitHymnData(data: Result) {
     this.observer.next(data);
@@ -57,6 +60,14 @@ export class CommsService {
     value: String,
   }): void {
     this.mainAppObserver.next(id);
+
+  }
+
+  emitPWAStatus(state: {
+    type: String,
+    value: boolean,
+  }): void {
+    this.pwaObserver.next(state);
 
   }
   constructor() {}

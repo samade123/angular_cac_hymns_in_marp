@@ -55,3 +55,6 @@ Thumbs.db
 # *.pyc
 # *-info
 # werkzeug/*
+
+# assets
+*.png

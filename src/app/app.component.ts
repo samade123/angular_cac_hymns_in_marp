@@ -7,6 +7,7 @@ import { IndexDbManagerService } from './services/index-db-manager.service';
 import { CommsService } from './services/comms.service';
 import { Router } from '@angular/router';
 import { RouterManagerService } from './services/router-manager.service';
+import { LoadPolyFillService } from './services/load-poly-fill.service';
 
 @Component({
   selector: 'app-root',
@@ -29,7 +30,8 @@ export class AppComponent implements OnInit {
     private dbService: IndexDbManagerService,
     private commService: CommsService,
     private router: Router,
-    private routerManagerService: RouterManagerService
+    private routerManagerService: RouterManagerService,
+    private loadPolyFillService: LoadPolyFillService
   ) {}
 
   notionPageTrackByFn = this.service.notionPageTrackByFn;
@@ -39,7 +41,20 @@ export class AppComponent implements OnInit {
     this.routerManagerService.setPageToMobileHome();
     this.initFullScreen();
     this.initHymnNumberComms();
+    this.loadScript();
     this.initHymnsDb();
+  }
+
+  loadScript(): void {
+    this.loadPolyFillService.loadScript('https://cdn.jsdelivr.net/npm/@marp-team/marpit-svg-polyfill/lib/polyfill.browser.js')
+    .then(() => {
+      // Script loaded successfully
+      console.log('polyfill loaded')
+    })
+    .catch(error => {
+      // Handle loading error
+      console.error(error, 'issue with loading polyfill')
+    });
   }
 
   initFullScreen(): void {

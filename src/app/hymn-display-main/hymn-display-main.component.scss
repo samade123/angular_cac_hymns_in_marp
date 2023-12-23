@@ -32,7 +32,7 @@ div.marpit-placeholder {
 
   .marp-details {
     border: 1px solid rgba(34, 34, 34, 0.1333333333);
-    background: #fff;
+    background: var(--background-color-1, #FFF);
     border-radius: 2px;
     padding: 10px;
     place-self: center;
@@ -54,8 +54,8 @@ div.marpit-placeholder {
       padding: 0.5rem;
       width: -moz-fit-content;
       width: fit-content;
-      border: solid 2px #000a;
-      background: #fffa
+      border: solid 2px var(--border-color, #000a);
+      background: #fffa;
     }
 
 

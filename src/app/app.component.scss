@@ -1,5 +1,5 @@
 @import './styles/card-div.scss';
-// @import './styles/variables.scss';
+@import './styles/variables.scss';
 
 
 :host {
@@ -74,7 +74,7 @@
     place-items: stretch;
     grid-row: 1/span 2;
     border: 1px solid rgba(34, 34, 34, 0.1333333333);
-    background: #fff;
+    background: var(--background-color-1, #FFF);
     border-radius: 2px;
     padding: 10px;
     height: 100%;

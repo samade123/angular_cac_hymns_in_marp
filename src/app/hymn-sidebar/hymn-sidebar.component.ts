@@ -13,6 +13,7 @@ export interface ButtonFilters {
   name: string;
   selected: boolean;
 }
+
 @Component({
   selector: 'app-hymn-sidebar',
   templateUrl: './hymn-sidebar.component.html',
@@ -53,14 +54,7 @@ export class HymnSidebarComponent implements OnInit {
   ngOnInit(): void {
     this.dBstorageServie.checkForEmptyDb(
       () => {
-        this.commService.mainAppSubscriber$
-          .pipe(take(1))
-          .subscribe((data: any) => {
-            if ((data.type = 'webworker')) {
-              this.defineLivequeries();
-              this.zeroHymns = false;
-            }
-          });
+        this.suscribeToWorker();
       },
       () => {
         console.log('db ready');
@@ -82,6 +76,18 @@ export class HymnSidebarComponent implements OnInit {
           this.filterHymns(this.buttonFilters[1]);
         }, 1000);
       } else {
+        this.zeroHymns = false;
+      }
+    });
+  }
+
+  suscribeToWorker(): void {
+    // this.zeroHymns = true;
+    this.commService.mainAppSubscriber$
+    .pipe(take(1))
+    .subscribe((data: any) => {
+      if ((data.type = 'webworker')) {
+        this.defineLivequeries();
         this.zeroHymns = false;
       }
     });
@@ -149,6 +155,7 @@ export class HymnSidebarComponent implements OnInit {
   }
   reloadDb(): void {
     // this.reload.emit();
+    this.suscribeToWorker();
 
     this.commService.emitHymnIdFromSidebar({
       type: 'reloadDb',

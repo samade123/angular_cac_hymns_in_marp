@@ -124,11 +124,13 @@ export class IndexDbManagerService {
     return count > 0;
   }
 
-  async listSimpleHymns(hymnNumber: string): Promise<SimpleHymn[]> {
+  async listSimpleHymns(searchString: string): Promise<SimpleHymn[]> {
     await db.on('ready', () => {});
     return await db
       .table('simpleHymns')
-      .filter((hymn) => hymn.hymnNumber.includes(hymnNumber))
+      .filter((hymn) => {
+        return hymn.hymnNumber.includes(searchString) || hymn.name.toLowerCase().includes(searchString.toLowerCase())
+      })
       .toArray();
   }
 

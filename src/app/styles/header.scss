@@ -9,7 +9,7 @@
   align-items: center;
   gap: 10px;
 
-  border: 1px solid rgba(34, 34, 34, 0.1333333333);
+  border-bottom: 1px ridge var(--border-color);
   background: var(--background-color-1, #FFF);
   border-radius: 2px;
   font-size: 0.9em;

@@ -5,61 +5,128 @@
 :host {
   display: grid;
   place-items: stretch;
-  gap: 11px;
+  gap: 0;
   grid-template-rows: auto auto 1fr;
 
   // grid-template-rows: auto 150px 1fr;
 
+  --padding-left: 8px;
+
 
   fieldset {
+
+    --transition-time: 0.3s;
     border: none;
-    background: linear-gradient(21deg, #10abff, #1beabd);
+    // background: linear-gradient(21deg, #10abff, #1beabd);
+    // background: var(--input-bg);
     padding: 0;
-    padding: 5px;
+    padding: 10px var(--padding-left);
+    padding: 0;
     display: grid;
     place-items: center;
-    border-radius: 21px;
+    border-radius: 7px;
     position: relative;
+    margin: 0;
+    box-sizing: border-box;
+    transition: padding var(--transition-time) linear;
+    height: calc(1lh + 20px + (2 * 7px));
+
+    // color: var(--input-color);
+    &:has(input:is(:focus, :focus-within, :active)) {
+      padding: 0 0;
+
+    }
+
+    &:has(input:not(:placeholder-shown) + .blank:empty) input {
+      background-color: color-mix(in srgb, var(--input-bg) 80%, red);
+    }
 
     .blank {
       @extend .card-div;
 
       position: absolute;
       top: 120%;
-      width: 90%;
+      left: 0;
+      width: 140%;
       z-index: 55;
       background: white;
       height: fit-content;
       animation: expand-height 0.2s ease-in;
       transform-origin: top center;
+      padding: 0;
+      margin: 10px;
+      box-sizing: border-box;
+      gap: 1em;
 
+      div.hymn-select-item {
+        padding-block: 3px;
+      }
+
+      &:empty {
+        display: none;
+      }
+
+    }
+
+    label {
+      display: none;
     }
 
     &[disabled] {
       background: #3336;
     }
 
-    &:has(input:focus) {
-      background: linear-gradient(var(--background-grad-degree, 21deg), #10abff, #1beabd);
-      --background-grad-degree: 21deg;
+    // &:has(input:focus) {
+    //   background: linear-gradient(var(--background-grad-degree, 21deg), #10abff, #1beabd);
+    //   --background-grad-degree: 21deg;
 
-    }
+    // }
 
     input {
-      border-radius: 18px;
-      /* margin: 3px 5px; */
+      background-color: transparent;
+      background-color: var(--input-bg);
+
+      background-image: url('./../../assets/search.svg');
+      background-repeat: no-repeat;
+      background-size: 1.2lh auto;
+      background-position-y: center;
+      background-position-x: .125em;
+
+
+      border-radius: 7px;
+      margin: 0;
       box-sizing: border-box;
       border: none;
       outline: none;
-      padding: 7px .325em;
-      padding-left: 1em;
+      padding: 7px .725em;
+      padding-left: 1.45em;
       z-index: 1;
-      width: 100%;
-      min-height: 25px;
+      width: calc(100% - (var(--padding-left) * 2));
+      min-height: calc(1lh + (2 * 7px));
+      cursor: pointer;
+      color: var(--input-color);
+
+      transition: border-radius var(--transition-time) linear, min-height var(--transition-time) linear, width var(--transition-time) linear;
+
+
+      // color: #fff;
+
+      &::placeholder {
+        color: var(--input-color);
+        opacity: 1;
+        /* Firefox */
+        font-weight: 700;
+        // line-height: 1.2lh;
+        font-size: 0.8em;
+      }
 
       &:focus {
         opacity: 1;
         transform: scale(1);
+        cursor: inherit;
+        min-height: 100%;
+        border-radius: 0;
+        width: 100%;
       }
     }
   }
@@ -91,9 +158,12 @@
       border-bottom: 1px solid #2222;
 
 
-      .hymn-list-filter, .hymn-list-filter__refresh {
+      .hymn-list-filter,
+      .hymn-list-filter__refresh {
         padding: 1px 3px;
         border-radius: var(--main-border-radius);
+
+
 
         background-color: #f8f9fa;
         border: 1px solid #f8f9fa;
@@ -162,11 +232,13 @@
 
 
 .hymn-list-wrapper {
+
+  --hymn-list-padding: 10px;
   position: relative;
   display: grid;
-  place-items: end start;
-  grid-template-rows: repeat(10, calc(1lh + 16px)) auto;
-  height: 20lh;
+  place-items: end stretch;
+  grid-template-rows: repeat(10, calc(1.4lh + (var(--hymn-list-padding) * 2))) auto;
+  min-height: 20lh;
 
 
 
@@ -220,34 +292,88 @@ li::marker {
 
 div.hymn-select-item {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: 6ch 1fr;
+  // grid-template-rows: 1fr auto;
   place-items: center stretch;
-  gap: 6px 5px;
-  padding-block: 8px;
+  gap: 1px 0.3em;
+  // padding-block: var(--hymn-list-padding, 10px);
   padding-inline: 4px;
-  border-radius: 6px;
-  font-size: 1.2rem;
+  // border-radius: 6px;
+  // font-size: 1.5rem;
+  height: 100%;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--border-color, none);
+
 }
 
 div.hymn-select-item:hover {
   cursor: pointer;
-  background-color: #3331;
+  background-color: var(--selected-hymn-bg-light);
 }
 
 .hymn-select-item__number {
   font-weight: 800;
-  font-size: 0.9em;
+  font-size: 1.7em;
+  text-align: center;
+  // grid-row: span 2;
+  grid-column: 1;
+  place-self: center end;
 }
 
 .hymn-select-item__date {}
 
 .hymn-select-item__title {
-  text-align: center;
+  text-align: left;
   text-overflow: ellipsis;
   width: 100%;
   white-space: nowrap;
   overflow: hidden;
   font-weight: 500;
   margin: 0;
-  font-size: 0.8em;
+  font-size: 0.9em;
+  grid-row: 1;
+  grid-column: 2;
+}
+
+.hymn-select-item__subtitle {
+  text-align: left;
+  text-overflow: ellipsis;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  font-weight: 300;
+  margin: 0;
+  font-size: 0.55em;
+  // line-height: 0.5;
+  grid-column: 2;
+  place-self: start start;
+  color: #515E72;
+
+}
+
+div.hymn-select-item:has(.hymn-select-item__subtitle) {
+
+  .hymn-select-item__subtitle {
+    grid-row: 2;
+  }
+
+  .hymn-select-item__title {
+    grid-row: 1;
+    place-self: end start;
+
+
+  }
+
+  .hymn-select-item__number {
+    grid-row: span 2;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  :host {
+    font-size: 1.45em;
+    fieldset .blank {
+      width: 95%;
+    }
+  }
 }

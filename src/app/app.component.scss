@@ -5,21 +5,22 @@
 :host {
   display: grid;
   grid-template-columns: auto 2fr;
-  grid-template-rows: calc(1lh + 4 * var(--header-padding, 10px));
-  gap: 10px 1px;
+  grid-template-rows: calc(1lh + 4 * var(--header-padding, 10px)) 1fr;
+  // gap: 10px 1px;
 
   width: 100%;
   // max-width: 99vw;
-  height: clamp(96vh, calc(97vh + 10px), 99vh);
+  // height: clamp(96vh, calc(97vh + 10px), 99vh);
+  height: 100svh;
   box-sizing: border-box;
   margin-block: auto;
   place-items: center stretch;
-  padding: 5px 10px;
+  padding: 0;
 
   border-radius: 10px;
 
   header {
-    // grid-column: span 2;
+    grid-column: span 2;
     display: grid;
     grid-template-columns: 1fr 1fr;
 
@@ -27,11 +28,18 @@
     h1.header__title {
       font-size: 1em;
       margin: 0;
+      font-weight: 500;
+
+      // span {
+      //   font-weight: 700;
+      // }
     }
 
     .header__left {
+      display: grid;
+      place-items: center start;
 
-      ::ng-deep .p-button{
+      ::ng-deep .p-button {
         display: none;
         font-size: 0.875rem;
         padding: 0.45625rem 0.9375rem;
@@ -39,10 +47,17 @@
     }
 
     .header__right {
+      display: grid;
+      grid-template-columns: 3fr auto 1fr;
+
+      ::ng-deep .p-element {
+        grid-column: 2;
+      }
+
       ::ng-deep .p-button.p-button-sm {
         font-size: 0.875rem;
         padding: 0.45625rem 0.9375rem;
-        background-color: var( --primary-button-dark);
+        background-color: var(--primary-button-dark);
 
       }
     }
@@ -72,11 +87,13 @@
     // padding: var(--padding-spacing);
     display: grid;
     place-items: stretch;
-    grid-row: 1/span 2;
-    border: 1px solid rgba(34, 34, 34, 0.1333333333);
+    // grid-row: 1/span 2;
+    grid-row: 2;
+    border-right: 1px ridge var(--border-color);
+    // border-right: 1px;
     background: var(--background-color-1, #FFF);
-    border-radius: 2px;
-    padding: 10px;
+    // border-radius: 2px;
+    padding: 0;
     height: 100%;
   }
 
@@ -94,31 +111,49 @@
     place-items: center stretch;
 
     &.fullscreen {
-      min-height: 97vh;
-      min-height: 97dvh;
-      min-height: 97svh;
+      min-height: 100vh;
+      min-height: 100dvh;
+      min-height: 100svh;
       grid-column: span 2;
       place-items: center stretch;
 
       place-self: stretch;
+      background: black;
 
       &::ng-deep router-outlet+app-hymn-display-main {
         .marpit {
+          padding: 0;
+          border: none;
           &-scrollable {
             display: none;
           }
 
           &-present {
-            display: block;
-            max-height: 96vh;
-            height: 100%;
-            width: auto;
+            display: grid;
+            max-height: 100vh;
+            height: 100vh;
+            width: 95vw;
+            place-items: center;
+            aspect-ratio: 4/3;
+            max-width: 1200px;
+            background:white;
+            box-sizing: content-box;
+            padding-inline: 2vw;
+
           }
 
         }
 
-        .marp-wrapper .marp-details {
-          display: block;
+        .marp-wrapper {
+          padding-block: 0px;
+          justify-content: center;
+          .marp-details {
+            display: block;
+          }
+
+          .details-bottom {
+            display: none;
+          }
         }
       }
     }
@@ -133,21 +168,25 @@
 @media only screen and (max-width: 600px) {
   :host {
     grid-template-rows: auto 1fr;
-    grid-template-columns: auto;
+    grid-template-columns: 1fr;
     // place-self: start;
+    // font-size: 1.06em;
 
     header {
       grid-template-columns: auto;
+      font-size: 1.15em;
+      place-items: center start;
+
 
       .header__left {
         display: grid;
         grid-template-columns: auto 1fr;
-        place-items: center;
+        place-items: center start;
 
         ::ng-deep .p-button {
           display: block;
 
-          &.p-button-icon-only:after{
+          &.p-button-icon-only:after {
             display: none;
           }
         }

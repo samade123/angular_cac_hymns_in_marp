@@ -4,7 +4,7 @@
     <p-button [rounded]="true" icon="pi pi-chevron-left" size='small' [text]="true" *ngIf="isHymnPage()" type="button"
       title="go Back" class="p-button-success" (onClick)="backToHymnsList()"></p-button>
     <h1 class="header__title">
-      CAC Hymns <span>{{selectedSimpleHymn ? " - "  + selectedSimpleHymn.hymnNumber + ' - ' + selectedSimpleHymn.name : ''}}</span>
+      CAC Doc Viewer <span *ngIf="selectedSimpleHymn">/ </span><strong>{{selectedSimpleHymn ? selectedSimpleHymn.hymnNumber + ' - ' + selectedSimpleHymn.name : ''}}</strong>
     </h1>
 
   </div>

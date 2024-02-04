@@ -1,8 +1,8 @@
 <fieldset [style.--background-grad-degree]="inputFocusBgDeg">
-  <label for="hymn-search-input"></label>
+  <label for="hymn-search-input">Search Hymns</label>
   <input type="text" id="hymn-search-input" placeholder="Search Hymns" [(ngModel)]="searchQuery"
     (ngModelChange)="queryDb()" (focus)="focusInput()" (blur)="loseFocus()">
-  <div class="blank" *ngIf="searchQuery.length > 0">
+  <div class="blank" *ngIf="searchQuery.length > 0" (blur)="loseFocus()" >
     <div class="hymn-select-item" *ngFor="let hymn of friends$ | async; index as i; trackBy: hymnTrackbyFn"
       (click)="pickHymn(hymn.id)">
       <div class="hymn-select-item__number">
@@ -11,6 +11,7 @@
       <h3 class="hymn-select-item__title">
         {{hymn.name}}
       </h3>
+
     </div>
   </div>
 </fieldset>
@@ -40,6 +41,10 @@
       <h3 class="hymn-select-item__title">
         {{hymn.name}}
       </h3>
+      <!-- <h4 class="hymn-select-item__subtitle">Last opened: {{hymn.last_used_time ? formatDate(hymn.last_used_time) : formatDate(hymn.last_edited_time) }}</h4> -->
+      <h4 class="hymn-select-item__subtitle">Last opened: {{hymn.last_used_time | date}}</h4>
+
+
     </div>
   </div>
   <ng-template #allHymns>
@@ -58,6 +63,10 @@
         <h3 class="hymn-select-item__title">
           {{hymn.name}}
         </h3>
+        <!-- <h4 class="hymn-select-item__subtitle">Last opened: {{hymn.last_edited_time ? formatDate(hymn.last_edited_time | date) : 'n/a' }}</h4> -->
+        <h4 class="hymn-select-item__subtitle">Last updated: {{hymn.last_edited_time | date}}</h4>
+
+
       </div>
       <div class="hymn-paginator">
         <!-- <div class="hymn-paginator__left">

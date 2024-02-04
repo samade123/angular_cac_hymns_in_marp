@@ -6,8 +6,9 @@ div.marpit-placeholder {
   @extend .card-div;
   // max-height: 90%;
   width: calc(100% - 6px);
+  max-width: 760px;
   aspect-ratio: 16 / 10;
-  margin: auto;
+  margin: 0 auto;
   border-radius: 2px;
 
   &-present {
@@ -23,10 +24,15 @@ div.marpit-placeholder {
   justify-content: flex-start;
   flex-direction: column;
   place-items: stretch;
+  padding-block: 10px;
+  :has(.fullscreen) {
+    padding-block: 0;
+  }
 
   &.not-placeholder {
     grid-template-rows: auto 1fr;
     gap: 7px;
+    place-items: start;
 
   }
 
@@ -108,9 +114,9 @@ div.marpit-placeholder {
     // aspect-ratio: 4 / 3;
     // margin: auto;
     &.fullscreen {
-      min-height: 75vh;
-      width: 85vw;
-      aspect-ratio: auto;
+      min-height: auto;
+      width: 95vw;
+      aspect-ratio: 4/3;
     }
   }
 

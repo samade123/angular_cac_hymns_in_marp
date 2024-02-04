@@ -1,6 +1,11 @@
 :root {
   --white-color-1: #f2f5f7;
   --white-color-2: #fff;
+  --white-50: #f8f8f8;
+  --white-100: #f9f9fb;
+  --light-gray: #dde2e9;
+  --dark-grey: #7B8CA8;
+  --white-color-3: #f1f0f4;
 
   --black-color-1: #111;
   --black-color-2: #303030;
@@ -13,8 +18,12 @@
   --header-padding: 10px;
 
 
-  --background-color: var(--white-color-1);
+  --background-color: var(--white-50);
   --background-color-1: var(--white-color-2, #f2f5f7);
+  --input-bg: var(--white-color-3);
+  --input-color: var(--dark-grey);
+  --selected-hymn-bg-light: var(--white-100);
+  --border-color: var(--light-gray);
   --text-color: var(--black-color-1, #111);
 
 }

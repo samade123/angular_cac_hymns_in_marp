@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { GrabNotiondbService } from './services/grab-notiondb.service';
 import { NotionDBQuery, Result, SimpleHymn } from './test-interface';
 import { StorageManagerService } from './services/storage-manager.service';
@@ -46,15 +46,18 @@ export class AppComponent implements OnInit {
   }
 
   loadScript(): void {
-    this.loadPolyFillService.loadScript('https://cdn.jsdelivr.net/npm/@marp-team/marpit-svg-polyfill/lib/polyfill.browser.js')
-    .then(() => {
-      // Script loaded successfully
-      console.log('polyfill loaded')
-    })
-    .catch(error => {
-      // Handle loading error
-      console.error(error, 'issue with loading polyfill')
-    });
+    this.loadPolyFillService
+      .loadScript(
+        'https://cdn.jsdelivr.net/npm/@marp-team/marpit-svg-polyfill/lib/polyfill.browser.js'
+      )
+      .then(() => {
+        // Script loaded successfully
+        console.log('polyfill loaded');
+      })
+      .catch((error) => {
+        // Handle loading error
+        console.error(error, 'issue with loading polyfill');
+      });
   }
 
   initFullScreen(): void {
@@ -71,6 +74,53 @@ export class AppComponent implements OnInit {
       type: 'fullScreen',
       value: true,
     });
+  }
+
+  @HostListener('window:keyup', ['$event'])
+  onKeyUp(event: KeyboardEvent) {
+    switch (event.key) {
+      case 'Escape':
+        console.log('Escape key pressed.', this.fullscreen);
+        if (this.fullscreen) {
+          this.setFullScreen();
+        }
+        break;
+      case 'ArrowLeft':
+        // console.log('Left arrow key pressed.');
+        if (this.fullscreen) {
+          // this.index =
+          //   this.index > 0 ? (this.index - 1) % this.data.length : this.index;
+          console.log('backward')
+
+          this.commService.emitChangePage({
+            type: 'direction',
+            forward: false,
+          });
+        }
+        break;
+      case 'ArrowRight':
+        // console.log('Right arrow key pressed.');
+        console.log('forward')
+
+        if (this.fullscreen) {
+          this.commService.emitChangePage({
+            type: 'direction',
+            forward: true,
+          });
+
+          // default:
+        }
+        break;
+    }
+  }
+
+  @HostListener('window:keydown.control.enter', ['$event'])
+  onShortcut(event: KeyboardEvent) {
+    // Your action for this shortcut
+    if (!this.fullscreen) {
+      this.setFullScreen();
+    }
+    // console.log('Ctrl+Shift+S pressed!');
   }
 
   initHymnNumberComms(): void {
@@ -93,7 +143,8 @@ export class AppComponent implements OnInit {
       } else if (data.type && data.type == 'reloadDb') {
         this.getNotionResponse();
       } else if (data.type && data.type == 'hymnIdFromMain') {
-        if (this.selectedHymnId == '') { // only change if empty
+        if (this.selectedHymnId == '') {
+          // only change if empty
           this.setCurrentHymn(data.value);
         }
       }

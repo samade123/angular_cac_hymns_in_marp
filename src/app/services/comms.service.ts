@@ -27,6 +27,9 @@ export class CommsService {
   emitFullscreen(screenState: { type: string; value: Boolean }) {
     this.observer.next(screenState);
   }
+  emitChangePage(direction: { type: string; forward: Boolean }) {
+    this.observer.next(direction);
+  }
 
   emitHymnId(
     hymnId: { type: string; value: string } = {

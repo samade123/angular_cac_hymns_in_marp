@@ -49,11 +49,11 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
     // trackNavigation = this.routerManagerService.trackNavigation;
   }
   @Input() hymn: SimpleHymn;
-  @Input() fullscreenState: Boolean;
+  // @Input() fullscreenState: Boolean;
 
   @Output() fullscreenEmitter = new EventEmitter<boolean>();
   @Output() failedFetch = new EventEmitter<Boolean>();
-  // fullscreenState = false;
+  fullscreenState = false;
   hymnItem: SimpleHymnItem;
   url = '';
   hymnNumber = '';
@@ -79,7 +79,7 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.initSimpleHymn();
     // this.renderMarp();
-    // this.initFullScreen();
+    this.initFullScreen();
     document.body.appendChild(this.sheet);
     if (this.storageService.doesDataExist('hymn-dict')) {
       let hymnDict = this.storageService.getData('hymn-dict');
@@ -95,25 +95,50 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
     this.theme = this.marpit.themeSet.add(this.themeString);
     this.marpit.themeSet.default = this.theme;
     // if(this.)
+    this.initKeyBindings();
     this.initCheckRouter();
 
     this.routerManagerService.trackNavigation(() => {
-      // if (!this.subscribeOnceFlag) {
       this.subscribeOnceFlag = true;
       setTimeout(() => {
         this.initCheckRouter();
       }, 0);
       // }
     });
-    // this.trackNavigation(()=>this.initCheckRouter);
   }
 
   initFullScreen(): void {
+    // this.fullscreenState = !this.fullscreenState;
     this.commService.subscriber$.subscribe((data: any) => {
       if ('type' in data && data.type == 'fullScreen') {
         // alert('fullscreen');
-        this.fullscreen();
+        console.log(this.fullscreenState);
+        this.index = 0;
+        // this.fullscreen();
+        this.ref.detectChanges(); // *trigger change here*
       }
+
+    });
+
+  }
+
+  initKeyBindings(): void {
+    // this.fullscreenState = !this.fullscreenState;
+    this.commService.subscriber$.subscribe((data: any) => {
+      if ('type' in data && data.type == 'direction') {
+        if (data.forward) {
+          console.log(data, data.forward, this.index);
+          this.index =
+            this.index < this.data.length - 1
+              ? (this.index + 1) % this.data.length
+              : this.index;
+        } else {
+          this.index =
+            this.index > 0 ? (this.index - 1) % this.data.length : this.index;
+        }
+      }
+
+      this.ref.detectChanges(); // *trigger change here*
     });
   }
 
@@ -177,11 +202,13 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
     this.fetchMarp(simpleHymn, true)
       .then(async () => {
         if (
-          localMarpFile.includes('AccessDenied') &&
-          this.file.includes('AccessDenied') || this.file.includes('AccessDenied')  // if both files failed there's no intenet or something funny happening with fetch servers
+          (localMarpFile.includes('AccessDenied') &&
+            this.file.includes('AccessDenied')) ||
+          this.file.includes('AccessDenied') // if both files failed there's no intenet or something funny happening with fetch servers
         ) {
           return;
-        } else if (localMarpFile.includes('AccessDenied')) { // if localfails we don't want to use that file
+        } else if (localMarpFile.includes('AccessDenied')) {
+          // if localfails we don't want to use that file
           console.log('trying becasue file has access denied');
           try {
             let testMarp = await fetch(simpleHymn.url); // check if fetch works then replace file to prevent storing another faied file
@@ -193,9 +220,11 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
           } catch (error) {
             return;
           }
-        } else if (localMarpFile === this.file) { // if files are the same don't do nothing
+        } else if (localMarpFile === this.file) {
+          // if files are the same don't do nothing
           return;
-        } else if (localMarpFile != this.file) { // if files are different update doing this last means we shouldn't have a bad file
+        } else if (localMarpFile != this.file) {
+          // if files are different update doing this last means we shouldn't have a bad file
           if (!this.file.includes('AccessDenied')) {
             this.fetchMarp(simpleHymn);
           }
@@ -316,6 +345,11 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
   updateSize(): void {
     this.themeString = `
 /* @theme my-second-theme */
+
+:root {
+  background: #fff;
+  font-size: 1.6em;
+}
 section {
   display: grid;
   gap: 0.5rem 1.5em;

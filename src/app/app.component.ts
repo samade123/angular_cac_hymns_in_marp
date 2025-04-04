@@ -43,6 +43,7 @@ export class AppComponent implements OnInit {
     this.initHymnNumberComms();
     this.loadScript();
     this.initHymnsDb();
+    this.initObserveFailedFetches();
   }
 
   loadScript(): void {
@@ -66,6 +67,14 @@ export class AppComponent implements OnInit {
         this.fullscreen = !this.fullscreen;
       }
     });
+  }
+
+  initObserveFailedFetches(): void {
+    this.commService.subscriber$.subscribe((data: any)=>{
+      if (data.type && data.type === 'fetchStatus') {
+        if (!data.value) this.failedFetch();
+      }
+    })
   }
   setFullScreen(): void {
     this.fullscreen = !this.fullscreen;

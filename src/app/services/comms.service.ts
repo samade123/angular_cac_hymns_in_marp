@@ -71,7 +71,16 @@ export class CommsService {
     value: boolean,
   }): void {
     this.pwaObserver.next(state);
+  }
 
+  emitFailedFetch(
+    state: { type: string; channel: string; value: Boolean } = {
+      type: 'fetchStatus',
+      channel: 'hymn-display-main',
+      value: false,
+    }
+  ): void {
+    this.mainAppObserver.next(state);
   }
   constructor() {}
 }

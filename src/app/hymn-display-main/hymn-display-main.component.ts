@@ -259,6 +259,7 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
           console.error(err);
           reject();
           this.failedFetch.emit();
+          this.commService.emitFailedFetch();
         });
     });
   }

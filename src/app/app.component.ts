@@ -2,7 +2,13 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { GrabNotiondbService } from './services/grab-notiondb.service';
 import { NotionDBQuery, Result, SimpleHymn } from './test-interface';
 import { StorageManagerService } from './services/storage-manager.service';
-import { addHours, isPast, isFuture, addMinutes } from 'date-fns';
+import {
+  addHours,
+  isPast,
+  isFuture,
+  addMinutes,
+  format,
+} from 'date-fns';
 import { IndexDbManagerService } from './services/index-db-manager.service';
 import { CommsService } from './services/comms.service';
 import { Router } from '@angular/router';
@@ -23,6 +29,7 @@ export class AppComponent implements OnInit {
   selectedHymnObject: Result;
   selectedSimpleHymn: SimpleHymn;
   fullscreen = false;
+  currentExpiry: String;
 
   constructor(
     private service: GrabNotiondbService,
@@ -237,6 +244,7 @@ export class AppComponent implements OnInit {
         this.results = [...notionResponse.results];
         this.storageManagerService.storeData('last-request', notionResponse);
         let newExpiry: Date = addHours(new Date(), 1);
+        this.currentExpiry = format(newExpiry, 'p').toString();
         // let newExpiry: Date = addMinutes(new Date(), 1);
 
         this.storageManagerService.storeData('last-request-date', newExpiry);
@@ -270,6 +278,8 @@ export class AppComponent implements OnInit {
       let currentExpiry = this.storageManagerService.getData(
         'last-request-date'
       ) as string;
+      this.currentExpiry = format(currentExpiry, 'p').toString();
+
       console.log(
         isPast(addMinutes(new Date(currentExpiry), 1)),
         addMinutes(new Date(currentExpiry), 1)

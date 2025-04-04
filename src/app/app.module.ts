@@ -11,6 +11,7 @@ import { HymnDisplayMainComponent } from './hymn-display-main/hymn-display-main.
 import { IndexDbManagerService } from './services/index-db-manager.service';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
+import { ChipModule } from 'primeng/chip';
 import { PaginatorModule } from 'primeng/paginator';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { PwaNotifComponent } from './pwa-notif/pwa-notif.component';
@@ -28,6 +29,7 @@ import { PwaNotifComponent } from './pwa-notif/pwa-notif.component';
     FormsModule,
     AppRoutingModule,
     ButtonModule,
+    ChipModule,
     PaginatorModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: !isDevMode(),

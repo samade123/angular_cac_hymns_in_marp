@@ -22,28 +22,29 @@
   header {
     grid-column: span 2;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr auto 1fr;
+
+    --p-chip-color: red;
 
 
     h1.header__title {
       font-size: 1em;
       margin: 0;
       font-weight: 500;
-
-      // span {
-      //   font-weight: 700;
-      // }
     }
 
     .header__left {
       display: grid;
       place-items: center start;
-
       ::ng-deep .p-button {
         display: none;
         font-size: 0.875rem;
         padding: 0.45625rem 0.9375rem;
       }
+    }
+
+    ::ng-deep .p-chip .p-chip-text {
+      font-size: 0.6rem;
     }
 
     .header__right {

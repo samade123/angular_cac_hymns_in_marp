@@ -117,9 +117,7 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
         // this.fullscreen();
         this.ref.detectChanges(); // *trigger change here*
       }
-
     });
-
   }
 
   initKeyBindings(): void {
@@ -202,18 +200,18 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
     this.fetchMarp(simpleHymn, true)
       .then(async () => {
         if (
-          (localMarpFile.includes('AccessDenied') &&
-            this.file.includes('AccessDenied')) ||
-          this.file.includes('AccessDenied') // if both files failed there's no intenet or something funny happening with fetch servers
+          (!this.validateMarpFile(localMarpFile) &&
+            !this.validateMarpFile(this.file)) ||
+          !this.validateMarpFile(this.file) // if both files failed there's no intenet or something funny happening with fetch servers
         ) {
           return;
-        } else if (localMarpFile.includes('AccessDenied')) {
+        } else if (!this.validateMarpFile(localMarpFile)) {
           // if localfails we don't want to use that file
           console.log('trying becasue file has access denied');
           try {
             let testMarp = await fetch(simpleHymn.url); // check if fetch works then replace file to prevent storing another faied file
             const testMarpString = await testMarp.text();
-            if (!testMarpString.includes('AccessDenied')) {
+            if (this.validateMarpFile(testMarpString)) {
               this.fetchMarp(simpleHymn);
             }
             return;
@@ -234,6 +232,16 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
       .catch(() => {
         return;
       });
+  }
+
+  validateMarpFile(text: string): boolean {
+    if (typeof text !== 'string') {
+      return false;
+    }
+
+    const marpTrueRegex = /marp:\s*true/i;
+
+    return marpTrueRegex.test(text);
   }
 
   fetchMarp(simpleHymn: SimpleHymn, diff: boolean = false): Promise<void> {

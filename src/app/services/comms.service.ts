@@ -15,12 +15,11 @@ export class CommsService {
   pwaObserver = new Subject();
   public pwaSuscriber$ = this.pwaObserver.asObservable();
 
-
   emitHymnData(data: Result) {
     this.observer.next(data);
   }
 
-  emitSimpleHymnData(data: { type: string; value: SimpleHymn }){
+  emitSimpleHymnData(data: { type: string; value: SimpleHymn }) {
     this.observer.next(data);
   }
 
@@ -46,30 +45,18 @@ export class CommsService {
       value: '',
     }
   ) {
-    console.log('emiiing from sidebar')
+    console.log('emiiing from sidebar');
     this.mainAppObserver.next(hymnId);
   }
 
-
-  emitFromWebWorker(webWorkerStatus: {
-    type: String,
-    status: String,
-  }): void {
+  emitFromWebWorker(webWorkerStatus: { type: String; status: String }): void {
     this.mainAppObserver.next(webWorkerStatus);
-
   }
-  emitIdFromMainChild(id: {
-    type: String,
-    value: String,
-  }): void {
+  emitIdFromMainChild(id: { type: String; value: String }): void {
     this.mainAppObserver.next(id);
-
   }
 
-  emitPWAStatus(state: {
-    type: String,
-    value: boolean,
-  }): void {
+  emitPWAStatus(state: { type: String; value: boolean }): void {
     this.pwaObserver.next(state);
   }
 

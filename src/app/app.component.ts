@@ -77,11 +77,11 @@ export class AppComponent implements OnInit {
   }
 
   initObserveFailedFetches(): void {
-    this.commService.subscriber$.subscribe((data: any)=>{
+    this.commService.subscriber$.subscribe((data: any) => {
       if (data.type && data.type === 'fetchStatus') {
         if (!data.value) this.failedFetch();
       }
-    })
+    });
   }
   setFullScreen(): void {
     this.fullscreen = !this.fullscreen;
@@ -106,7 +106,7 @@ export class AppComponent implements OnInit {
         if (this.fullscreen) {
           // this.index =
           //   this.index > 0 ? (this.index - 1) % this.data.length : this.index;
-          console.log('backward')
+          console.log('backward');
 
           this.commService.emitChangePage({
             type: 'direction',
@@ -116,7 +116,7 @@ export class AppComponent implements OnInit {
         break;
       case 'ArrowRight':
         // console.log('Right arrow key pressed.');
-        console.log('forward')
+        console.log('forward');
 
         if (this.fullscreen) {
           this.commService.emitChangePage({

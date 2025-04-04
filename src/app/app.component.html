@@ -4,15 +4,16 @@
     <p-button [rounded]="true" icon="pi pi-chevron-left" size='small' [text]="true" *ngIf="isHymnPage()" type="button"
       title="go Back" class="p-button-success" (onClick)="backToHymnsList()"></p-button>
     <h1 class="header__title">
-      CAC Doc Viewer <span *ngIf="selectedSimpleHymn">/ </span><strong>{{selectedSimpleHymn ? selectedSimpleHymn.hymnNumber + ' - ' + selectedSimpleHymn.name : ''}}</strong>
+      CAC Doc Viewer <span *ngIf="selectedSimpleHymn">/ </span><strong>{{selectedSimpleHymn ?
+        selectedSimpleHymn.hymnNumber + ' - ' + selectedSimpleHymn.name : ''}}</strong>
     </h1>
-
   </div>
   <p-chip *ngIf="currentExpiry" [label]="currentExpiry.toString()" [removable]="true" icon="pi pi-clock"/>
   <div class="header__right">
 
-    <p-button [rounded]="false" icon="pi pi-window-maximize" [text]="false" size='small' iconPos="right" *ngIf="isHymnPage()"
-      type="button" title="Present" label="Present" class="p-button-success" (onClick)="setFullScreen()"></p-button>
+    <p-button [rounded]="false" icon="pi pi-window-maximize" [text]="false" size='small' iconPos="right"
+      *ngIf="isHymnPage()" type="button" title="Present" label="Present" class="p-button-success"
+      (onClick)="setFullScreen()"></p-button>
   </div>
   <!-- <button (click)="getNotionResponse()">Reload</button> -->
   <!-- <button type="button" (click)="pushToDb()">push to DB</button> -->
@@ -24,15 +25,10 @@
 <main id="main" [ngClass]="{'fullscreen': fullscreen}">
   <router-outlet />
 
-  <!-- </router-outlet> -->
-
 </main>
-<app-pwa-notif/>
+<app-pwa-notif />
 <!-- <div *ngFor="let result of results; index as i; trackBy: notionPageTrackByFn">
   <div *ngIf="result['properties']['Name']['rich_text'][0]">
     {{result['properties']['Name']['rich_text'][0]['plain_text']| json}}
   </div>
 </div> -->
-
-
-<!-- <router-outlet></router-outlet> -->

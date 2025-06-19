@@ -15,11 +15,13 @@ import { ChipModule } from 'primeng/chip';
 import { PaginatorModule } from 'primeng/paginator';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { PwaNotifComponent } from './pwa-notif/pwa-notif.component';
+import { HymnSidebarItemComponent } from './hymn-sidebar/hymn-sidebar-item/hymn-sidebar-item.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HymnSidebarComponent,
+    HymnSidebarItemComponent,
     HymnDisplayMainComponent,
     PwaNotifComponent,
   ],

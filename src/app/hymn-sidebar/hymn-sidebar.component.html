@@ -2,16 +2,10 @@
   <label for="hymn-search-input">Search Hymns</label>
   <input type="text" id="hymn-search-input" placeholder="Search Hymns" [(ngModel)]="searchQuery"
     (ngModelChange)="queryDb()" (focus)="focusInput()" (blur)="loseFocus()">
-  <div class="blank" *ngIf="searchQuery.length > 0" (blur)="loseFocus()" >
-    <div class="hymn-select-item" *ngFor="let hymn of friends$ | async; index as i; trackBy: hymnTrackbyFn"
-      (click)="pickHymn(hymn.id)">
-      <div class="hymn-select-item__number">
-        {{hymn.hymnNumber}}
-      </div>
-      <h3 class="hymn-select-item__title">
-        {{hymn.name}}
-      </h3>
+  <div class="blank" *ngIf="searchQuery.length > 0" (blur)="loseFocus()">
 
+    <div class="hymn-item-wrapper" *ngFor="let hymn of friends$ | async; index as i; trackBy: hymnTrackbyFn">
+      <app-hymn-sidebar-item [hymnItem]="hymn" (click)="pickHymn(hymn.id)" />
     </div>
   </div>
 </fieldset>
@@ -19,8 +13,8 @@
 <section>
   <div class="hymn-list-filter-wrapper">
     <div class="hymn-list-filter" role="button" *ngFor="let button of buttonFilters"
-      [ngClass]="{'selected': button.selected}" [title]="button.name" (click)='filterHymns(button)'>{{button.name}}</div>
-    <!-- <div class="reload-btn" (click)="reloadDb()"></div> -->
+      [ngClass]="{'selected': button.selected}" [title]="button.name" (click)='filterHymns(button)'>{{button.name}}
+    </div>
     <div type="button" title="Reload Database" role="button" class="hymn-list-filter__refresh" (click)="reloadDb()">
       <i class="pi pi-refresh"></i>
     </div>
@@ -32,19 +26,10 @@
         Loading Hymns...
       </div>
     </div>
-    <div class="hymn-select-item"
-      *ngFor="let hymn of hymnItemsArr$ | async; index as i; trackBy: simpleHymnItemsTrackByFn"
-      [style]="'--hymn-number: '+hymn.hymnNumber" [attr.data-number]="hymn.hymnNumber" (click)="pickHymn(hymn.id)">
-      <div class="hymn-select-item__number">
-        {{hymn.hymnNumber}}
-      </div>
-      <h3 class="hymn-select-item__title">
-        {{hymn.name}}
-      </h3>
-      <!-- <h4 class="hymn-select-item__subtitle">Last opened: {{hymn.last_used_time ? formatDate(hymn.last_used_time) : formatDate(hymn.last_edited_time) }}</h4> -->
-      <h4 class="hymn-select-item__subtitle">Last opened: {{hymn.last_used_time | date}}</h4>
 
-
+    <div class="hymn-item-wrapper"
+      *ngFor="let hymn of hymnItemsArr$ | async; index as i; trackBy: simpleHymnItemsTrackByFn">
+      <app-hymn-sidebar-item [hymnItem]="hymn" [lastOpenedEnabled]="true" (click)="pickHymn(hymn.id)" />
     </div>
   </div>
   <ng-template #allHymns>
@@ -55,18 +40,8 @@
           Loading Hymns...
         </div>
       </div>
-      <div class="hymn-select-item" *ngFor="let hymn of allSimpleHymns$ | async; index as i; trackBy: hymnTrackbyFn"
-        [style]="'--hymn-number: '+hymn.hymnNumber" [attr.data-number]="hymn.hymnNumber" (click)="pickHymn(hymn.id)">
-        <div class="hymn-select-item__number">
-          {{hymn.hymnNumber}}
-        </div>
-        <h3 class="hymn-select-item__title">
-          {{hymn.name}}
-        </h3>
-        <!-- <h4 class="hymn-select-item__subtitle">Last opened: {{hymn.last_edited_time ? formatDate(hymn.last_edited_time | date) : 'n/a' }}</h4> -->
-        <h4 class="hymn-select-item__subtitle">Last updated: {{hymn.last_edited_time | date}}</h4>
-
-
+      <div class="hymn-item-wrapper" *ngFor="let hymn of allSimpleHymns$ | async; index as i; trackBy: hymnTrackbyFn">
+        <app-hymn-sidebar-item [hymnItem]="hymn" [lastOpenedEnabled]="true" (click)="pickHymn(hymn.id)" />
       </div>
       <div class="hymn-paginator">
         <!-- <div class="hymn-paginator__left">
@@ -79,7 +54,8 @@
           <i class="pi pi-arrow-right"></i>
         </div> -->
 
-        <p-paginator (onPageChange)="onPageChange($event)" [first]="offset" [rows]="10" [totalRecords]="hymnsLength" [pageLinkSize]="3"></p-paginator>
+        <p-paginator (onPageChange)="onPageChange($event)" [first]="offset" [rows]="10" [totalRecords]="hymnsLength"
+          [pageLinkSize]="3"></p-paginator>
 
       </div>
     </div>

@@ -94,25 +94,28 @@ export interface Number {
   title: RichText[];
 }
 
-
-export interface SimpleHymn {
-  id: string;
-  name: string;
-  last_edited_time: Date;
-  hymnNumber: string;
-  url: string;
-}
-
-
 export interface RequestOptions {
   method: string;
   redirect: RequestRedirect;
 }
 
-export interface SimpleHymnItem {
+export interface BaseHymn {
   id: string;
   name: string;
-  last_used_time: Date;
   hymnNumber: string;
-  marp: string
+}
+
+export interface SimpleHymn extends BaseHymn {
+  last_edited_time: Date;
+  url: string;
+}
+
+export interface SimpleHymnItem extends BaseHymn {
+  last_used_time: Date;
+  marp: string;
+}
+
+export interface hymnUiObj extends BaseHymn {
+  last_used_time?: Date;
+  last_edited_time?: Date;
 }

@@ -1,5 +1,7 @@
 @use './../styles/card-div.scss'as *;
 @use './../styles/keyframes.scss'as *;
+@use './../styles/sidebar-item.scss'as *;
+
 
 
 :host {
@@ -290,88 +292,12 @@ li::marker {
 
 }
 
-div.hymn-select-item {
-  display: grid;
-  grid-template-columns: 6ch 1fr;
-  // grid-template-rows: 1fr auto;
-  place-items: center stretch;
-  gap: 1px 0.3em;
-  // padding-block: var(--hymn-list-padding, 10px);
-  padding-inline: 4px;
-  // border-radius: 6px;
-  // font-size: 1.5rem;
-  height: 100%;
-  box-sizing: border-box;
-  border-bottom: 1px solid var(--border-color, none);
 
-}
-
-div.hymn-select-item:hover {
-  cursor: pointer;
-  background-color: var(--selected-hymn-bg-light);
-}
-
-.hymn-select-item__number {
-  font-weight: 800;
-  font-size: 1.7em;
-  text-align: center;
-  // grid-row: span 2;
-  grid-column: 1;
-  place-self: center end;
-}
-
-.hymn-select-item__date {}
-
-.hymn-select-item__title {
-  text-align: left;
-  text-overflow: ellipsis;
-  width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  font-weight: 500;
-  margin: 0;
-  font-size: 0.9em;
-  grid-row: 1;
-  grid-column: 2;
-}
-
-.hymn-select-item__subtitle {
-  text-align: left;
-  text-overflow: ellipsis;
-  width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  font-weight: 300;
-  margin: 0;
-  font-size: 0.55em;
-  // line-height: 0.5;
-  grid-column: 2;
-  place-self: start start;
-  color: #515E72;
-
-}
-
-div.hymn-select-item:has(.hymn-select-item__subtitle) {
-
-  .hymn-select-item__subtitle {
-    grid-row: 2;
-  }
-
-  .hymn-select-item__title {
-    grid-row: 1;
-    place-self: end start;
-
-
-  }
-
-  .hymn-select-item__number {
-    grid-row: span 2;
-  }
-}
 
 @media only screen and (max-width: 600px) {
   :host {
     font-size: 1.45em;
+
     fieldset .blank {
       width: 95%;
     }

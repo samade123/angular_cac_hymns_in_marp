@@ -13,9 +13,12 @@ import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { ChipModule } from 'primeng/chip';
 import { PaginatorModule } from 'primeng/paginator';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'; // Import
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { PwaNotifComponent } from './pwa-notif/pwa-notif.component';
 import { HymnSidebarItemComponent } from './hymn-sidebar/hymn-sidebar-item/hymn-sidebar-item.component';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { ToggleButtonModule } from 'primeng/togglebutton';
 
 @NgModule({
   declarations: [
@@ -33,6 +36,9 @@ import { HymnSidebarItemComponent } from './hymn-sidebar/hymn-sidebar-item/hymn-
     ButtonModule,
     ChipModule,
     PaginatorModule,
+    OverlayPanelModule,
+    BrowserAnimationsModule,
+    ToggleButtonModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: !isDevMode(),
       // Register the ServiceWorker as soon as the application is stable

@@ -15,9 +15,9 @@
     <div class="hymn-list-filter" role="button" *ngFor="let button of buttonFilters"
       [ngClass]="{'selected': button.selected}" [title]="button.name" (click)='filterHymns(button)'>{{button.name}}
     </div>
-    <div type="button" title="Reload Database" role="button" class="hymn-list-filter__refresh" (click)="reloadDb()">
+    <!-- <div type="button" title="Reload Database" role="button" class="hymn-list-filter__refresh" (click)="reloadDb()">
       <i class="pi pi-refresh"></i>
-    </div>
+    </div> -->
   </div>
   <div class="hymn-list-wrapper" *ngIf="buttonFilters[0].selected else allHymns">
     <div class="zero-hymns" *ngIf="zeroHymns">

@@ -30,6 +30,7 @@ export class AppComponent implements OnInit {
   selectedSimpleHymn: SimpleHymn;
   fullscreen = false;
   currentExpiry: String;
+  darkMode: Boolean = false;
 
   constructor(
     private service: GrabNotiondbService,

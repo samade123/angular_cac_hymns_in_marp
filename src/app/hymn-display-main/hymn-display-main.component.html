@@ -77,7 +77,7 @@
     display: grid;
     place-items: stretch;
     height: 100%;
-    overflow: scroll;
+    overflow: auto scroll;
   }
 
   :host .marp-wrapper:empty::before {
@@ -145,5 +145,57 @@
 
   .buttons h4 {
     margin: 0;
+  }
+
+
+  /* :host { */
+    /* --- Scrollbar Styles for Firefox --- */
+    /* scrollbar-width: thin; */
+    /* 'auto' | 'thin' | 'none' */
+    /* scrollbar-color: var(--scrollbar-thumb-bg) var(--scrollbar-track-bg); */
+    /* thumb color | track color */
+    /* You can adjust these colors */
+  /* } */
+
+  /* --- Scrollbar Styles for Webkit (Chrome, Safari, Edge, Opera) --- */
+
+  /* Width and height of the scrollbar itself */
+  :host::-webkit-scrollbar {
+    width: 12px;
+    /* For vertical scrollbar */
+    height: 12px;
+    /* For horizontal scrollbar */
+    background-color: transparent;
+    /* Make the scrollbar area transparent by default */
+  }
+
+  /* The track (the area where the scrollbar thumb moves) */
+  :host::-webkit-scrollbar-track {
+    background: var(--scrollbar-track-bg);
+    /* Dark background for the track */
+    border-radius: 10px;
+    /* Optional: rounded corners for the track */
+  }
+
+  /* The thumb (the draggable part of the scrollbar) */
+  :host::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb-bg);
+    /* Dark gray for the thumb */
+    border-radius: 10px;
+    /* Rounded corners for the thumb */
+    /* Optional: Add a subtle border to match the track if you want a recessed look */
+    border: 3px solid var(--scrollbar-track-bg);
+  }
+
+  /* Thumb hover state */
+  :host::-webkit-scrollbar-thumb:hover {
+    background-color: var(--scrollbar-thumb-hover-bg);
+    /* Slightly lighter on hover for interactivity */
+  }
+
+  /* The corner where vertical and horizontal scrollbars meet */
+  :host::-webkit-scrollbar-corner {
+    background: var(--scrollbar-track-bg);
+    /* Match the track background */
   }
 </style>

@@ -1,22 +1,87 @@
 // @import './card-div.scss';
 .header {
   // @extend .card-div;
-  padding: 0 var(--padding-spacing);
-
-  box-sizing: border-box;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  border-bottom: 1px ridge var(--border-color);
-  background: var(--background-color-1, #FFF);
-  border-radius: 2px;
-  font-size: 0.9em;
 
   ::ng-deep .p-button.p-button-sm {
     font-size: 0.875rem;
     padding: 0.45625rem 0.9375rem;
+  }
+
 }
 
+.header {
+
+  display: grid;
+  padding: 0 var(--padding-spacing);
+  // padding-right: 40px;
+  grid-column: span 2;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 10px;
+  height: 100%;
+  background: var(--background-color-1, #FFF);
+  box-sizing: border-box;
+  border-bottom: 1px ridge var(--border-color);
+  border-radius: 2px;
+  font-size: 0.9em;
+  --p-chip-color: red;
+
+
+
+
+  h1.header__title {
+    font-size: 1em;
+    margin: 0;
+    font-weight: 500;
+  }
+
+  .header__left {
+    display: grid;
+    place-items: center start;
+
+    ::ng-deep .p-button {
+      display: none;
+      font-size: 0.875rem;
+      padding: 0.45625rem 0.9375rem;
+    }
+  }
+
+  ::ng-deep .p-chip .p-chip-text {
+    font-size: 0.6rem;
+  }
+
+  .header__right {
+    display: grid;
+    grid-template-columns: 3fr auto 1fr;
+
+    ::ng-deep .p-element {
+      grid-column: 2;
+    }
+
+    display: flex;
+    gap: 1em;
+    justify-content: center;
+
+    ::ng-deep .p-button.p-button-sm {
+      font-size: 0.875rem;
+      padding: 0.45625rem 0.9375rem;
+      background-color: var(--primary-button-dark);
+
+      &.p-button-icon-only {
+        background-color: var(--secondary-btn-bg);
+        color: var(--secondary-btn-col);
+        border-color: grey;
+      }
+    }
+  }
+
+
+  button {
+    height: auto;
+    // padding: 0;
+  }
+
+  &.fullscreen {
+    display: none;
+  }
 }

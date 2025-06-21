@@ -1,3 +1,4 @@
+@use './styles/header.scss';
 @import './styles/card-div.scss';
 @import './styles/variables.scss';
 
@@ -20,58 +21,7 @@
   border-radius: 10px;
 
   header {
-    grid-column: span 2;
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-
-    --p-chip-color: red;
-
-
-    h1.header__title {
-      font-size: 1em;
-      margin: 0;
-      font-weight: 500;
-    }
-
-    .header__left {
-      display: grid;
-      place-items: center start;
-      ::ng-deep .p-button {
-        display: none;
-        font-size: 0.875rem;
-        padding: 0.45625rem 0.9375rem;
-      }
-    }
-
-    ::ng-deep .p-chip .p-chip-text {
-      font-size: 0.6rem;
-    }
-
-    .header__right {
-      display: grid;
-      grid-template-columns: 3fr auto 1fr;
-
-      ::ng-deep .p-element {
-        grid-column: 2;
-      }
-
-      ::ng-deep .p-button.p-button-sm {
-        font-size: 0.875rem;
-        padding: 0.45625rem 0.9375rem;
-        background-color: var(--primary-button-dark);
-
-      }
-    }
-
-
-    button {
-      height: auto;
-      padding: 0;
-    }
-
-    &.fullscreen {
-      display: none;
-    }
+    @extend .header;
   }
 
   main,
@@ -125,6 +75,7 @@
         .marpit {
           padding: 0;
           border: none;
+
           &-scrollable {
             display: none;
           }
@@ -137,7 +88,7 @@
             place-items: center;
             aspect-ratio: 4/3;
             max-width: 1200px;
-            background:white;
+            background-color: var(--background-color, #fff);
             box-sizing: content-box;
             padding-inline: 2vw;
 
@@ -148,6 +99,7 @@
         .marp-wrapper {
           padding-block: 0px;
           justify-content: center;
+
           .marp-details {
             display: block;
           }

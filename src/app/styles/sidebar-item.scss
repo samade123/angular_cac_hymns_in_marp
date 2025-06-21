@@ -16,7 +16,7 @@ div.hymn-select-item {
 
 div.hymn-select-item:hover {
   cursor: pointer;
-  background-color: var(--selected-hymn-bg-light);
+  background-color: var(--item-hover-col);
 }
 
 .hymn-select-item__number {
@@ -55,7 +55,7 @@ div.hymn-select-item:hover {
   // line-height: 0.5;
   grid-column: 2;
   place-self: start start;
-  color: #515E72;
+  color: var(--subtitle-color);
 
 }
 

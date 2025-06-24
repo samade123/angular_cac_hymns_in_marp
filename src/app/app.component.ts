@@ -46,6 +46,7 @@ export class AppComponent implements OnInit {
   isHymnPage = this.routerManagerService.isHymnPage;
 
   ngOnInit(): void {
+    this._initColorTheme();
     this.routerManagerService.setPageToMobileHome();
     this.initFullScreen();
     this.initHymnNumberComms();
@@ -54,7 +55,20 @@ export class AppComponent implements OnInit {
     this.initObserveFailedFetches();
   }
 
-  loadScript(): void {
+  setColourTheme(): void {
+    let colourThemesAttribute = this.darkMode ? 'dark' : 'light';
+    document.body.setAttribute('data-color-theme', `${colourThemesAttribute}`);
+    this.storageManagerService.storeData('dark-mode', this.darkMode);
+  }
+
+  private _initColorTheme(): void {
+    if (this.storageManagerService.doesDataExist('dark-mode')) {
+      this.darkMode = this.storageManagerService.getData(
+        'dark-mode'
+      ) as Boolean;
+    }
+    this.setColourTheme();
+  }
     this.loadPolyFillService
       .loadScript(
         'https://cdn.jsdelivr.net/npm/@marp-team/marpit-svg-polyfill/lib/polyfill.browser.js'

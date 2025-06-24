@@ -19,7 +19,7 @@
           <h3>Status</h3>
           <div class="row">Data freshness limit <span>{{currentExpiry.toString()}}</span></div>
           <h3>Themeing</h3>
-          <div class="row">Dark/Light Mode: <p-toggleButton [(ngModel)]="darkMode" style="padding: 5px"
+          <div class="row">Dark/Light Mode: <p-toggleButton [(ngModel)]="darkMode" (onChange)="setColourTheme()" style="padding: 5px"
               onIcon="pi pi-moon" offIcon="pi pi-sun" /></div>
           <h3>Presentation</h3>
           <div class="row">Font Size: <input type="number" name="font-size" id="font-size-input"></div>

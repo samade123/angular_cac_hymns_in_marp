@@ -1,70 +1,154 @@
+/*
+  Theme Variables SCSS
+  --------------------
+  This file defines global CSS variables for colors, spacing, and other
+  design tokens. It also includes mixins for light and dark themes,
+  and applies them based on data attributes and system preferences.
+*/
+
+// --- Base Colors ---
+// Define a clear palette of base colors that can be reused and combined.
 :root {
-  --white-color-1: #f2f5f7;
-  --white-color-2: #fff;
-  --white-50: #f8f8f8;
-  --white-100: #f9f9fb;
-  --white-200: #f8f9fa;
-  --light-gray: #dde2e9;
-  --dark-grey: #7B8CA8;
-  --dark-grey-2: #555;
-  --dark-grey-3: #777;
-  --white-color-3: #f1f0f4;
+  // White shades
+  --white-color-1: #f2f5f7; // A very light, slightly cool white
+  --white-color-2: #fff;    // Pure white
+  --white-color-3: #f1f0f4; // A slightly warmer white
+  --white-color-4: color-mix(in srgb, #f2f5f7 95%, #000); // White with a hint of black for subtle contrast
 
-  --black-color-1: #111;
-  --black-color-2: #303030;
-  --black-color-3: #515E72;
-  --black-color-4: #2b2b2b;
-  --primary-button-dark: color-mix(in srgb, var(--primary-blue, #3B82F6), #000000);
-  --primary-blue: #3B82F6;
-  --primary-color: var(--primary-blue);
-  --secondary-color: var(--primary-blue);
-  --secondary-btn-bg: var(--white-color-2);
-  --secondary-btn-col: var(--black-color-2);
-  --main-border-radius: 6px;
-  --padding-spacing: 1.25rem;
-  --header-padding: 10px;
+  // Grayscale (for whites that are technically light grays)
+  --white-50: #f8f8f8;   // Very light gray
+  --white-100: #f9f9fb;  // Slightly darker very light gray
+  --white-200: #f8f9fa;  // Another very light gray shade
 
+  // Grays
+  --light-gray: #dde2e9; // Standard light gray
+  --dark-grey: #7B8CA8;  // Medium dark gray (blue-ish)
+  --dark-grey-2: #555;   // Standard dark gray
+  --dark-grey-3: #777;   // Medium gray
 
-  --background-color: var(--white-50);
-  --background-color-1: var(--white-color-2, #232d34);
-  --border-color: var(--light-gray);
-  --input-bg: var(--white-color-3);
-  --input-color: var(--dark-grey);
-  --selected-hymn-bg-light: var(--white-100);
-  --item-hover-col: var(--selected-hymn-bg-light) --border-color: var(--light-gray);
-  --text-color: var(--black-color-1, #111);
-  --subtitle-color: var(--black-color-3);
+  // Black shades
+  --black-color-1: #111;      // Very dark gray/off-black
+  --black-color-2: #303030;   // Darker gray
+  --black-color-3: #515E72;   // Blue-ish dark gray
+  --black-color-4: #2b2b2b;   // A true dark gray
 
-  --presemtation-bg: transparent;
-  --sidebar-btn-bg: var(--white-200);
+  // Accent Colors
+  --primary-blue: #3B82F6; // Primary blue for branding/actions
+  --primary-dark-blue: color-mix(in srgb, var(--primary-blue, #3B82F6), #000); // Darker shade of primary blue
 
-  --scrollbar-track-bg: white;
-  --scrollbar-thumb-bg: var(--dark-grey-2);
-    --scrollbar-thumb-hover-bg: var(--dark-grey-3);
-  
+  // Other Global Variables
+  --presentation-bg: transparent; // For specific presentation backgrounds, if needed
 }
 
+// --- Common Design Tokens (independent of theme) ---
+// These variables define general design properties that apply regardless of light/dark mode.
+:root {
+  --main-border-radius: 6px;     // Standard border radius for elements
+  --padding-spacing: 1.25rem;    // General padding unit
+  --header-padding: 10px;        // Specific padding for headers
+}
 
+// --- Theme Mixins ---
+// These mixins define the specific variable values for light and dark themes.
+// Using mixins keeps the theme logic encapsulated and reusable.
 
+@mixin light-mode-variables {
+  // Primary/Secondary Colors
+  --primary-color: var(--primary-blue);
+  --secondary-color: var(--primary-blue); // Often secondary can be the same or a variant of primary
+  --secondary-btn-bg: var(--white-color-2);
+  --secondary-btn-col: var(--black-color-2);
+
+  // Backgrounds
+  --background-color: var(--white-50);
+  --background-color-1: var(--white-color-2, #232d34); // Fallback for safety
+
+  // Borders
+  --border-color: var(--light-gray);
+
+  // Inputs
+  --input-bg: var(--white-color-3);
+  --input-color: var(--dark-grey);
+
+  // Specific Element Colors
+  --selected-hymn-bg-light: var(--white-100); // Background for selected items in light mode
+  --item-hover-col: var(--selected-hymn-bg-light); // Color for item hovers (reusing selected background)
+
+  // Text Colors
+  --text-color: var(--black-color-1, #111); // Main text color
+  --subtitle-color: var(--black-color-3);   // Subtitle/secondary text color
+
+  // Sidebar
+  --sidebar-btn-bg: var(--white-200);
+
+  // Scrollbar
+  --scrollbar-track-bg: white;
+  --scrollbar-thumb-bg: var(--dark-grey-2);
+  --scrollbar-thumb-hover-bg: var(--dark-grey-3);
+}
+
+@mixin dark-mode-variables {
+  // Light/Dark specific colors
+  --light-dark-color: #858585; // A specific gray for dark mode borders/elements
+
+  // Borders
+  --border-color: var(--light-dark-color);
+
+  // Backgrounds (using color-mix for subtle variations)
+  --background-color: color-mix(in srgb, var(--white-color-4, #f2f5f7), var(--black-color-2) 95%);
+  --background-color-1: color-mix(in srgb, var(--white-color-4, #f2f5f7), var(--black-color-2) 97%);
+
+  // Specific Element Colors
+  --item-hover-col: #232d34; // Darker hover color for dark mode
+
+  // Text Colors
+  --text-color: var(--white-color-4, #f2f5f7);
+  --subtitle-color: var(--white-color-4);
+
+  // Secondary Button in Dark Mode (often transparent or minimal)
+  --secondary-btn-bg: none;
+  --secondary-btn-col: var(--white-color-4, #f2f5f7); // Corrected variable name
+
+  // Scrollbar
+  --scrollbar-track-bg: var(--black-color-4);
+  --scrollbar-thumb-bg: var(--dark-grey-2);
+  --scrollbar-thumb-hover-bg: var(--dark-grey-3);
+
+  // Sidebar
+  --sidebar-btn-bg: transparent;
+}
+
+// --- Theme Application Classes ---
+// These classes apply the themed variables to elements.
+.light-mode {
+  @include light-mode-variables;
+}
+
+.dark-mode {
+  @include dark-mode-variables;
+}
+
+// --- Dynamic Theme Switching Logic ---
+// This section handles how themes are applied based on user preferences and system settings.
+
+// Explicitly set theme: light
+body[data-color-theme="light"][data-system-theme="false"] {
+  @extend .light-mode; // Use @extend for efficiency if the mixin only contains variables
+}
+
+// Explicitly set theme: dark
+body[data-color-theme="dark"][data-system-theme="false"] {
+  @extend .dark-mode;
+}
+
+// System theme enabled: default to light mode
+:root body[data-system-theme="true"] {
+  @extend .light-mode;
+}
+
+// System theme enabled and prefers dark mode
 @media (prefers-color-scheme: dark) {
-  :root {
-    // --background-color: color-mix(in srgb, var(--white-color-1, #f2f5f7) 70%, #000000);
-    --white-color-1: color-mix(in srgb, #f2f5f7 95%, #000000);
-    --light-dark-color: #858585;
-    --border-color: var(--light-dark-color);
-    --background-color: color-mix(in srgb, var(--white-color-1, #f2f5f7), var(--black-color-2) 95%);
-    --background-color-1: color-mix(in srgb, var(--white-color-1, #f2f5f7), var(--black-color-2) 97%);
-    --item-hover-col: #232d34;
-    --text-color: var(--white-color-1, #f2f5f7);
-    --subtitle-color: var(--white-color-3);
-    --secondary-btn-bg: none;
-    --secondary-btn-col: ar(--white-color-1, #f2f5f7);
-
-    --scrollbar-track-bg: var(--black-color-4);
-    --scrollbar-thumb-bg: var(--dark-grey-2);
-    --scrollbar-thumb-hover-bg: var(--dark-grey-3);
-    --sidebar-btn-bg: transparent;
-
-
+  :root body[data-system-theme="true"] {
+    @include dark-mode-variables; // Use @include here as media queries don't play well with @extend
   }
 }

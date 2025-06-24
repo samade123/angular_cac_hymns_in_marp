@@ -356,7 +356,7 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
 /* @theme my-second-theme */
 
 :root {
-  background-color: var(--presemtation-bg, #fff);
+  background-color: var(--presentation-bg, #fff);
   font-size: 1.6em;
 }
 section {

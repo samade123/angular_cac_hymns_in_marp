@@ -19,6 +19,7 @@ import { PwaNotifComponent } from './pwa-notif/pwa-notif.component';
 import { HymnSidebarItemComponent } from './hymn-sidebar/hymn-sidebar-item/hymn-sidebar-item.component';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ToggleButtonModule } from 'primeng/togglebutton';
+import { InputNumberModule } from 'primeng/inputnumber';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { ToggleButtonModule } from 'primeng/togglebutton';
     OverlayPanelModule,
     BrowserAnimationsModule,
     ToggleButtonModule,
+    InputNumberModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: !isDevMode(),
       // Register the ServiceWorker as soon as the application is stable

@@ -1,11 +1,56 @@
+::ng-deep {
+
+    .p-overlaypanel:after,
+    .p-overlaypanel:before {
+        border: solid transparent;
+        border-color: rgba(24, 24, 27, 0);
+        border-bottom-color: var(--background-color);
+    }
+}
+
 ::ng-deep div[role="dialog"] {
+    background-color: var(--background-color);
+    font-size: 0.8rem;
+
+
+    div.overlay-wrap {
+
+        display: flex;
+        flex-direction: column;
+        gap: 0.2lh;
+        background-color: var(--background-color);
+        color: var(--text-color);
+    }
+
 
     .p-button-sm,
-    .p-togglebutton {
+    .p-togglebutton,
+    .p-inputtext {
         padding: 0.25625rem 0.9375rem;
+        font-size: 0.7em;
 
         .p-button-icon {
             font-size: 0.7rem;
         }
+    }
+
+    h3 {
+        font-weight: 500;
+        font-size: 1.3em;
+    }
+
+    h2 {
+        font-size: 1.4em;
+        font-weight: 700;
+    }
+
+    h2,
+    h3 {
+        margin: 0;
+        margin-bottom: 0.1lh;
+    }
+
+    hr {
+        width: 100%;
     }
 }

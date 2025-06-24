@@ -1,0 +1,11 @@
+::ng-deep div[role="dialog"] {
+
+    .p-button-sm,
+    .p-togglebutton {
+        padding: 0.25625rem 0.9375rem;
+
+        .p-button-icon {
+            font-size: 0.7rem;
+        }
+    }
+}

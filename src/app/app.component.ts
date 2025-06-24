@@ -48,11 +48,11 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this._initColorTheme();
     this.routerManagerService.setPageToMobileHome();
-    this.initFullScreen();
-    this.initHymnNumberComms();
-    this.loadScript();
-    this.initHymnsDb();
-    this.initObserveFailedFetches();
+    this._initFullScreen();
+    this._initHymnNumberComms();
+    this._loadScript();
+    this._initHymnsDb();
+    this._initObserveFailedFetches();
   }
 
   setColourTheme(): void {
@@ -69,6 +69,8 @@ export class AppComponent implements OnInit {
     }
     this.setColourTheme();
   }
+
+  private _loadScript(): void {
     this.loadPolyFillService
       .loadScript(
         'https://cdn.jsdelivr.net/npm/@marp-team/marpit-svg-polyfill/lib/polyfill.browser.js'
@@ -83,7 +85,7 @@ export class AppComponent implements OnInit {
       });
   }
 
-  initFullScreen(): void {
+  private _initFullScreen(): void {
     this.commService.subscriber$.subscribe((data: any) => {
       if (data.type && data.type == 'fullscreen') {
         this.fullscreen = !this.fullscreen;
@@ -91,7 +93,7 @@ export class AppComponent implements OnInit {
     });
   }
 
-  initObserveFailedFetches(): void {
+  _initObserveFailedFetches(): void {
     this.commService.subscriber$.subscribe((data: any) => {
       if (data.type && data.type === 'fetchStatus') {
         if (!data.value) this.failedFetch();
@@ -154,7 +156,7 @@ export class AppComponent implements OnInit {
     // console.log('Ctrl+Shift+S pressed!');
   }
 
-  initHymnNumberComms(): void {
+  _initHymnNumberComms(): void {
     this.commService.subscriber$.subscribe((data: any) => {
       if (data.type && data.type == 'hymnId') {
         // console.log(this.router.url, this.router.url.includes('?number'));
@@ -281,7 +283,7 @@ export class AppComponent implements OnInit {
     this.selectHymnId(this.selectedHymnId);
   }
 
-  private initHymnsDb(): void {
+  private _initHymnsDb(): void {
     if (!this.storageManagerService.doesDataExist('last-request-date')) {
       this.getNotionResponse();
       console.log('data not exists, requesting new');

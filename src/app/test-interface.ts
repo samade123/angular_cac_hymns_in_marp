@@ -104,17 +104,17 @@ export interface BaseHymn {
   hymnNumber: string;
 }
 
-export interface SimpleHymn extends BaseHymn {
+export interface PreFetchHymn extends BaseHymn {
   last_edited_time: Date;
   url: string;
 }
 
-export interface SimpleHymnItem extends BaseHymn {
+export interface FetchedHymn extends BaseHymn {
   last_used_time: Date;
   marp: string;
 }
 
-export interface hymnUiObj extends BaseHymn {
+export interface DisplayHymn extends BaseHymn {
   last_used_time?: Date;
   last_edited_time?: Date;
 }

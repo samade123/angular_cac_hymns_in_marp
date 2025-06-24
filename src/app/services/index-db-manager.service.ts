@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { SimpleHymnItem, SimpleHymn } from './../test-interface';
+import { FetchedHymn, PreFetchHymn } from './../test-interface';
 
 import Dexie, { Table } from 'dexie';
 import { db } from './../db'; // You get a db with property table1 attached (because the schema is declared)
@@ -9,8 +9,8 @@ import { CommsService } from './comms.service';
   providedIn: 'root',
 })
 export class IndexDbManagerService {
-  simpleHymnItems: Table<SimpleHymnItem, number>;
-  simpleHymns: Table<SimpleHymn, number>;
+  simpleHymnItems: Table<FetchedHymn, number>;
+  simpleHymns: Table<PreFetchHymn, number>;
   // worker = new Worker(
   //   new URL('../web-workers/db-web-worker.worker.ts', import.meta.url)
   // );
@@ -19,7 +19,7 @@ export class IndexDbManagerService {
 
   async storeData(
     table: string,
-    hymn: SimpleHymn | SimpleHymnItem
+    hymn: PreFetchHymn | FetchedHymn
   ): Promise<void> {
     await db.on('ready', () => {});
     await db.table(table).put(hymn);
@@ -34,7 +34,7 @@ export class IndexDbManagerService {
   async getHymnItem(
     hymnNumber: string,
     table: string = 'simpleHymnItems'
-  ): Promise<SimpleHymnItem> {
+  ): Promise<FetchedHymn> {
     const hymnItem = await db.table(table).get({ hymnNumber: hymnNumber });
     if (hymnItem) {
       return hymnItem;
@@ -52,7 +52,7 @@ export class IndexDbManagerService {
   async getHymnItembyId(
     id: string,
     table: string = 'simpleHymns'
-  ): Promise<SimpleHymn> {
+  ): Promise<PreFetchHymn> {
     const hymnItem = await db.table(table).get(id);
     if (hymnItem) {
       return hymnItem;
@@ -72,7 +72,7 @@ export class IndexDbManagerService {
   async getSimpleHymnByNumber(
     hymnNumber: string,
     table: string = 'simpleHymns'
-  ): Promise<SimpleHymn> {
+  ): Promise<PreFetchHymn> {
     const hymnItem = await db.table(table).get({ hymnNumber: hymnNumber });
     if (hymnItem) {
       return hymnItem;
@@ -89,12 +89,12 @@ export class IndexDbManagerService {
     }
   }
 
-  async updateHymnLastUsed(hymnItem: SimpleHymnItem): Promise<void> {
+  async updateHymnLastUsed(hymnItem: FetchedHymn): Promise<void> {
     hymnItem.last_used_time = new Date();
     await db.table('simpleHymnItems').put(hymnItem);
   }
 
-  async addSimpleHymn(hymn: SimpleHymn): Promise<void> {
+  async addSimpleHymn(hymn: PreFetchHymn): Promise<void> {
     await db.table('simpleHymns').put(hymn);
   }
 
@@ -124,7 +124,7 @@ export class IndexDbManagerService {
     return count > 0;
   }
 
-  async listSimpleHymns(searchString: string): Promise<SimpleHymn[]> {
+  async listSimpleHymns(searchString: string): Promise<PreFetchHymn[]> {
     await db.on('ready', () => {});
     return await db
       .table('simpleHymns')
@@ -134,19 +134,19 @@ export class IndexDbManagerService {
       .toArray();
   }
 
-  async getLastFiveHymns(): Promise<SimpleHymnItem[]> {
+  async getLastFiveHymns(): Promise<FetchedHymn[]> {
     await db.on('ready', () => {});
     return (await db
       .table('simpleHymnItems')
       .orderBy('last_used_time')
       .reverse()
       .limit(5)
-      .toArray()) as SimpleHymnItem[];
+      .toArray()) as FetchedHymn[];
 
-    // return hymns as SimpleHymnItem[];
+    // return hymns as FetchedHymn[];
   }
 
-  async returnAll(offset: number = 0): Promise<SimpleHymn[]> {
+  async returnAll(offset: number = 0): Promise<PreFetchHymn[]> {
     await db.on('ready', () => {});
     return await db
       .table('simpleHymns')
@@ -170,7 +170,7 @@ export class IndexDbManagerService {
   //   return data;
   // }
 
-  storeNewHymnsList(hymnList: SimpleHymn[]): void {
+  storeNewHymnsList(hymnList: PreFetchHymn[]): void {
     let worker = new Worker(
       new URL('../web-workers/db-web-worker.worker.ts', import.meta.url)
     );

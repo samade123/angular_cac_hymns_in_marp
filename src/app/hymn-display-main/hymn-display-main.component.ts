@@ -13,8 +13,8 @@ import {
 import {
   Properties,
   Result,
-  SimpleHymn,
-  SimpleHymnItem,
+  PreFetchHymn,
+  FetchedHymn,
 } from './../test-interface';
 import { GrabNotiondbService } from '../services/grab-notiondb.service';
 import { Marpit } from '@marp-team/marpit';
@@ -48,13 +48,13 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
   ) {
     // trackNavigation = this.routerManagerService.trackNavigation;
   }
-  @Input() hymn: SimpleHymn;
+  @Input() hymn: PreFetchHymn;
   // @Input() fullscreenState: Boolean;
 
   @Output() fullscreenEmitter = new EventEmitter<boolean>();
   @Output() failedFetch = new EventEmitter<Boolean>();
   fullscreenState = false;
-  hymnItem: SimpleHymnItem;
+  hymnItem: FetchedHymn;
   url = '';
   hymnNumber = '';
   file = '';
@@ -154,7 +154,7 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
         this.getHymn(simpleHymn);
       } else if ('type' in data && data.type == 'simpleHymn') {
         // console.log('testing can we receieve this', data.value)
-        let simpleHymn = data.value as SimpleHymn;
+        let simpleHymn = data.value as PreFetchHymn;
         // if (simpleHymn.hymnNumber != this.hymnNumber) {
         this.getHymn(simpleHymn);
         // }
@@ -163,7 +163,7 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
     // this.routerManagerService.trackNavigation(this.initCheckRouter);
   }
 
-  async getHymn(simpleHymn: SimpleHymn) {
+  async getHymn(simpleHymn: PreFetchHymn) {
     this.url = simpleHymn.url;
     if (simpleHymn.hymnNumber === this.hymnNumber) {
       return;
@@ -196,7 +196,7 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
       }
     }
   }
-  diffMarp(simpleHymn: SimpleHymn, localMarpFile: string): void {
+  diffMarp(simpleHymn: PreFetchHymn, localMarpFile: string): void {
     this.fetchMarp(simpleHymn, true)
       .then(async () => {
         if (
@@ -244,7 +244,7 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
     return marpTrueRegex.test(text);
   }
 
-  fetchMarp(simpleHymn: SimpleHymn, diff: boolean = false): Promise<void> {
+  fetchMarp(simpleHymn: PreFetchHymn, diff: boolean = false): Promise<void> {
     return new Promise((resolve, reject) => {
       this.service
         .getMarp(this.url)
@@ -340,7 +340,7 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
     ) {
       let simpleHymn = (await this.dbStorageService.getSimpleHymnByNumber(
         routeHymnNumber
-      )) as SimpleHymn;
+      )) as PreFetchHymn;
       if (simpleHymn) {
         this.getHymn(simpleHymn);
         this.commService.emitIdFromMainChild({

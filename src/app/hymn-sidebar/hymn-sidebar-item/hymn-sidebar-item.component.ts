@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { SimpleHymn, SimpleHymnItem, hymnUiObj } from 'src/app/test-interface';
+import { PreFetchHymn, FetchedHymn, DisplayHymn } from 'src/app/test-interface';
 
 @Component({
   selector: 'app-hymn-sidebar-item',
@@ -28,6 +28,6 @@ import { SimpleHymn, SimpleHymnItem, hymnUiObj } from 'src/app/test-interface';
   styleUrls: ['./hymn-sidebar-item.component.scss'],
 })
 export class HymnSidebarItemComponent {
-  @Input() hymnItem: hymnUiObj;
+  @Input() hymnItem: DisplayHymn;
   @Input() lastOpenedEnabled: Boolean = false;
 }

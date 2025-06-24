@@ -1,6 +1,6 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { GrabNotiondbService } from './services/grab-notiondb.service';
-import { NotionDBQuery, Result, SimpleHymn } from './test-interface';
+import { NotionDBQuery, Result, PreFetchHymn } from './test-interface';
 import { StorageManagerService } from './services/storage-manager.service';
 import { addHours, isPast, isFuture, addMinutes, format } from 'date-fns';
 import { IndexDbManagerService } from './services/index-db-manager.service';
@@ -17,11 +17,11 @@ import { LoadPolyFillService } from './services/load-poly-fill.service';
 export class AppComponent implements OnInit {
   title = 'marp-hymns';
   data: NotionDBQuery;
-  hymnsList: SimpleHymn[];
+  hymnsList: PreFetchHymn[];
   results: Result[]; //define it here
   selectedHymnId: string = '';
   selectedHymnObject: Result;
-  selectedSimpleHymn: SimpleHymn;
+  selectedSimpleHymn: PreFetchHymn;
   fullscreen = false;
   currentExpiry: String;
   darkMode: Boolean = false;

@@ -3,9 +3,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, catchError, throwError } from 'rxjs';
 import {
   Result,
-  SimpleHymn,
+  PreFetchHymn,
   RequestOptions,
-  SimpleHymnItem,
+  FetchedHymn,
   Properties,
 } from '../test-interface';
 import { IndexDbManagerService } from './index-db-manager.service';
@@ -31,14 +31,14 @@ export class GrabNotiondbService {
   notionPageTrackByFn(index: number, result: Result): string {
     return result.id;
   }
-  simpleHymnsTrackByFn(index: number, hymn: SimpleHymn): string {
+  simpleHymnsTrackByFn(index: number, hymn: PreFetchHymn): string {
     return hymn.id;
   }
-  simpleHymnItemsTrackByFn(index: number, hymn: SimpleHymnItem): string {
+  simpleHymnItemsTrackByFn(index: number, hymn: FetchedHymn): string {
     return hymn.id;
   }
 
-  simplifyHymnItem(simpleHymn: SimpleHymn, marp: string): SimpleHymnItem {
+  simplifyHymnItem(simpleHymn: PreFetchHymn, marp: string): FetchedHymn {
     const name: string = simpleHymn.name ? simpleHymn.name : 'n/a';
     return {
       id: simpleHymn.id,
@@ -49,7 +49,7 @@ export class GrabNotiondbService {
     };
   }
 
-  simplifyHymns(results: Result[]): SimpleHymn[] {
+  simplifyHymns(results: Result[]): PreFetchHymn[] {
     return results
       .filter(
         (result) =>
@@ -71,7 +71,7 @@ export class GrabNotiondbService {
       });
   }
 
-  isSimpleHymn(value: any): value is SimpleHymn {
+  isSimpleHymn(value: any): value is PreFetchHymn {
     return (
       typeof value === 'object' &&
       'id' in value &&
@@ -119,7 +119,7 @@ export class GrabNotiondbService {
     }
   }
 
-  async getHymn(simpleHymn: SimpleHymn) {
+  async getHymn(simpleHymn: PreFetchHymn) {
     console.log('checking');
     simpleHymn.hymnNumber;
     if (simpleHymn.url) {

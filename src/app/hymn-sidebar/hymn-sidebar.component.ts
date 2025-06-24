@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { SimpleHymn, SimpleHymnItem } from './../test-interface';
+import { PreFetchHymn, FetchedHymn } from './../test-interface';
 import { GrabNotiondbService } from '../services/grab-notiondb.service';
 import { IndexDbManagerService } from '../services/index-db-manager.service';
 import { animate } from 'popmotion';
@@ -25,7 +25,7 @@ export class HymnSidebarComponent implements OnInit {
     private dBstorageServie: IndexDbManagerService,
     private commService: CommsService
   ) {}
-  @Input() simpleHymns: SimpleHymn[];
+  @Input() simpleHymns: PreFetchHymn[];
   @Output() selectedHymnId = new EventEmitter<string>();
   @Output() reload = new EventEmitter<void>();
 

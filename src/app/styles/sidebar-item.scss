@@ -8,7 +8,6 @@ div.hymn-select-item {
   box-sizing: border-box;
   border-bottom: 1px solid var(--border-color, none);
   background-color: var(--background-color);
-
 }
 
 div.hymn-select-item:hover {
@@ -22,9 +21,8 @@ div.hymn-select-item:hover {
   text-align: center;
   grid-column: 1;
   place-self: center end;
+  text-transform: uppercase;
 }
-
-.hymn-select-item__date {}
 
 .hymn-select-item__title {
   text-align: left;
@@ -52,11 +50,9 @@ div.hymn-select-item:hover {
   grid-column: 2;
   place-self: start start;
   color: var(--subtitle-color);
-
 }
 
 div.hymn-select-item:has(.hymn-select-item__subtitle) {
-
   .hymn-select-item__subtitle {
     grid-row: 2;
   }
@@ -64,8 +60,6 @@ div.hymn-select-item:has(.hymn-select-item__subtitle) {
   .hymn-select-item__title {
     grid-row: 1;
     place-self: end start;
-
-
   }
 
   .hymn-select-item__number {

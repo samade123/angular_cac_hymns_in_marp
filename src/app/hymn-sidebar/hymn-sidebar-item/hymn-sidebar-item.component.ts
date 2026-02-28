@@ -44,6 +44,7 @@ import { PreFetchHymn, FetchedHymn, DisplayHymn } from 'src/app/test-interface';
           font-size: 1.4rem;
           font-weight: 800;
           color: var(--accent-primary);
+          text-transform: uppercase;
         }
 
         &__title {

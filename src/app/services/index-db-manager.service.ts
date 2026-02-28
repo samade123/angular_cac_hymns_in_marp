@@ -129,9 +129,10 @@ export class IndexDbManagerService {
     return await db
       .table('simpleHymns')
       .filter((hymn) => {
+        const search = searchString.toLowerCase();
         return (
-          hymn.hymnNumber.includes(searchString) ||
-          hymn.name.toLowerCase().includes(searchString.toLowerCase())
+          hymn.hymnNumber.toLowerCase().includes(search) ||
+          hymn.name.toLowerCase().includes(search)
         );
       })
       .toArray();

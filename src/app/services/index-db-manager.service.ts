@@ -19,7 +19,7 @@ export class IndexDbManagerService {
 
   async storeData(
     table: string,
-    hymn: PreFetchHymn | FetchedHymn
+    hymn: PreFetchHymn | FetchedHymn,
   ): Promise<void> {
     await db.on('ready', () => {});
     await db.table(table).put(hymn);
@@ -33,7 +33,7 @@ export class IndexDbManagerService {
 
   async getHymnItem(
     hymnNumber: string,
-    table: string = 'simpleHymnItems'
+    table: string = 'simpleHymnItems',
   ): Promise<FetchedHymn> {
     const hymnItem = await db.table(table).get({ hymnNumber: hymnNumber });
     if (hymnItem) {
@@ -51,7 +51,7 @@ export class IndexDbManagerService {
 
   async getHymnItembyId(
     id: string,
-    table: string = 'simpleHymns'
+    table: string = 'simpleHymns',
   ): Promise<PreFetchHymn> {
     const hymnItem = await db.table(table).get(id);
     if (hymnItem) {
@@ -71,7 +71,7 @@ export class IndexDbManagerService {
 
   async getSimpleHymnByNumber(
     hymnNumber: string,
-    table: string = 'simpleHymns'
+    table: string = 'simpleHymns',
   ): Promise<PreFetchHymn> {
     const hymnItem = await db.table(table).get({ hymnNumber: hymnNumber });
     if (hymnItem) {
@@ -104,7 +104,7 @@ export class IndexDbManagerService {
 
   async doesHymnExist(
     hymnNumber: string,
-    table: string = 'simpleHymnItems'
+    table: string = 'simpleHymnItems',
   ): Promise<boolean> {
     await db.on('ready', () => {});
     const count = await db
@@ -117,7 +117,7 @@ export class IndexDbManagerService {
 
   async doesHymnbyIdExist(
     id: string,
-    table: string = 'simpleHymnItems'
+    table: string = 'simpleHymnItems',
   ): Promise<boolean> {
     await db.on('ready', () => {});
     const count = await db.table(table).where('id').equals(id).count();
@@ -129,18 +129,21 @@ export class IndexDbManagerService {
     return await db
       .table('simpleHymns')
       .filter((hymn) => {
-        return hymn.hymnNumber.includes(searchString) || hymn.name.toLowerCase().includes(searchString.toLowerCase())
+        return (
+          hymn.hymnNumber.includes(searchString) ||
+          hymn.name.toLowerCase().includes(searchString.toLowerCase())
+        );
       })
       .toArray();
   }
 
-  async getLastFiveHymns(): Promise<FetchedHymn[]> {
+  async getLastEightHymns(): Promise<FetchedHymn[]> {
     await db.on('ready', () => {});
     return (await db
       .table('simpleHymnItems')
       .orderBy('last_used_time')
       .reverse()
-      .limit(5)
+      .limit(8)
       .toArray()) as FetchedHymn[];
 
     // return hymns as FetchedHymn[];
@@ -172,7 +175,7 @@ export class IndexDbManagerService {
 
   storeNewHymnsList(hymnList: PreFetchHymn[]): void {
     let worker = new Worker(
-      new URL('../web-workers/db-web-worker.worker.ts', import.meta.url)
+      new URL('../web-workers/db-web-worker.worker.ts', import.meta.url),
     );
     worker.addEventListener(
       'message',
@@ -187,14 +190,14 @@ export class IndexDbManagerService {
         }
         console.log('Message received from worker', e);
       },
-      { once: true }
+      { once: true },
     );
     worker.postMessage({ data: hymnList, type: 'bulkPut' });
   }
 
   checkForEmptyDb(
     onEmptyDbFunc: () => void,
-    onNotEmptyDbFunc: () => void
+    onNotEmptyDbFunc: () => void,
   ): void {
     this.returnAll().then(async (arr) => {
       // check if database is loaded

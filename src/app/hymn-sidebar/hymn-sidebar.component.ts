@@ -56,7 +56,7 @@ export class HymnSidebarComponent implements OnInit {
     return await this.dBstorageServie.returnAll(this.offset);
   });
   hymnItemsArr$ = liveQuery(async () => {
-    return await this.dBstorageServie.getLastFiveHymns();
+    return await this.dBstorageServie.getLastEightHymns();
   });
 
   ngOnInit(): void {
@@ -108,7 +108,7 @@ export class HymnSidebarComponent implements OnInit {
         return await this.dBstorageServie.returnAll(this.offset);
       });
       this.hymnItemsArr$ = liveQuery(async () => {
-        return await this.dBstorageServie.getLastFiveHymns();
+        return await this.dBstorageServie.getLastEightHymns();
       });
       this.dBstorageServie
         .getTableLength()

@@ -185,7 +185,8 @@
       & > ::ng-deep router-outlet + app-hymn-sidebar {
         place-self: stretch;
         display: block;
-        grid-row: 1;
+        grid-row: 1 /-1;
+        grid-column: 1 / -1;
       }
     }
 

@@ -175,9 +175,17 @@
     }
 
     main {
+      min-height: 60vh;
+      grid-column: 1;
+      height: 100%;
+      display: grid;
+      place-items: start;
+      place-self: stretch;
+
       & > ::ng-deep router-outlet + app-hymn-sidebar {
-        place-self: start stretch;
+        place-self: stretch;
         display: block;
+        grid-row: 1;
       }
     }
 

@@ -1,14 +1,19 @@
 <header class="header" [ngClass]="{'fullscreen': fullscreen}">
-  <div class="header-path">
-    <span>CAC Doc Viewer</span>
-    <span class="opacity-30">/</span>
-    <strong id="currentHymnTitle">{{selectedSimpleHymn ? selectedSimpleHymn.hymnNumber + ' - ' + selectedSimpleHymn.name
-      :
-      ''}}</strong>
+  <div class="header__left">
+    <p-button *ngIf="isHymnPage()" (onClick)="backToHymnsList()" icon="pi pi-arrow-left" [text]="true" size="small"
+      styleClass="mobile-back-btn" />
+    <div class="header-path">
+      <span>CAC Doc Viewer</span>
+      <span class="opacity-30">/</span>
+      <strong id="currentHymnTitle">{{selectedSimpleHymn ? selectedSimpleHymn.hymnNumber + ' - ' +
+        selectedSimpleHymn.name
+        :
+        ''}}</strong>
+    </div>
   </div>
   <div class="header__right">
     <p-button [rounded]="false" icon="pi pi-window-maximize" [text]="false" size='small' iconPos="right"
-      *ngIf="isHymnPage()" type="button" title="Present" label="Present" class="p-button-success"
+      *ngIf="isHymnPage()" type="button" title="Present" label="Present" styleClass="p-button-info"
       (onClick)="setFullScreen()"></p-button>
     <p-button (onClick)="op.toggle($event)" icon="pi pi-cog" size="small" />
 

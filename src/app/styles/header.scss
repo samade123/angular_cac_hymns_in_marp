@@ -2,6 +2,16 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  .header__left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .mobile-back-btn {
+      display: none;
+    }
+  }
   padding: 1.25rem;
   background-color: var(--header-bg);
   border-bottom: 1px solid var(--border-ui);
@@ -28,7 +38,21 @@
     align-items: center;
     gap: 0.75rem;
 
-    ::ng-deep .p-button {
+    /* Specific styling for the blue Present button to ensure it's not overridden */
+    ::ng-deep .p-button.p-button-info {
+      background: var(--accent-primary) !important;
+      color: white !important;
+      border: 1px solid var(--accent-primary) !important;
+      padding-inline: 1.25rem;
+
+      &:hover {
+        background: var(--accent-primary) !important;
+        filter: brightness(1.1) !important;
+        border-color: var(--accent-primary) !important;
+      }
+    }
+
+    ::ng-deep .p-button:not(.p-button-info) {
       background: var(--sidebar-bg);
       color: var(--text-main);
       font-size: 0.75rem;
@@ -66,21 +90,25 @@
         background: var(--tool-bg);
         border-color: var(--border-active);
       }
-
-      &.p-button-success {
-        background: var(--accent-primary);
-        color: white;
-        border: none;
-        padding-inline: 1.25rem;
-
-        &:hover {
-          filter: brightness(1.1);
-        }
-      }
     }
   }
 
   &.fullscreen {
     display: none;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .header {
+    .header__left {
+      .mobile-back-btn {
+        display: inline-flex !important;
+      }
+    }
+    .header-path {
+      span {
+        display: none;
+      }
+    }
   }
 }

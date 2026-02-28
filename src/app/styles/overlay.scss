@@ -1,6 +1,7 @@
 ::ng-deep {
   .p-overlaypanel {
-    background: var(--overlay-bg);
+    background: var(--overlay-bg) !important;
+    color: var(--text-main) !important;
     backdrop-filter: blur(20px);
     border: 1px solid var(--border-active);
     border-radius: 12px;

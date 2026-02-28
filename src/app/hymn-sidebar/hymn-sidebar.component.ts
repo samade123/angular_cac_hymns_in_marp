@@ -1,4 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  HostListener,
+} from '@angular/core';
 import { PreFetchHymn, FetchedHymn } from './../test-interface';
 import { GrabNotiondbService } from '../services/grab-notiondb.service';
 import { IndexDbManagerService } from '../services/index-db-manager.service';
@@ -7,7 +14,7 @@ import { liveQuery } from 'dexie';
 import { db } from './../db'; // You get a db with property table1 attached (because the schema is declared)
 import { CommsService } from '../services/comms.service';
 import { PaginatorState } from 'primeng/paginator';
-import { first, take } from 'rxjs';
+import { first, take, from } from 'rxjs';
 
 export interface ButtonFilters {
   name: string;
@@ -23,7 +30,7 @@ export class HymnSidebarComponent implements OnInit {
   constructor(
     private notionService: GrabNotiondbService,
     private dBstorageServie: IndexDbManagerService,
-    private commService: CommsService
+    private commService: CommsService,
   ) {}
   @Input() simpleHymns: PreFetchHymn[];
   @Output() selectedHymnId = new EventEmitter<string>();
@@ -41,8 +48,9 @@ export class HymnSidebarComponent implements OnInit {
   searchQuery: string = '';
   zeroHymns: boolean = false;
   offset: number = 0;
+  activeIndex: number = -1;
   friends$ = liveQuery(() =>
-    this.dBstorageServie.listSimpleHymns(this.searchQuery)
+    this.dBstorageServie.listSimpleHymns(this.searchQuery),
   );
   allSimpleHymns$ = liveQuery(async () => {
     return await this.dBstorageServie.returnAll(this.offset);
@@ -65,7 +73,7 @@ export class HymnSidebarComponent implements OnInit {
             this.hymnsLength = number;
           })
           .catch(() => (this.hymnsLength = 0));
-      }
+      },
     );
 
     this.dBstorageServie.returnAll().then(async (arr) => {
@@ -83,9 +91,7 @@ export class HymnSidebarComponent implements OnInit {
 
   suscribeToWorker(): void {
     // this.zeroHymns = true;
-    this.commService.mainAppSubscriber$
-    .pipe(take(1))
-    .subscribe((data: any) => {
+    this.commService.mainAppSubscriber$.pipe(take(1)).subscribe((data: any) => {
       if ((data.type = 'webworker')) {
         this.defineLivequeries();
         this.zeroHymns = false;
@@ -96,7 +102,7 @@ export class HymnSidebarComponent implements OnInit {
   defineLivequeries(pageChange: Boolean = false): void {
     if (!pageChange) {
       this.friends$ = liveQuery(() =>
-        this.dBstorageServie.listSimpleHymns(this.searchQuery)
+        this.dBstorageServie.listSimpleHymns(this.searchQuery),
       );
       this.allSimpleHymns$ = liveQuery(async () => {
         return await this.dBstorageServie.returnAll(this.offset);
@@ -135,7 +141,7 @@ export class HymnSidebarComponent implements OnInit {
       from: '21deg',
       to: '180deg',
       duration: 600,
-      onUpdate: (latest) => (this.inputFocusBgDeg = latest),
+      onUpdate: (latest: any) => (this.inputFocusBgDeg = latest),
     });
   }
 
@@ -144,15 +150,48 @@ export class HymnSidebarComponent implements OnInit {
       from: '180deg',
       to: '21deg',
       duration: 600,
-      onUpdate: (latest) => (this.inputFocusBgDeg = latest),
+      onUpdate: (latest: any) => (this.inputFocusBgDeg = latest),
     });
   }
 
   queryDb(): void {
+    this.activeIndex = -1;
     this.friends$ = liveQuery(() =>
-      this.dBstorageServie.listSimpleHymns(this.searchQuery)
+      this.dBstorageServie.listSimpleHymns(this.searchQuery),
     );
   }
+
+  @HostListener('window:keydown', ['$event'])
+  onKeydown(event: KeyboardEvent) {
+    if (this.searchQuery.length === 0) return;
+
+    from(this.friends$)
+      .pipe(take(1))
+      .subscribe((items: any[]) => {
+        if (!items || items.length === 0) return;
+
+        if (event.key === 'ArrowDown') {
+          event.preventDefault();
+          this.activeIndex = Math.min(this.activeIndex + 1, items.length - 1);
+        } else if (event.key === 'ArrowUp') {
+          event.preventDefault();
+          this.activeIndex = Math.max(this.activeIndex - 1, 0);
+        } else if (event.key === 'Enter') {
+          if (this.activeIndex >= 0 && items[this.activeIndex]) {
+            this.pickHymn(items[this.activeIndex].id);
+          }
+        }
+      });
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.search-block')) {
+      this.searchQuery = '';
+    }
+  }
+
   reloadDb(): void {
     // this.reload.emit();
     this.suscribeToWorker();

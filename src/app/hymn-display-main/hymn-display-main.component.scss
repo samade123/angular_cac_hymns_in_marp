@@ -1,10 +1,9 @@
-@use './../styles/card-div.scss'as *;
+@use "./../styles/card-div.scss" as *;
 
 div.marpit,
 svg.marpit,
 div.marpit-placeholder {
   @extend .card-div;
-  // max-height: 90%;
   width: calc(100% - 6px);
   max-width: 760px;
   aspect-ratio: 16 / 10;
@@ -14,7 +13,6 @@ div.marpit-placeholder {
   &-present {
     display: none;
   }
-
 }
 
 .marp-wrapper {
@@ -30,40 +28,47 @@ div.marpit-placeholder {
   }
 
   &.not-placeholder {
-    grid-template-rows: auto 1fr;
+    grid-template-rows: auto;
     gap: 7px;
     place-items: start;
+  }
 
+  &.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100svh;
+    background: var(--tool-bg);
+    z-index: 1000;
+    padding: 0;
+    justify-content: center;
+    align-items: center;
   }
 
   .marp-details {
-    border: 1px solid rgba(34, 34, 34, 0.1333333333);
-    background: var(--background-color-1, #FFF);
+    border: 1px solid var(--border-ui);
+    background: var(--overlay-bg);
     border-radius: 2px;
     padding: 10px;
     place-self: center;
-    display: grid;
-    gap: 10px;
-    place-items: start;
     display: none;
-
     position: absolute;
 
     bottom: 40px;
     margin: 0 auto;
-
 
     .buttons {
       @extend .card-div;
       position: relative;
       box-shadow: none;
       padding: 0.5rem;
-      width: -moz-fit-content;
       width: fit-content;
-      border: solid 2px var(--border-color, #000a);
-      background: #fffa;
+      border: solid 2px var(--border-ui);
+      background: var(--overlay-bg);
+      backdrop-filter: blur(10px);
     }
-
 
     div[title="fullscreen"],
     div[title="previous"],
@@ -102,9 +107,7 @@ div.marpit-placeholder {
   // }
 }
 
-
 @media only screen and (max-width: 600px) {
-
   div.marpit,
   svg.marpit,
   div.marpit-placeholder {
@@ -119,5 +122,4 @@ div.marpit-placeholder {
       aspect-ratio: 4/3;
     }
   }
-
 }

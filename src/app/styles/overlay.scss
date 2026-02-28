@@ -1,56 +1,124 @@
 ::ng-deep {
+  .p-overlaypanel {
+    background: var(--overlay-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-active);
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    padding: 1.5rem;
+    width: 300px;
+    margin-top: 10px;
 
-    .p-overlaypanel:after,
-    .p-overlaypanel:before {
-        border: solid transparent;
-        border-color: rgba(24, 24, 27, 0);
-        border-bottom-color: var(--background-color);
-    }
-}
-
-::ng-deep div[role="dialog"] {
-    background-color: var(--background-color);
-    font-size: 0.8rem;
-
-
-    div.overlay-wrap {
-
-        display: flex;
-        flex-direction: column;
-        gap: 0.2lh;
-        background-color: var(--background-color);
-        color: var(--text-color);
+    &:before,
+    &:after {
+      display: none;
     }
 
-
-    .p-button-sm,
-    .p-togglebutton,
-    .p-inputtext {
-        padding: 0.25625rem 0.9375rem;
-        font-size: 0.7em;
-
-        .p-button-icon {
-            font-size: 0.7rem;
-        }
+    .p-overlaypanel-content {
+      padding: 0;
     }
+  }
 
-    h3 {
-        font-weight: 500;
-        font-size: 1.3em;
-    }
-
+  .overlay-wrap {
     h2 {
-        font-size: 1.4em;
-        font-weight: 700;
-    }
-
-    h2,
-    h3 {
-        margin: 0;
-        margin-bottom: 0.1lh;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--text-main);
     }
 
     hr {
-        width: 100%;
+      border: none;
+      border-top: 1px solid var(--border-ui);
+      margin: 1rem 0;
     }
+
+    .settings-section {
+      padding: 1rem 0;
+      border-top: 1px solid var(--border-ui);
+
+      &:first-of-type {
+        border-top: none;
+        padding-top: 0.5rem;
+      }
+
+      h3 {
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        letter-spacing: 0.1em;
+        margin-bottom: 0.75rem;
+      }
+
+      .settings-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+
+        .val-accent {
+          color: var(--accent-primary);
+          font-family: "JetBrains Mono", monospace;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+
+  /* Hardware Controls Look */
+  .p-inputnumber-input {
+    background: var(--tool-bg) !important;
+    border: 1px solid var(--border-ui) !important;
+    color: var(--text-main) !important;
+    padding: 6px 10px !important;
+    border-radius: 4px !important;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.8rem !important;
+    width: 70px !important;
+    text-align: center !important;
+
+    &:focus {
+      outline: none;
+      border-color: var(--accent-primary) !important;
+    }
+  }
+
+  .p-togglebutton {
+    background: var(--tool-bg) !important;
+    border: 1px solid var(--border-ui) !important;
+    color: var(--text-main) !important;
+    border-radius: 4px !important;
+    width: 40px !important;
+    height: 32px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    &.p-highlight {
+      background: var(--tool-bg) !important;
+      border-color: var(--accent-primary) !important;
+      color: var(--accent-primary) !important;
+    }
+
+    .p-button-icon {
+      font-size: 0.8rem;
+    }
+  }
+
+  .p-button.p-button-sm.p-button-icon-only {
+    background: var(--tool-bg) !important;
+    border: 1px solid var(--border-ui) !important;
+    color: var(--text-main) !important;
+    border-radius: 4px !important;
+    width: 32px !important;
+    height: 32px !important;
+
+    &:hover {
+      border-color: var(--border-active) !important;
+      background: var(--sidebar-bg) !important;
+    }
+  }
 }

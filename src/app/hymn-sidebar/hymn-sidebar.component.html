@@ -1,23 +1,25 @@
-<fieldset [style.--background-grad-degree]="inputFocusBgDeg">
-  <label for="hymn-search-input">Search Hymns</label>
-  <input type="text" id="hymn-search-input" placeholder="Search Hymns" [(ngModel)]="searchQuery"
-    (ngModelChange)="queryDb()" (focus)="focusInput()" (blur)="loseFocus()">
-  <div class="blank" *ngIf="searchQuery.length > 0" (blur)="loseFocus()">
+<div class="search-block">
+  <i class="pi pi-search search-icon"></i>
+  <input type="text" id="hymn-search-input" placeholder="Search by number or title..." [(ngModel)]="searchQuery"
+    (ngModelChange)="queryDb()" (focus)="focusInput()" (blur)="loseFocus()" autocomplete="off">
 
-    <div class="hymn-item-wrapper" *ngFor="let hymn of friends$ | async; index as i; trackBy: hymnTrackbyFn">
-      <app-hymn-sidebar-item [hymnItem]="hymn" (click)="pickHymn(hymn.id)" />
+  <div class="search-results-dropdown" [class.visible]="searchQuery.length > 0">
+    <div class="hymn-select-item" *ngFor="let hymn of friends$ | async; index as i; trackBy: hymnTrackbyFn"
+      (click)="pickHymn(hymn.id)" [class.kb-active]="activeIndex === i">
+      <div class="hymn-select-item__number">{{hymn.hymnNumber}}</div>
+      <div class="hymn-select-item__info">
+        <h3 class="hymn-select-item__title">{{hymn.name}}</h3>
+        <span class="hymn-select-item__author" *ngIf="hymn.author">{{hymn.author}}</span>
+      </div>
+      <div class="hymn-select-item__hint"><i class="pi pi-arrow-right"></i></div>
     </div>
   </div>
-</fieldset>
+</div>
 
 <section>
-  <div class="hymn-list-filter-wrapper">
-    <div class="hymn-list-filter" role="button" *ngFor="let button of buttonFilters"
-      [ngClass]="{'selected': button.selected}" [title]="button.name" (click)='filterHymns(button)'>{{button.name}}
-    </div>
-    <!-- <div type="button" title="Reload Database" role="button" class="hymn-list-filter__refresh" (click)="reloadDb()">
-      <i class="pi pi-refresh"></i>
-    </div> -->
+  <div class="sidebar-tabs">
+    <div class="tab-item" *ngFor="let button of buttonFilters" [class.active]="button.selected"
+      (click)='filterHymns(button)'>{{button.name}}</div>
   </div>
   <div class="hymn-list-wrapper" *ngIf="buttonFilters[0].selected else allHymns">
     <div class="zero-hymns" *ngIf="zeroHymns">

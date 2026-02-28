@@ -44,7 +44,7 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
     private commService: CommsService,
     private activatedRoute: ActivatedRoute,
     private routerManagerService: RouterManagerService,
-    private ref: ChangeDetectorRef
+    private ref: ChangeDetectorRef,
   ) {
     // trackNavigation = this.routerManagerService.trackNavigation;
   }
@@ -108,14 +108,11 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
   }
 
   initFullScreen(): void {
-    // this.fullscreenState = !this.fullscreenState;
     this.commService.subscriber$.subscribe((data: any) => {
       if ('type' in data && data.type == 'fullScreen') {
-        // alert('fullscreen');
-        console.log(this.fullscreenState);
+        this.fullscreenState = !this.fullscreenState;
         this.index = 0;
-        // this.fullscreen();
-        this.ref.detectChanges(); // *trigger change here*
+        this.ref.detectChanges();
       }
     });
   }
@@ -287,7 +284,7 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
 
   appendSvgToDivWithImportNode = (
     svgString: string,
-    div: HTMLElement
+    div: HTMLElement,
   ): void => {
     const parser = new DOMParser();
     const svgDocument = parser.parseFromString(svgString, 'image/svg+xml');
@@ -339,7 +336,7 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
       await this.dbStorageService.doesHymnExist(routeHymnNumber, 'simpleHymns')
     ) {
       let simpleHymn = (await this.dbStorageService.getSimpleHymnByNumber(
-        routeHymnNumber
+        routeHymnNumber,
       )) as PreFetchHymn;
       if (simpleHymn) {
         this.getHymn(simpleHymn);
@@ -356,13 +353,15 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
 /* @theme my-second-theme */
 
 :root {
-  background-color: var(--presentation-bg, #fff);
+  background-color: var(--presentation-bg, #1e1e1e);
+  color: var(--presentation-color, #e0e0e0);
   font-size: 1.6em;
 }
 section {
   display: grid;
   gap: 0.5rem 1.5em;
   grid-template-columns: 1fr 1fr;
+  color: inherit;
 }
 
 section:has(ol) {
@@ -441,6 +440,8 @@ section ol:has(li:nth-of-type(2)) + p, section ol:has(li:nth-of-type(2)){
         // console.log(this.data)
       }
     });
+
+    // Ensure the theme uses the correct background from variables
     this.sheet.innerHTML = css;
     console.log(this.data);
     this.ref.markForCheck();

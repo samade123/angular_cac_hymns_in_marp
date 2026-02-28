@@ -2,13 +2,11 @@
   <!-- <div id="template-div" *ngIf="showHymns else marpitPlcHldr" [innerHTML]='data[index]' class='marpit' -->
 
 
-  <div id="template-div" *ngFor="let page of data; index as i;" [innerHTML]='data[i]' class='marpit marpit-scrollable'
-    [ngClass]="{'fullscreen': fullscreenState}">
+  <div id="template-div" *ngFor="let page of data; index as i;" [innerHTML]='data[i]' class='marpit marpit-scrollable'>
 
   </div>
 
-  <div id="template-div" [innerHTML]='data[index]' class='marpit marpit-present'
-    [ngClass]="{'fullscreen': fullscreenState}">
+  <div id="template-div" [innerHTML]='data[index]' class='marpit marpit-present'>
   </div>
 
 
@@ -149,12 +147,12 @@
 
 
   /* :host { */
-    /* --- Scrollbar Styles for Firefox --- */
-    /* scrollbar-width: thin; */
-    /* 'auto' | 'thin' | 'none' */
-    /* scrollbar-color: var(--scrollbar-thumb-bg) var(--scrollbar-track-bg); */
-    /* thumb color | track color */
-    /* You can adjust these colors */
+  /* --- Scrollbar Styles for Firefox --- */
+  /* scrollbar-width: thin; */
+  /* 'auto' | 'thin' | 'none' */
+  /* scrollbar-color: var(--scrollbar-thumb-bg) var(--scrollbar-track-bg); */
+  /* thumb color | track color */
+  /* You can adjust these colors */
   /* } */
 
   /* --- Scrollbar Styles for Webkit (Chrome, Safari, Edge, Opera) --- */

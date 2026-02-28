@@ -24,7 +24,7 @@ export class AppComponent implements OnInit {
   selectedSimpleHymn: PreFetchHymn;
   fullscreen = false;
   currentExpiry: String;
-  darkMode: Boolean = false;
+  darkMode: boolean = false;
 
   constructor(
     private service: GrabNotiondbService,
@@ -33,7 +33,7 @@ export class AppComponent implements OnInit {
     private commService: CommsService,
     private router: Router,
     private routerManagerService: RouterManagerService,
-    private loadPolyFillService: LoadPolyFillService
+    private loadPolyFillService: LoadPolyFillService,
   ) {}
 
   notionPageTrackByFn = this.service.notionPageTrackByFn;
@@ -51,15 +51,16 @@ export class AppComponent implements OnInit {
 
   setColourTheme(): void {
     let colourThemesAttribute = this.darkMode ? 'dark' : 'light';
-    document.body.setAttribute('data-color-theme', `${colourThemesAttribute}`);
+    document.documentElement.setAttribute(
+      'data-color-theme',
+      `${colourThemesAttribute}`,
+    );
     this.storageManagerService.storeData('dark-mode', this.darkMode);
   }
 
   private _initColorTheme(): void {
     if (this.storageManagerService.doesDataExist('dark-mode')) {
-      this.darkMode = this.storageManagerService.getData(
-        'dark-mode'
-      ) as Boolean;
+      this.darkMode = !!this.storageManagerService.getData('dark-mode');
     }
     this.setColourTheme();
   }
@@ -67,7 +68,7 @@ export class AppComponent implements OnInit {
   private _loadScript(): void {
     this.loadPolyFillService
       .loadScript(
-        'https://cdn.jsdelivr.net/npm/@marp-team/marpit-svg-polyfill/lib/polyfill.browser.js'
+        'https://cdn.jsdelivr.net/npm/@marp-team/marpit-svg-polyfill/lib/polyfill.browser.js',
       )
       .then(() => {
         // Script loaded successfully
@@ -215,7 +216,7 @@ export class AppComponent implements OnInit {
 
     this.setCurrentHymn(id).then(() => {
       let currentExpiry = this.storageManagerService.getData(
-        'last-request-date'
+        'last-request-date',
       ) as string;
 
       // console.log(isFuture(new Date(currentExpiry)), new Date(currentExpiry));
@@ -268,7 +269,7 @@ export class AppComponent implements OnInit {
       (error) => {
         console.error('Error fetching notion data:', error);
         // Handle the error here
-      }
+      },
     );
   }
 
@@ -287,13 +288,13 @@ export class AppComponent implements OnInit {
 
     if (this.storageManagerService.doesDataExist('last-request-date')) {
       let currentExpiry = this.storageManagerService.getData(
-        'last-request-date'
+        'last-request-date',
       ) as string;
       this.currentExpiry = format(currentExpiry, 'p').toString();
 
       console.log(
         isPast(addMinutes(new Date(currentExpiry), 1)),
-        addMinutes(new Date(currentExpiry), 1)
+        addMinutes(new Date(currentExpiry), 1),
       );
 
       if (isPast(addHours(new Date(currentExpiry), 1))) {

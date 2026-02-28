@@ -1,84 +1,83 @@
-// @import './card-div.scss';
 .header {
-  // @extend .card-div;
-
-  ::ng-deep .p-button.p-button-sm {
-    font-size: 0.875rem;
-    padding: 0.45625rem 0.9375rem;
-  }
-
-}
-
-.header {
-
-  display: grid;
-  padding: 0 var(--padding-spacing);
-  // padding-right: 40px;
-  grid-column: span 2;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 10px;
-  height: 100%;
-  background: var(--background-color-1, #FFF);
+  padding: 1.25rem;
+  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--border-ui);
+  z-index: 100;
+  height: 64px;
   box-sizing: border-box;
-  border-bottom: 1px ridge var(--border-color);
-  border-radius: 2px;
-  font-size: 0.9em;
-  --p-chip-color: red;
 
-
-
-
-  h1.header__title {
-    font-size: 1em;
-    margin: 0;
+  .header-path {
+    font-size: 0.8rem;
     font-weight: 500;
-  }
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 
-  .header__left {
-    display: grid;
-    place-items: center start;
-
-    ::ng-deep .p-button {
-      display: none;
-      font-size: 0.875rem;
-      padding: 0.45625rem 0.9375rem;
+    strong {
+      color: var(--text-main);
+      font-weight: 600;
     }
-  }
-
-  ::ng-deep .p-chip .p-chip-text {
-    font-size: 0.6rem;
   }
 
   .header__right {
-    display: grid;
-    grid-template-columns: 3fr auto 1fr;
-
-    ::ng-deep .p-element {
-      grid-column: 2;
-    }
-
     display: flex;
-    gap: 1em;
-    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
 
-    ::ng-deep .p-button.p-button-sm {
-      font-size: 0.875rem;
-      padding: 0.45625rem 0.9375rem;
-      background-color: var(--primary-dark-blue);
+    ::ng-deep .p-button {
+      background: var(--sidebar-bg);
+      color: var(--text-main);
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 1px solid var(--border-ui);
+      height: 36px;
+      min-width: 36px;
+      cursor: pointer;
+      box-shadow: none;
+      transition: all 0.2s;
+      padding: 0 14px;
 
+      /* Reset for icon-only buttons to be square and perfectly centered */
       &.p-button-icon-only {
-        background-color: var(--secondary-btn-bg);
-        color: var(--secondary-btn-col);
-        border-color: grey;
+        padding: 0 !important;
+        width: 36px !important;
+        justify-content: center !important;
+
+        .p-button-icon {
+          margin: 0 !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          width: 100% !important;
+          height: 100% !important;
+        }
+      }
+
+      &:hover {
+        background: var(--tool-bg);
+        border-color: var(--border-active);
+      }
+
+      &.p-button-success {
+        background: var(--accent-primary);
+        color: white;
+        border: none;
+        padding-inline: 1.25rem;
+
+        &:hover {
+          filter: brightness(1.1);
+        }
       }
     }
-  }
-
-
-  button {
-    height: auto;
-    // padding: 0;
   }
 
   &.fullscreen {

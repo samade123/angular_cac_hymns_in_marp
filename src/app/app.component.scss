@@ -1,62 +1,53 @@
-@use './styles/header.scss';
-@use './styles/overlay.scss';
-@import './styles/card-div.scss';
-@import './styles/variables.scss';
-
+@import "./styles/header.scss";
+@import "./styles/overlay.scss";
+@import "./styles/card-div.scss";
+@import "./styles/variables.scss";
+@import "./styles/keyframes.scss";
 
 :host {
   display: grid;
-  grid-template-columns: auto 2fr;
-  grid-template-rows: calc(1lh + 4 * var(--header-padding, 10px)) 1fr;
-  // gap: 10px 1px;
-
-  width: 100%;
-  // max-width: 99vw;
-  // height: clamp(96vh, calc(97vh + 10px), 99vh);
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto 1fr;
+  width: 100vw;
+  height: 100vh;
   height: 100svh;
   box-sizing: border-box;
-  margin-block: auto;
-  place-items: center stretch;
+  margin: 0;
   padding: 0;
+  overflow: hidden;
+  background-color: var(--tool-bg);
 
   border-radius: 10px;
 
   header {
     @extend .header;
+    grid-column: 1 / 3;
+    grid-row: 1;
+    width: 100%;
   }
 
   main,
   aside {
-    // @extend .card-div;
     place-self: stretch;
-    padding: var(--padding-spacing), 5px;
-
-  }
-
-  aside {
-    width: clamp(150px, 25vw, 300px);
-    place-self: stretch;
-    // padding: var(--padding-spacing);
-    display: grid;
-    place-items: stretch;
-    // grid-row: 1/span 2;
     grid-row: 2;
-    border-right: 1px ridge var(--border-color);
-    // border-right: 1px;
-    background: var(--background-color-1, #FFF);
-    // border-radius: 2px;
-    padding: 0;
-    height: 100%;
   }
 
   aside.fullscreen {
     display: none;
   }
 
+  aside {
+    width: 340px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-ui);
+    padding: 0;
+    height: 100%;
+    grid-column: 1;
+  }
+
   main {
     min-height: 60vh;
-    min-height: 60dvh;
-    min-height: 60svh;
+    grid-column: 2;
     height: 100%;
     display: grid;
 
@@ -64,59 +55,88 @@
 
     &.fullscreen {
       min-height: 100vh;
-      min-height: 100dvh;
-      min-height: 100svh;
-      grid-column: span 2;
+      grid-column: 1 / 3;
+      grid-row: 1 / 3;
+      z-index: 200;
       place-items: center stretch;
-
       place-self: stretch;
-      background: black;
+      background: var(--tool-bg);
 
-      &::ng-deep router-outlet+app-hymn-display-main {
-        .marpit {
-          padding: 0;
-          border: none;
+      /* Targeted override for the presentation viewer when in fullscreen */
+      &::ng-deep {
+        app-hymn-display-main {
+          height: 100vh;
+          height: 100svh;
+          width: 100vw;
+          overflow: hidden;
 
-          &-scrollable {
+          .marp-wrapper {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+            display: grid;
+            place-items: center;
+          }
+
+          .marpit-scrollable {
             display: none;
           }
 
-          &-present {
+          .marpit-present {
             display: grid;
-            max-height: 100vh;
-            height: 100vh;
-            width: 95vw;
+            width: 100vw;
+            /* height: 100vh; */
+            max-height: 85vh;
+            max-width: none;
+            aspect-ratio: 16 / 9;
+            margin: 0 auto;
+            padding: 0;
+            border: none;
+            box-shadow: none;
             place-items: center;
-            aspect-ratio: 4/3;
-            max-width: 1200px;
-            background-color: var(--background-color, #fff);
-            box-sizing: content-box;
-            padding-inline: 2vw;
+            place-self: center;
 
+            svg {
+              width: 100%;
+              height: 100%;
+              display: block;
+              padding: 30px 40px;
+            }
           }
-
-        }
-
-        .marp-wrapper {
-          padding-block: 0px;
-          justify-content: center;
 
           .marp-details {
-            display: block;
-          }
+            display: flex;
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: auto;
+            z-index: 100;
+            background: transparent;
+            border: none;
 
-          .details-bottom {
-            display: none;
+            .details-bottom {
+              display: none;
+            }
+
+            .buttons {
+              background: var(--overlay-bg);
+              backdrop-filter: blur(10px);
+              border: 1px solid var(--border-ui);
+              padding: 0.5rem 1rem;
+              border-radius: 20px;
+              box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            }
           }
         }
       }
     }
 
-    &>::ng-deep router-outlet+app-hymn-sidebar {
+    & > ::ng-deep router-outlet + app-hymn-sidebar {
       display: none;
     }
   }
-
 }
 
 @media only screen and (max-width: 600px) {
@@ -130,7 +150,6 @@
       grid-template-columns: auto;
       font-size: 1.15em;
       place-items: center start;
-
 
       .header__left {
         display: grid;
@@ -150,15 +169,15 @@
         display: none;
       }
 
-
-      min-height: calc(3rem + (2 * 10px)); // padding of p-button + padding in header
+      min-height: calc(
+        3rem + (2 * 10px)
+      ); // padding of p-button + padding in header
     }
 
     main {
-      &> ::ng-deep router-outlet+app-hymn-sidebar {
+      & > ::ng-deep router-outlet + app-hymn-sidebar {
         place-self: start stretch;
         display: block;
-
       }
     }
 
@@ -166,5 +185,4 @@
       display: none;
     }
   }
-
 }

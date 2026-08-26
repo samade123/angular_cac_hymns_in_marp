@@ -52,11 +52,51 @@
             <span>Local Storage</span>
             <p-button (onClick)="getNotionResponse()" icon="pi pi-refresh" size="small" />
           </div>
+          <div class="settings-row" style="margin-top: 10px;">
+            <span>Hymn Cache</span>
+            <p-button (onClick)="openManageCacheModal(); op.hide()" icon="pi pi-database" size="small" label="Manage" />
+          </div>
         </div>
       </div>
     </p-overlayPanel>
   </div>
 </header>
+
+<div class="modal-overlay" *ngIf="showCacheModal" (click)="closeManageCacheModal($event)">
+  <div class="cache-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Stored Hymns Cache Manager</h2>
+      <p-button (onClick)="showCacheModal = false" icon="pi pi-times" [text]="true" size="small" />
+    </div>
+    <div class="modal-body">
+      <table class="cache-table">
+        <thead>
+          <tr>
+            <th class="col-number">Number</th>
+            <th class="col-id">ID</th>
+            <th class="col-name">Name</th>
+            <th class="col-marp">Marp Content</th>
+            <th class="col-action">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let hymn of cachedHymnsInfo">
+            <td class="cell-number" title="{{hymn.hymnNumber}}">{{hymn.hymnNumber}}</td>
+            <td class="cell-id" title="{{hymn.id}}">{{hymn.id}}</td>
+            <td class="cell-name" title="{{hymn.name}}">{{hymn.name}}</td>
+            <td class="cell-marp cell-marp-content" title="{{hymn.marp}}">
+              <span *ngIf="hymn.hasMarp">{{hymn.marp}}</span>
+              <span *ngIf="!hymn.hasMarp" class="status-badge missing">Not Cached</span>
+            </td>
+            <td class="cell-action">
+              <p-button *ngIf="hymn.hasMarp" (onClick)="deleteHymnCache(hymn.hymnNumber)" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" size="small" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 <aside [ngClass]="{'fullscreen': fullscreen}">
   <app-hymn-sidebar [simpleHymns]="hymnsList" (selectedHymnId)="selectHymnId($event)"
     (reload)="getNotionResponse()"></app-hymn-sidebar>

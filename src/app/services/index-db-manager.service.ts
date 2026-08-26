@@ -209,5 +209,20 @@ export class IndexDbManagerService {
       }
     });
   }
+
+  async getAllSimpleHymns(): Promise<PreFetchHymn[]> {
+    await db.on('ready', () => {});
+    return await db.table('simpleHymns').orderBy('hymnNumber').toArray();
+  }
+
+  async getAllFetchedHymns(): Promise<FetchedHymn[]> {
+    await db.on('ready', () => {});
+    return await db.table('simpleHymnItems').toArray();
+  }
+
+  async deleteFetchedHymn(hymnNumber: string): Promise<void> {
+    await db.on('ready', () => {});
+    await db.table('simpleHymnItems').where('hymnNumber').equals(hymnNumber).delete();
+  }
 }
 // export const db = new IndexDbManagerService();

@@ -122,4 +122,125 @@
       background: var(--sidebar-bg) !important;
     }
   }
+
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+  }
+
+  .cache-modal {
+    background: var(--overlay-bg);
+    color: var(--text-main);
+    border: 1px solid var(--border-active);
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    width: 90vw;
+    max-width: 1000px;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 1.5rem;
+    box-sizing: border-box;
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-ui);
+      padding-bottom: 1rem;
+      margin-bottom: 1rem;
+
+      h2 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 700;
+      }
+    }
+
+    .modal-body {
+      flex: 1;
+      overflow-y: auto;
+      border: 1px solid var(--border-ui);
+      border-radius: 6px;
+      background: var(--tool-bg);
+    }
+
+    .cache-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      table-layout: fixed;
+
+      th, td {
+        padding: 0.5rem 0.75rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border-ui);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        height: 2.5rem;
+        box-sizing: border-box;
+      }
+
+      th {
+        background: var(--sidebar-bg);
+        font-weight: 700;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        color: var(--text-muted);
+        border-bottom: 2px solid var(--border-ui);
+      }
+
+      tr:hover {
+        background: var(--border-ui);
+      }
+
+      /* Column widths */
+      .col-number { width: 12%; }
+      .col-id { width: 23%; }
+      .col-name { width: 25%; }
+      .col-marp { width: 30%; }
+      .col-action { width: 10%; text-align: center; }
+
+      .cell-marp-content {
+        font-family: "JetBrains Mono", monospace;
+        color: var(--text-muted);
+        font-size: 0.75rem;
+      }
+
+      .cell-action {
+        text-align: center;
+        padding: 0;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 500;
+
+        &.stored {
+          background: rgba(16, 185, 129, 0.15);
+          color: #10b981;
+        }
+
+        &.missing {
+          background: rgba(239, 68, 68, 0.15);
+          color: #ef4444;
+        }
+      }
+    }
+  }
 }

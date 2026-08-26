@@ -25,6 +25,8 @@ export class AppComponent implements OnInit {
   fullscreen = false;
   currentExpiry: String;
   darkMode: boolean = false;
+  showCacheModal: boolean = false;
+  cachedHymnsInfo: any[] = [];
 
   constructor(
     private service: GrabNotiondbService,
@@ -303,5 +305,48 @@ export class AppComponent implements OnInit {
         console.log('data expired, requesting new', currentExpiry);
       }
     }
+  }
+
+  openManageCacheModal(): void {
+    this.showCacheModal = true;
+    this.loadCacheData();
+  }
+
+  async loadCacheData(): Promise<void> {
+    try {
+      const simpleHymns = await this.dbService.getAllSimpleHymns();
+      const fetchedHymns = await this.dbService.getAllFetchedHymns();
+      
+      const fetchedMap = new Map<string, any>();
+      fetchedHymns.forEach(item => {
+        fetchedMap.set(item.hymnNumber, item);
+      });
+
+      this.cachedHymnsInfo = simpleHymns.map(hymn => {
+        const fetched = fetchedMap.get(hymn.hymnNumber);
+        return {
+          id: hymn.id,
+          name: hymn.name,
+          hymnNumber: hymn.hymnNumber,
+          hasMarp: !!fetched,
+          marp: fetched ? fetched.marp : ''
+        };
+      });
+    } catch (err) {
+      console.error('Error loading cache data:', err);
+    }
+  }
+
+  async deleteHymnCache(hymnNumber: string): Promise<void> {
+    try {
+      await this.dbService.deleteFetchedHymn(hymnNumber);
+      await this.loadCacheData();
+    } catch (err) {
+      console.error('Error deleting hymn cache:', err);
+    }
+  }
+
+  closeManageCacheModal(event: MouseEvent): void {
+    this.showCacheModal = false;
   }
 }

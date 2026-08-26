@@ -195,39 +195,18 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
   }
   diffMarp(simpleHymn: PreFetchHymn, localMarpFile: string): void {
     this.fetchMarp(simpleHymn, true)
-      .then(async () => {
-        if (
-          (!this.validateMarpFile(localMarpFile) &&
-            !this.validateMarpFile(this.file)) ||
-          !this.validateMarpFile(this.file) // if both files failed there's no intenet or something funny happening with fetch servers
-        ) {
-          return;
-        } else if (!this.validateMarpFile(localMarpFile)) {
-          // if localfails we don't want to use that file
-          console.log('trying becasue file has access denied');
-          try {
-            let testMarp = await fetch(simpleHymn.url); // check if fetch works then replace file to prevent storing another faied file
-            const testMarpString = await testMarp.text();
-            if (this.validateMarpFile(testMarpString)) {
-              this.fetchMarp(simpleHymn);
-            }
-            return;
-          } catch (error) {
-            return;
-          }
-        } else if (localMarpFile === this.file) {
-          // if files are the same don't do nothing
-          return;
-        } else if (localMarpFile != this.file) {
-          // if files are different update doing this last means we shouldn't have a bad file
-          if (!this.file.includes('AccessDenied')) {
-            this.fetchMarp(simpleHymn);
-          }
-          return;
-        } else return;
+      .then((remoteMarpFile) => {
+        if (localMarpFile !== remoteMarpFile) {
+          console.log('Marp file changed on remote, updating local store and display...');
+          this.file = remoteMarpFile;
+          this.renderMarp();
+          let hymnItem = this.service.simplifyHymnItem(simpleHymn, remoteMarpFile);
+          this.hymnItem = hymnItem;
+          this.dbStorageService.storeData('simpleHymnItems', hymnItem);
+        }
       })
-      .catch(() => {
-        return;
+      .catch((err) => {
+        console.log('Could not check for remote updates, using cached version:', err);
       });
   }
 
@@ -241,30 +220,34 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
     return marpTrueRegex.test(text);
   }
 
-  fetchMarp(simpleHymn: PreFetchHymn, diff: boolean = false): Promise<void> {
+  fetchMarp(simpleHymn: PreFetchHymn, diff: boolean = false): Promise<string> {
     return new Promise((resolve, reject) => {
       this.service
         .getMarp(this.url)
         .then((file) => {
-          // console.log(file, 'file for this hymn');
-          this.file = file;
-          this.hymnDict[this.hymnNumber] = this.file;
+          if (!this.validateMarpFile(file)) {
+            reject(new Error('Invalid Marp file content'));
+            return;
+          }
+          this.hymnDict[this.hymnNumber] = file;
           if (!diff) {
+            this.file = file;
             this.showHymns = true;
             this.renderMarp();
-            // this.storageService.storeData('hymn-dict', this.hymnDict);
-            let hymnItem = this.service.simplifyHymnItem(simpleHymn, this.file);
+            let hymnItem = this.service.simplifyHymnItem(simpleHymn, file);
             this.hymnItem = hymnItem;
 
             this.dbStorageService.storeData('simpleHymnItems', hymnItem);
           }
-          resolve();
+          resolve(file);
         })
         .catch((err) => {
           console.error(err);
-          reject();
-          this.failedFetch.emit();
-          this.commService.emitFailedFetch();
+          if (!diff) {
+            this.failedFetch.emit();
+            this.commService.emitFailedFetch();
+          }
+          reject(err);
         });
     });
   }

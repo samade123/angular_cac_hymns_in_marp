@@ -297,7 +297,7 @@ export class AppComponent implements OnInit {
         addMinutes(new Date(currentExpiry), 1),
       );
 
-      if (isPast(addHours(new Date(currentExpiry), 1))) {
+      if (isPast(new Date(currentExpiry))) {
         // if (isPast(addMinutes(new Date(currentExpiry), 1))) {
         this.getNotionResponse();
         console.log('data expired, requesting new', currentExpiry);

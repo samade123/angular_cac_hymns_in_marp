@@ -51,7 +51,8 @@ export interface FilesMedia {
 export interface FileElement {
   name: string;
   type: string;
-  file: FileFile;
+  file?: FileFile;
+  external?: { url: string };
 }
 
 export interface FileFile {

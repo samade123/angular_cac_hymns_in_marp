@@ -53,20 +53,39 @@ export class GrabNotiondbService {
     return results
       .filter(
         (result) =>
+          result &&
+          result.properties &&
+          result.properties['Name'] &&
+          result.properties['Name']['rich_text'] &&
           result.properties['Name']['rich_text'][0] &&
+          result.properties['Number'] &&
+          result.properties['Number']['title'] &&
           result.properties['Number']['title'][0]
       )
       .map((result) => {
-        const name: string = result.properties['Name']['rich_text'][0]
-          ? result.properties['Name']['rich_text'][0]['plain_text']
+        const richTextName = result.properties['Name']['rich_text'][0];
+        const name: string = richTextName && richTextName['plain_text']
+          ? richTextName['plain_text']
           : 'n/a';
+
+        const filesMedia = result.properties['Files & media'];
+        const files = filesMedia && filesMedia['files'];
+        const firstFile = files && files[0];
+        let url = '';
+        if (firstFile) {
+          if (firstFile['file']) {
+            url = firstFile['file']['url'] || '';
+          } else if (firstFile['external']) {
+            url = firstFile['external']['url'] || '';
+          }
+        }
 
         return {
           id: result.id,
           name,
           last_edited_time: result.last_edited_time,
           hymnNumber: result.properties['Number']['title'][0]['plain_text'],
-          url: result.properties['Files & media']['files'][0]['file']['url'],
+          url: url,
         };
       });
   }
@@ -111,6 +130,9 @@ export class GrabNotiondbService {
 
     try {
       const response = await fetch(s3Url, requestOptions);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const result = await response.text();
 
       return result;

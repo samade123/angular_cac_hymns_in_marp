@@ -155,6 +155,15 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
         // if (simpleHymn.hymnNumber != this.hymnNumber) {
         this.getHymn(simpleHymn);
         // }
+      } else if ('type' in data && data.type == 'sourceModeChanged') {
+        if (this.hymnNumber) {
+          this.dbStorageService.getSimpleHymnByNumber(this.hymnNumber).then((simpleHymn) => {
+            if (simpleHymn && simpleHymn.hymnNumber !== 'na') {
+              this.file = ''; // reset so getHymn re-evaluates
+              this.getHymn(simpleHymn);
+            }
+          });
+        }
       }
     });
     // this.routerManagerService.trackNavigation(this.initCheckRouter);
@@ -162,11 +171,32 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
 
   async getHymn(simpleHymn: PreFetchHymn) {
     this.url = simpleHymn.url;
-    if (simpleHymn.hymnNumber === this.hymnNumber) {
+    if (simpleHymn.hymnNumber === this.hymnNumber && this.file) {
       return;
     }
     console.log('checking');
     this.hymnNumber = simpleHymn.hymnNumber;
+
+    const sourceMode = (this.storageService.getData('hymn-source-mode') as string) || 'cloud';
+
+    // If source mode is local and a local version exists, prefer the local version
+    if (sourceMode === 'local') {
+      const localHymn = await this.dbStorageService.getLocalHymn(this.hymnNumber);
+      if (localHymn && localHymn.marp) {
+        this.file = localHymn.marp;
+        this.showHymns = true;
+        this.hymnItem = {
+          id: localHymn.id || simpleHymn.id,
+          name: localHymn.name || simpleHymn.name,
+          hymnNumber: localHymn.hymnNumber || simpleHymn.hymnNumber,
+          marp: localHymn.marp,
+          last_used_time: new Date(),
+        };
+        this.renderMarp();
+        return;
+      }
+    }
+
     if (this.url) {
       // if (this.hymnDict[this.hymnNumber]) {
       if (await this.dbStorageService.doesHymnExist(this.hymnNumber)) {
@@ -198,8 +228,11 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
       .then((remoteMarpFile) => {
         if (localMarpFile !== remoteMarpFile) {
           console.log('Marp file changed on remote, updating local store and display...');
-          this.file = remoteMarpFile;
-          this.renderMarp();
+          const sourceMode = (this.storageService.getData('hymn-source-mode') as string) || 'cloud';
+          if (sourceMode !== 'local') {
+            this.file = remoteMarpFile;
+            this.renderMarp();
+          }
           let hymnItem = this.service.simplifyHymnItem(simpleHymn, remoteMarpFile);
           this.hymnItem = hymnItem;
           this.dbStorageService.storeData('simpleHymnItems', hymnItem);

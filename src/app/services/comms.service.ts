@@ -69,5 +69,11 @@ export class CommsService {
   ): void {
     this.mainAppObserver.next(state);
   }
+
+  emitSourceModeChanged(mode: 'cloud' | 'local'): void {
+    this.observer.next({ type: 'sourceModeChanged', mode });
+    this.mainAppObserver.next({ type: 'sourceModeChanged', mode });
+  }
+
   constructor() {}
 }

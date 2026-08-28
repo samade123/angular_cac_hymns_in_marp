@@ -1,0 +1,396 @@
+/* Cache Manager Internal Layout & Side-by-Side Editor */
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-ui);
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+
+  .header-titles {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .header-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .modal-source-tabs {
+      display: flex;
+      align-items: center;
+      background: var(--tool-bg);
+      border: 1px solid var(--border-ui);
+      border-radius: 6px;
+      padding: 2px 4px;
+      gap: 4px;
+
+      .tab-label {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        font-weight: 600;
+        padding-left: 4px;
+      }
+
+      .modal-tab-btn {
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 4px 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        transition: all 0.2s ease;
+
+        &:hover {
+          color: var(--text-main);
+        }
+
+        &.active {
+          background: var(--accent-primary);
+          color: #fff;
+        }
+      }
+    }
+  }
+}
+
+.modal-content-split {
+  display: flex;
+  flex: 1;
+  gap: 1rem;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.modal-body {
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid var(--border-ui);
+  border-radius: 6px;
+  background: var(--tool-bg);
+  min-height: 0;
+}
+
+.cache-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  table-layout: fixed;
+
+  th, td {
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-ui);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 2.5rem;
+    box-sizing: border-box;
+  }
+
+  th {
+    background: var(--sidebar-bg);
+    font-weight: 700;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    color: var(--text-muted);
+    border-bottom: 2px solid var(--border-ui);
+  }
+
+  tr:hover {
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  tr.active-editing {
+    background: rgba(59, 130, 246, 0.15) !important;
+    border-left: 3px solid var(--accent-primary);
+  }
+
+  .col-number { width: 10%; }
+  .col-id { width: 18%; }
+  .col-name { width: 22%; }
+  .col-status { width: 12%; text-align: center; }
+  .col-marp { width: 28%; }
+  .col-action { width: 10%; text-align: center; }
+
+  .cell-status {
+    text-align: center;
+  }
+
+  .cell-marp-content {
+    font-family: "JetBrains Mono", monospace;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+
+      .edit-hint-icon {
+        opacity: 1;
+      }
+    }
+
+    .marp-cell-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      overflow: hidden;
+
+      span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .local-marp-text {
+        color: #38bdf8;
+        font-weight: 500;
+      }
+
+      .empty-marp-prompt {
+        font-style: italic;
+        opacity: 0.6;
+      }
+
+      .edit-hint-icon {
+        font-size: 0.7rem;
+        opacity: 0;
+        color: var(--accent-primary);
+        margin-left: 6px;
+        flex-shrink: 0;
+      }
+    }
+  }
+
+  .cell-action {
+    text-align: center;
+    padding: 0;
+
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 2px;
+    }
+  }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+
+    &.local {
+      background: rgba(56, 189, 248, 0.2);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+    }
+
+    &.stored {
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
+    }
+
+    &.missing {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ef4444;
+    }
+  }
+}
+
+/* Markdown Editor Pane */
+.editor-pane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--tool-bg);
+  border: 1px solid var(--border-active);
+  border-radius: 6px;
+  overflow: hidden;
+  min-height: 0;
+
+  .editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 0.8rem;
+    background: var(--sidebar-bg);
+    border-bottom: 1px solid var(--border-ui);
+
+    .editor-hymn-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .editor-tag {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        background: var(--accent-primary);
+        color: #fff;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-weight: 700;
+      }
+
+      strong {
+        font-size: 0.85rem;
+      }
+    }
+
+    .editor-header-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .save-status-msg {
+        font-size: 0.75rem;
+        color: #10b981;
+        font-weight: 500;
+      }
+
+      .btn-secondary {
+        background: transparent;
+        border: 1px solid var(--border-ui);
+        color: var(--text-main);
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        cursor: pointer;
+
+        &:hover {
+          background: var(--border-ui);
+        }
+      }
+
+      .btn-primary {
+        background: var(--accent-primary);
+        border: none;
+        color: #fff;
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+
+        &:hover {
+          opacity: 0.9;
+        }
+      }
+    }
+  }
+
+  .editor-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4rem 0.8rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid var(--border-ui);
+    font-size: 0.75rem;
+
+    .version-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+
+      &.is-local {
+        color: #38bdf8;
+        font-weight: 600;
+      }
+    }
+
+    .btn-danger-outline {
+      background: transparent;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #ef4444;
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+
+      &:hover {
+        background: rgba(239, 68, 68, 0.15);
+      }
+    }
+  }
+
+  .editor-body {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+    padding: 0;
+
+    .marp-textarea {
+      width: 100%;
+      height: 100%;
+      background: #18181b;
+      color: #e4e4e7;
+      border: none;
+      padding: 1rem;
+      font-family: "JetBrains Mono", Consolas, "Courier New", monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      resize: none;
+      box-sizing: border-box;
+      outline: none;
+
+      &:focus {
+        background: #141416;
+      }
+    }
+  }
+
+  .editor-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4rem 0.8rem;
+    background: var(--sidebar-bg);
+    border-top: 1px solid var(--border-ui);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+
+    code {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-family: "JetBrains Mono", monospace;
+      color: var(--accent-primary);
+    }
+  }
+}

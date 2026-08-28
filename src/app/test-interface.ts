@@ -115,7 +115,13 @@ export interface FetchedHymn extends BaseHymn {
   marp: string;
 }
 
+export interface LocalHymn extends BaseHymn {
+  last_edited_time: Date;
+  marp: string;
+}
+
 export interface DisplayHymn extends BaseHymn {
   last_used_time?: Date;
   last_edited_time?: Date;
+  hasLocal?: boolean;
 }

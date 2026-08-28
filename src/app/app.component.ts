@@ -27,6 +27,11 @@ export class AppComponent implements OnInit {
   darkMode: boolean = false;
   showCacheModal: boolean = false;
   cachedHymnsInfo: any[] = [];
+  hymnSourceMode: 'cloud' | 'local' = 'cloud';
+  isEditorOpen: boolean = false;
+  editingHymn: any = null;
+  editMarpContent: string = '';
+  editorStatusMsg: string = '';
 
   constructor(
     private service: GrabNotiondbService,
@@ -43,12 +48,28 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this._initColorTheme();
+    this._initSourceMode();
     this.routerManagerService.setPageToMobileHome();
     this._initFullScreen();
     this._initHymnNumberComms();
     this._loadScript();
     this._initHymnsDb();
     this._initObserveFailedFetches();
+  }
+
+  private _initSourceMode(): void {
+    if (this.storageManagerService.doesDataExist('hymn-source-mode')) {
+      const mode = this.storageManagerService.getData('hymn-source-mode') as 'cloud' | 'local';
+      if (mode === 'cloud' || mode === 'local') {
+        this.hymnSourceMode = mode;
+      }
+    }
+  }
+
+  setHymnSourceMode(mode: 'cloud' | 'local'): void {
+    this.hymnSourceMode = mode;
+    this.storageManagerService.storeData('hymn-source-mode', mode);
+    this.commService.emitSourceModeChanged(mode);
   }
 
   setColourTheme(): void {
@@ -309,6 +330,8 @@ export class AppComponent implements OnInit {
 
   openManageCacheModal(): void {
     this.showCacheModal = true;
+    this.isEditorOpen = false;
+    this.editingHymn = null;
     this.loadCacheData();
   }
 
@@ -316,20 +339,30 @@ export class AppComponent implements OnInit {
     try {
       const simpleHymns = await this.dbService.getAllSimpleHymns();
       const fetchedHymns = await this.dbService.getAllFetchedHymns();
+      const localHymns = await this.dbService.getAllLocalHymns();
       
       const fetchedMap = new Map<string, any>();
       fetchedHymns.forEach(item => {
         fetchedMap.set(item.hymnNumber, item);
       });
 
+      const localMap = new Map<string, any>();
+      localHymns.forEach(item => {
+        localMap.set(item.hymnNumber, item);
+      });
+
       this.cachedHymnsInfo = simpleHymns.map(hymn => {
         const fetched = fetchedMap.get(hymn.hymnNumber);
+        const local = localMap.get(hymn.hymnNumber);
         return {
           id: hymn.id,
           name: hymn.name,
           hymnNumber: hymn.hymnNumber,
           hasMarp: !!fetched,
-          marp: fetched ? fetched.marp : ''
+          marp: fetched ? fetched.marp : '',
+          hasLocal: !!local,
+          localMarp: local ? local.marp : '',
+          localLastEdited: local ? local.last_edited_time : null
         };
       });
     } catch (err) {
@@ -346,7 +379,87 @@ export class AppComponent implements OnInit {
     }
   }
 
+  async onMarpCellDoubleClick(hymn: any): Promise<void> {
+    this.editingHymn = hymn;
+    this.editorStatusMsg = '';
+    
+    // Check if we have local marp first, otherwise cloud cached marp
+    if (hymn.hasLocal && hymn.localMarp) {
+      this.editMarpContent = hymn.localMarp;
+    } else if (hymn.hasMarp && hymn.marp) {
+      this.editMarpContent = hymn.marp;
+    } else {
+      // Create standard Marp starter template if not cached yet
+      this.editMarpContent = `---
+marp: true
+theme: my-second-theme
+paginate: true
+---
+
+# ${hymn.hymnNumber} - ${hymn.name}
+
+1. First verse text goes here...
+
+---
+
+# Chorus / Verse 2
+
+2. Second verse text goes here...
+`;
+    }
+    this.isEditorOpen = true;
+  }
+
+  closeEditor(): void {
+    this.isEditorOpen = false;
+    this.editingHymn = null;
+    this.editMarpContent = '';
+    this.editorStatusMsg = '';
+  }
+
+  async saveLocalMarp(): Promise<void> {
+    if (!this.editingHymn) return;
+    try {
+      const localHymn = {
+        id: this.editingHymn.id,
+        name: this.editingHymn.name,
+        hymnNumber: this.editingHymn.hymnNumber,
+        marp: this.editMarpContent,
+        last_edited_time: new Date()
+      };
+      await this.dbService.saveLocalHymn(localHymn);
+      this.editorStatusMsg = 'Saved local version successfully!';
+      await this.loadCacheData();
+      // Re-link editingHymn to updated state
+      this.editingHymn = this.cachedHymnsInfo.find(h => h.hymnNumber === localHymn.hymnNumber) || this.editingHymn;
+      // Emit update so active hymn presentation reloads if in local mode
+      this.commService.emitSourceModeChanged(this.hymnSourceMode);
+      setTimeout(() => {
+        this.editorStatusMsg = '';
+      }, 3000);
+    } catch (err) {
+      console.error('Error saving local Marp hymn:', err);
+      this.editorStatusMsg = 'Error saving local hymn';
+    }
+  }
+
+  async deleteLocalHymn(hymnNumber: string): Promise<void> {
+    try {
+      await this.dbService.deleteLocalHymn(hymnNumber);
+      if (this.editingHymn && this.editingHymn.hymnNumber === hymnNumber) {
+        const cloudCached = this.cachedHymnsInfo.find(h => h.hymnNumber === hymnNumber);
+        this.editMarpContent = cloudCached && cloudCached.marp ? cloudCached.marp : '';
+      }
+      await this.loadCacheData();
+      this.commService.emitSourceModeChanged(this.hymnSourceMode);
+    } catch (err) {
+      console.error('Error deleting local hymn version:', err);
+    }
+  }
+
   closeManageCacheModal(event: MouseEvent): void {
     this.showCacheModal = false;
+    this.isEditorOpen = false;
+    this.editingHymn = null;
   }
 }

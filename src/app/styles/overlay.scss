@@ -1,246 +1,196 @@
-::ng-deep {
-  .p-overlaypanel {
-    background: var(--overlay-bg) !important;
-    color: var(--text-main) !important;
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--border-active);
-    border-radius: 12px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-    padding: 1.5rem;
-    width: 300px;
-    margin-top: 10px;
+/* PrimeNG & Global Overlay Overrides */
 
-    &:before,
-    &:after {
-      display: none;
-    }
+::ng-deep .p-overlaypanel {
+  background: var(--overlay-bg) !important;
+  color: var(--text-main) !important;
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-active);
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  padding: 1.5rem;
+  width: 300px;
+  margin-top: 10px;
 
-    .p-overlaypanel-content {
-      padding: 0;
-    }
+  &:before,
+  &:after {
+    display: none;
   }
 
-  .overlay-wrap {
-    h2 {
-      font-size: 1rem;
-      font-weight: 700;
-      margin-bottom: 1rem;
-      color: var(--text-main);
-    }
-
-    hr {
-      border: none;
-      border-top: 1px solid var(--border-ui);
-      margin: 1rem 0;
-    }
-
-    .settings-section {
-      padding: 1rem 0;
-      border-top: 1px solid var(--border-ui);
-
-      &:first-of-type {
-        border-top: none;
-        padding-top: 0.5rem;
-      }
-
-      h3 {
-        font-size: 0.65rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        color: var(--text-muted);
-        letter-spacing: 0.1em;
-        margin-bottom: 0.75rem;
-      }
-
-      .settings-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 0.85rem;
-        margin-bottom: 0.5rem;
-
-        .val-accent {
-          color: var(--accent-primary);
-          font-family: "JetBrains Mono", monospace;
-          font-weight: 500;
-        }
-      }
-    }
+  .p-overlaypanel-content {
+    padding: 0;
   }
+}
 
-  /* Hardware Controls Look */
-  .p-inputnumber-input {
-    background: var(--tool-bg) !important;
-    border: 1px solid var(--border-ui) !important;
-    color: var(--text-main) !important;
-    padding: 6px 10px !important;
-    border-radius: 4px !important;
-    font-family: "JetBrains Mono", monospace;
-    font-size: 0.8rem !important;
-    width: 70px !important;
-    text-align: center !important;
-
-    &:focus {
-      outline: none;
-      border-color: var(--accent-primary) !important;
-    }
-  }
-
-  .p-togglebutton {
-    background: var(--tool-bg) !important;
-    border: 1px solid var(--border-ui) !important;
-    color: var(--text-main) !important;
-    border-radius: 4px !important;
-    width: 40px !important;
-    height: 32px !important;
-    padding: 0 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-
-    &.p-highlight {
-      background: var(--tool-bg) !important;
-      border-color: var(--accent-primary) !important;
-      color: var(--accent-primary) !important;
-    }
-
-    .p-button-icon {
-      font-size: 0.8rem;
-    }
-  }
-
-  .p-button.p-button-sm.p-button-icon-only {
-    background: var(--tool-bg) !important;
-    border: 1px solid var(--border-ui) !important;
-    color: var(--text-main) !important;
-    border-radius: 4px !important;
-    width: 32px !important;
-    height: 32px !important;
-
-    &:hover {
-      border-color: var(--border-active) !important;
-      background: var(--sidebar-bg) !important;
-    }
-  }
-
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
-    z-index: 1000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    backdrop-filter: blur(5px);
-  }
-
-  .cache-modal {
-    background: var(--overlay-bg);
+/* Settings Overlay Structure */
+.overlay-wrap {
+  h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
     color: var(--text-main);
-    border: 1px solid var(--border-active);
-    border-radius: 12px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-    width: 90vw;
-    max-width: 1000px;
-    height: 80vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    padding: 1.5rem;
-    box-sizing: border-box;
+  }
 
-    .modal-header {
+  hr {
+    border: none;
+    border-top: 1px solid var(--border-ui);
+    margin: 1rem 0;
+  }
+
+  .settings-section {
+    padding: 1rem 0;
+    border-top: 1px solid var(--border-ui);
+
+    &:first-of-type {
+      border-top: none;
+      padding-top: 0.5rem;
+    }
+
+    h3 {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      margin-bottom: 0.75rem;
+    }
+
+    .settings-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid var(--border-ui);
-      padding-bottom: 1rem;
-      margin-bottom: 1rem;
-
-      h2 {
-        margin: 0;
-        font-size: 1.25rem;
-        font-weight: 700;
-      }
-    }
-
-    .modal-body {
-      flex: 1;
-      overflow-y: auto;
-      border: 1px solid var(--border-ui);
-      border-radius: 6px;
-      background: var(--tool-bg);
-    }
-
-    .cache-table {
-      width: 100%;
-      border-collapse: collapse;
       font-size: 0.85rem;
-      table-layout: fixed;
+      margin-bottom: 0.5rem;
 
-      th, td {
-        padding: 0.5rem 0.75rem;
-        text-align: left;
-        border-bottom: 1px solid var(--border-ui);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        height: 2.5rem;
-        box-sizing: border-box;
-      }
-
-      th {
-        background: var(--sidebar-bg);
-        font-weight: 700;
-        position: sticky;
-        top: 0;
-        z-index: 2;
-        color: var(--text-muted);
-        border-bottom: 2px solid var(--border-ui);
-      }
-
-      tr:hover {
-        background: var(--border-ui);
-      }
-
-      /* Column widths */
-      .col-number { width: 12%; }
-      .col-id { width: 23%; }
-      .col-name { width: 25%; }
-      .col-marp { width: 30%; }
-      .col-action { width: 10%; text-align: center; }
-
-      .cell-marp-content {
+      .val-accent {
+        color: var(--accent-primary);
         font-family: "JetBrains Mono", monospace;
-        color: var(--text-muted);
-        font-size: 0.75rem;
-      }
-
-      .cell-action {
-        text-align: center;
-        padding: 0;
-      }
-
-      .status-badge {
-        display: inline-block;
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-size: 0.75rem;
         font-weight: 500;
+      }
 
-        &.stored {
-          background: rgba(16, 185, 129, 0.15);
-          color: #10b981;
-        }
+      .source-mode-switch {
+        display: flex;
+        background: var(--tool-bg);
+        border: 1px solid var(--border-ui);
+        border-radius: 6px;
+        padding: 2px;
+        gap: 2px;
 
-        &.missing {
-          background: rgba(239, 68, 68, 0.15);
-          color: #ef4444;
+        .mode-btn {
+          background: transparent;
+          border: none;
+          color: var(--text-muted);
+          font-size: 0.75rem;
+          font-weight: 600;
+          padding: 4px 10px;
+          border-radius: 4px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          transition: all 0.2s ease;
+
+          &:hover {
+            color: var(--text-main);
+          }
+
+          &.active {
+            background: var(--accent-primary);
+            color: #fff;
+          }
         }
       }
     }
+  }
+}
+
+/* Hardware Form Controls Overrides */
+::ng-deep .p-inputnumber-input {
+  background: var(--tool-bg) !important;
+  border: 1px solid var(--border-ui) !important;
+  color: var(--text-main) !important;
+  padding: 6px 10px !important;
+  border-radius: 4px !important;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.8rem !important;
+  width: 70px !important;
+  text-align: center !important;
+
+  &:focus {
+    outline: none;
+    border-color: var(--accent-primary) !important;
+  }
+}
+
+::ng-deep .p-togglebutton {
+  background: var(--tool-bg) !important;
+  border: 1px solid var(--border-ui) !important;
+  color: var(--text-main) !important;
+  border-radius: 4px !important;
+  width: 40px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  &.p-highlight {
+    background: var(--tool-bg) !important;
+    border-color: var(--accent-primary) !important;
+    color: var(--accent-primary) !important;
+  }
+
+  .p-button-icon {
+    font-size: 0.8rem;
+  }
+}
+
+::ng-deep .p-button.p-button-sm.p-button-icon-only {
+  background: var(--tool-bg) !important;
+  border: 1px solid var(--border-ui) !important;
+  color: var(--text-main) !important;
+  border-radius: 4px !important;
+  width: 32px !important;
+  height: 32px !important;
+
+  &:hover {
+    border-color: var(--border-active) !important;
+    background: var(--sidebar-bg) !important;
+  }
+}
+
+/* Modal Outer Containers & Resize Control */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(5px);
+}
+
+.cache-modal {
+  background: var(--overlay-bg);
+  color: var(--text-main);
+  border: 1px solid var(--border-active);
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  width: 90vw;
+  max-width: 1050px;
+  height: 82vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  transition: max-width 0.3s ease;
+
+  &.editor-active {
+    max-width: 1350px;
+    width: 95vw;
   }
 }

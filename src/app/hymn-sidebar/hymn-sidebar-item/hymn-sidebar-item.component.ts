@@ -11,6 +11,9 @@ import { PreFetchHymn, FetchedHymn, DisplayHymn } from 'src/app/test-interface';
       <div>
         <div class="hymn-item__title">
           {{ hymnItem.name }}
+          <span *ngIf="hymnItem.hasLocal" class="hymn-item__local-badge" title="Local custom version available">
+            <i class="pi pi-file-edit"></i>
+          </span>
         </div>
         <div
           class="hymn-item__meta"
@@ -51,6 +54,20 @@ import { PreFetchHymn, FetchedHymn, DisplayHymn } from 'src/app/test-interface';
           font-size: 0.85rem;
           font-weight: 500;
           color: var(--text-main);
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+
+        &__local-badge {
+          font-size: 0.7rem;
+          color: #38bdf8;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(56, 189, 248, 0.15);
+          border-radius: 3px;
+          padding: 1px 3px;
         }
 
         &__meta {

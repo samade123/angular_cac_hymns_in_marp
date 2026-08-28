@@ -224,5 +224,32 @@ export class IndexDbManagerService {
     await db.on('ready', () => {});
     await db.table('simpleHymnItems').where('hymnNumber').equals(hymnNumber).delete();
   }
+
+  async saveLocalHymn(localHymn: { id: string; name: string; hymnNumber: string; marp: string; last_edited_time: Date }): Promise<void> {
+    await db.on('ready', () => {});
+    await db.table('localHymns').put(localHymn);
+  }
+
+  async getLocalHymn(hymnNumber: string): Promise<any | null> {
+    await db.on('ready', () => {});
+    const hymn = await db.table('localHymns').get({ hymnNumber: hymnNumber });
+    return hymn || null;
+  }
+
+  async getAllLocalHymns(): Promise<any[]> {
+    await db.on('ready', () => {});
+    return await db.table('localHymns').toArray();
+  }
+
+  async deleteLocalHymn(hymnNumber: string): Promise<void> {
+    await db.on('ready', () => {});
+    await db.table('localHymns').where('hymnNumber').equals(hymnNumber).delete();
+  }
+
+  async doesLocalHymnExist(hymnNumber: string): Promise<boolean> {
+    await db.on('ready', () => {});
+    const count = await db.table('localHymns').where('hymnNumber').equals(hymnNumber).count();
+    return count > 0;
+  }
 }
 // export const db = new IndexDbManagerService();

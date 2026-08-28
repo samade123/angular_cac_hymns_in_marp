@@ -47,6 +47,23 @@
         </div>
 
         <div class="settings-section">
+          <h3>Hymn Content Source</h3>
+          <div class="settings-row">
+            <span>Active Source</span>
+            <div class="source-mode-switch">
+              <button type="button" class="mode-btn" [class.active]="hymnSourceMode === 'cloud'"
+                (click)="setHymnSourceMode('cloud')">
+                <i class="pi pi-cloud"></i> Cloud
+              </button>
+              <button type="button" class="mode-btn" [class.active]="hymnSourceMode === 'local'"
+                (click)="setHymnSourceMode('local')">
+                <i class="pi pi-file-edit"></i> Local
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
           <h3>Database</h3>
           <div class="settings-row">
             <span>Local Storage</span>
@@ -63,37 +80,122 @@
 </header>
 
 <div class="modal-overlay" *ngIf="showCacheModal" (click)="closeManageCacheModal($event)">
-  <div class="cache-modal" (click)="$event.stopPropagation()">
+  <div class="cache-modal" [class.editor-active]="isEditorOpen" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h2>Stored Hymns Cache Manager</h2>
-      <p-button (onClick)="showCacheModal = false" icon="pi pi-times" [text]="true" size="small" />
+      <div class="header-titles">
+        <h2>Stored Hymns Cache Manager</h2>
+        <span class="header-subtitle">Double-click any Marp cell to edit or add custom local Marp content</span>
+      </div>
+      <div class="header-actions">
+        <div class="modal-source-tabs">
+          <span class="tab-label">Global Mode:</span>
+          <button type="button" class="modal-tab-btn" [class.active]="hymnSourceMode === 'cloud'"
+            (click)="setHymnSourceMode('cloud')">
+            <i class="pi pi-cloud"></i> Cloud
+          </button>
+          <button type="button" class="modal-tab-btn" [class.active]="hymnSourceMode === 'local'"
+            (click)="setHymnSourceMode('local')">
+            <i class="pi pi-file-edit"></i> Local
+          </button>
+        </div>
+        <p-button (onClick)="showCacheModal = false; isEditorOpen = false" icon="pi pi-times" [text]="true"
+          size="small" />
+      </div>
     </div>
-    <div class="modal-body">
-      <table class="cache-table">
-        <thead>
-          <tr>
-            <th class="col-number">Number</th>
-            <th class="col-id">ID</th>
-            <th class="col-name">Name</th>
-            <th class="col-marp">Marp Content</th>
-            <th class="col-action">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let hymn of cachedHymnsInfo">
-            <td class="cell-number" title="{{hymn.hymnNumber}}">{{hymn.hymnNumber}}</td>
-            <td class="cell-id" title="{{hymn.id}}">{{hymn.id}}</td>
-            <td class="cell-name" title="{{hymn.name}}">{{hymn.name}}</td>
-            <td class="cell-marp cell-marp-content" title="{{hymn.marp}}">
-              <span *ngIf="hymn.hasMarp">{{hymn.marp}}</span>
-              <span *ngIf="!hymn.hasMarp" class="status-badge missing">Not Cached</span>
-            </td>
-            <td class="cell-action">
-              <p-button *ngIf="hymn.hasMarp" (onClick)="deleteHymnCache(hymn.hymnNumber)" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" size="small" />
-            </td>
-          </tr>
-        </tbody>
-      </table>
+
+    <div class="modal-content-split">
+      <div class="modal-body table-container">
+        <table class="cache-table">
+          <thead>
+            <tr>
+              <th class="col-number">Number</th>
+              <th class="col-id">ID</th>
+              <th class="col-name">Name</th>
+              <th class="col-status">Version</th>
+              <th class="col-marp">Marp Content (Double-click to edit)</th>
+              <th class="col-action">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let hymn of cachedHymnsInfo"
+              [class.active-editing]="editingHymn && editingHymn.hymnNumber === hymn.hymnNumber">
+              <td class="cell-number" title="{{hymn.hymnNumber}}">{{hymn.hymnNumber}}</td>
+              <td class="cell-id" title="{{hymn.id}}">{{hymn.id}}</td>
+              <td class="cell-name" title="{{hymn.name}}">{{hymn.name}}</td>
+              <td class="cell-status">
+                <span *ngIf="hymn.hasLocal" class="status-badge local" title="Custom local Marp available">
+                  <i class="pi pi-file-edit"></i> Local
+                </span>
+                <span *ngIf="!hymn.hasLocal && hymn.hasMarp" class="status-badge stored"
+                  title="Cloud cached version available">
+                  <i class="pi pi-cloud"></i> Cloud
+                </span>
+                <span *ngIf="!hymn.hasLocal && !hymn.hasMarp" class="status-badge missing" title="Not cached yet">
+                  None
+                </span>
+              </td>
+              <td class="cell-marp cell-marp-content" (dblclick)="onMarpCellDoubleClick(hymn)"
+                title="Double click to edit Marp: {{hymn.hasLocal ? hymn.localMarp : hymn.marp}}">
+                <div class="marp-cell-wrapper">
+                  <span *ngIf="hymn.hasLocal" class="local-marp-text">{{hymn.localMarp}}</span>
+                  <span *ngIf="!hymn.hasLocal && hymn.hasMarp">{{hymn.marp}}</span>
+                  <span *ngIf="!hymn.hasLocal && !hymn.hasMarp" class="empty-marp-prompt">Double-click to create local
+                    Marp</span>
+                  <i class="pi pi-pencil edit-hint-icon"></i>
+                </div>
+              </td>
+              <td class="cell-action">
+                <div class="action-buttons">
+                  <p-button *ngIf="hymn.hasLocal" (onClick)="deleteLocalHymn(hymn.hymnNumber)" icon="pi pi-undo"
+                    [rounded]="true" [text]="true" severity="warning" size="small" title="Delete local override" />
+                  <p-button *ngIf="hymn.hasMarp" (onClick)="deleteHymnCache(hymn.hymnNumber)" icon="pi pi-trash"
+                    [rounded]="true" [text]="true" severity="danger" size="small" title="Delete cloud cache" />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Side-by-Side Markdown Editor -->
+      <div class="editor-pane" *ngIf="isEditorOpen">
+        <div class="editor-header">
+          <div class="editor-hymn-title">
+            <span class="editor-tag">Editing Marp</span>
+            <strong>#{{editingHymn?.hymnNumber}} - {{editingHymn?.name}}</strong>
+          </div>
+          <div class="editor-header-controls">
+            <span class="save-status-msg" *ngIf="editorStatusMsg">{{editorStatusMsg}}</span>
+            <button type="button" class="btn-secondary" (click)="closeEditor()">Close</button>
+            <button type="button" class="btn-primary" (click)="saveLocalMarp()">
+              <i class="pi pi-save"></i> Save Local
+            </button>
+          </div>
+        </div>
+
+        <div class="editor-toolbar">
+          <span class="version-indicator" [class.is-local]="editingHymn?.hasLocal">
+            <i [class]="editingHymn?.hasLocal ? 'pi pi-file-edit' : 'pi pi-cloud'"></i>
+            {{editingHymn?.hasLocal ? 'Currently editing Local Version' : 'Creating new Local Version from Cloud
+            source'}}
+          </span>
+          <button *ngIf="editingHymn?.hasLocal" type="button" class="btn-danger-outline"
+            (click)="deleteLocalHymn(editingHymn.hymnNumber)">
+            <i class="pi pi-trash"></i> Revert to Cloud
+          </button>
+        </div>
+
+        <div class="editor-body">
+          <textarea class="marp-textarea" [(ngModel)]="editMarpContent"
+            placeholder="Type your Marp markdown content here..." spellcheck="false"></textarea>
+        </div>
+
+        <div class="editor-footer">
+          <small class="tip">Tip: Must include <code>marp: true</code> header for Marpit presentation slides to
+            render.</small>
+          <small class="shortcuts">Saved changes are preserved locally even if Notion database is refreshed.</small>
+        </div>
+      </div>
     </div>
   </div>
 </div>

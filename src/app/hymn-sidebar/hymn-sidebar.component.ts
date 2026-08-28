@@ -49,14 +49,23 @@ export class HymnSidebarComponent implements OnInit {
   zeroHymns: boolean = false;
   offset: number = 0;
   activeIndex: number = -1;
-  friends$ = liveQuery(() =>
-    this.dBstorageServie.listSimpleHymns(this.searchQuery),
-  );
+  friends$ = liveQuery(async () => {
+    const hymns = await this.dBstorageServie.listSimpleHymns(this.searchQuery);
+    const localHymns = await this.dBstorageServie.getAllLocalHymns();
+    const localSet = new Set(localHymns.map((h) => h.hymnNumber));
+    return hymns.map((h) => ({ ...h, hasLocal: localSet.has(h.hymnNumber) }));
+  });
   allSimpleHymns$ = liveQuery(async () => {
-    return await this.dBstorageServie.returnAll(this.offset);
+    const hymns = await this.dBstorageServie.returnAll(this.offset);
+    const localHymns = await this.dBstorageServie.getAllLocalHymns();
+    const localSet = new Set(localHymns.map((h) => h.hymnNumber));
+    return hymns.map((h) => ({ ...h, hasLocal: localSet.has(h.hymnNumber) }));
   });
   hymnItemsArr$ = liveQuery(async () => {
-    return await this.dBstorageServie.getLastEightHymns();
+    const hymns = await this.dBstorageServie.getLastEightHymns();
+    const localHymns = await this.dBstorageServie.getAllLocalHymns();
+    const localSet = new Set(localHymns.map((h) => h.hymnNumber));
+    return hymns.map((h) => ({ ...h, hasLocal: localSet.has(h.hymnNumber) }));
   });
 
   ngOnInit(): void {
@@ -101,14 +110,23 @@ export class HymnSidebarComponent implements OnInit {
 
   defineLivequeries(pageChange: Boolean = false): void {
     if (!pageChange) {
-      this.friends$ = liveQuery(() =>
-        this.dBstorageServie.listSimpleHymns(this.searchQuery),
-      );
+      this.friends$ = liveQuery(async () => {
+        const hymns = await this.dBstorageServie.listSimpleHymns(this.searchQuery);
+        const localHymns = await this.dBstorageServie.getAllLocalHymns();
+        const localSet = new Set(localHymns.map((h) => h.hymnNumber));
+        return hymns.map((h) => ({ ...h, hasLocal: localSet.has(h.hymnNumber) }));
+      });
       this.allSimpleHymns$ = liveQuery(async () => {
-        return await this.dBstorageServie.returnAll(this.offset);
+        const hymns = await this.dBstorageServie.returnAll(this.offset);
+        const localHymns = await this.dBstorageServie.getAllLocalHymns();
+        const localSet = new Set(localHymns.map((h) => h.hymnNumber));
+        return hymns.map((h) => ({ ...h, hasLocal: localSet.has(h.hymnNumber) }));
       });
       this.hymnItemsArr$ = liveQuery(async () => {
-        return await this.dBstorageServie.getLastEightHymns();
+        const hymns = await this.dBstorageServie.getLastEightHymns();
+        const localHymns = await this.dBstorageServie.getAllLocalHymns();
+        const localSet = new Set(localHymns.map((h) => h.hymnNumber));
+        return hymns.map((h) => ({ ...h, hasLocal: localSet.has(h.hymnNumber) }));
       });
       this.dBstorageServie
         .getTableLength()
@@ -118,7 +136,10 @@ export class HymnSidebarComponent implements OnInit {
         .catch(() => (this.hymnsLength = 0));
     } else {
       this.allSimpleHymns$ = liveQuery(async () => {
-        return await this.dBstorageServie.returnAll(this.offset);
+        const hymns = await this.dBstorageServie.returnAll(this.offset);
+        const localHymns = await this.dBstorageServie.getAllLocalHymns();
+        const localSet = new Set(localHymns.map((h) => h.hymnNumber));
+        return hymns.map((h) => ({ ...h, hasLocal: localSet.has(h.hymnNumber) }));
       });
     }
   }
@@ -156,9 +177,12 @@ export class HymnSidebarComponent implements OnInit {
 
   queryDb(): void {
     this.activeIndex = -1;
-    this.friends$ = liveQuery(() =>
-      this.dBstorageServie.listSimpleHymns(this.searchQuery),
-    );
+    this.friends$ = liveQuery(async () => {
+      const hymns = await this.dBstorageServie.listSimpleHymns(this.searchQuery);
+      const localHymns = await this.dBstorageServie.getAllLocalHymns();
+      const localSet = new Set(localHymns.map((h) => h.hymnNumber));
+      return hymns.map((h) => ({ ...h, hasLocal: localSet.has(h.hymnNumber) }));
+    });
   }
 
   @HostListener('window:keydown', ['$event'])

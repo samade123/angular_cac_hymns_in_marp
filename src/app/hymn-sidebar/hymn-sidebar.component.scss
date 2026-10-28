@@ -113,6 +113,21 @@
         text-overflow: ellipsis;
         color: var(--text-main);
         margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      &__local-badge {
+        font-size: 0.65rem;
+        color: #38bdf8;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(56, 189, 248, 0.15);
+        border-radius: 3px;
+        padding: 1px 4px;
+        flex-shrink: 0;
       }
 
       &__author {

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FetchedHymn, PreFetchHymn } from './../test-interface';
+import { FetchedHymn, PreFetchHymn, DisplayHymn } from './../test-interface';
 
 import Dexie, { Table } from 'dexie';
 import { db } from './../db'; // You get a db with property table1 attached (because the schema is declared)
@@ -53,12 +53,23 @@ export class IndexDbManagerService {
     id: string,
     table: string = 'simpleHymns',
   ): Promise<PreFetchHymn> {
+    await db.on('ready', () => {});
     const hymnItem = await db.table(table).get(id);
     if (hymnItem) {
       return hymnItem;
     } else {
-      // if (table == 'simpleHymns') {
-
+      if (table === 'simpleHymns') {
+        const localItem = await db.table('localHymns').get(id);
+        if (localItem) {
+          return {
+            id: localItem.id,
+            name: localItem.name || 'n/a',
+            last_edited_time: localItem.last_edited_time || new Date(),
+            hymnNumber: localItem.hymnNumber,
+            url: '',
+          };
+        }
+      }
       return {
         id: 'na',
         name: 'na',
@@ -73,12 +84,23 @@ export class IndexDbManagerService {
     hymnNumber: string,
     table: string = 'simpleHymns',
   ): Promise<PreFetchHymn> {
+    await db.on('ready', () => {});
     const hymnItem = await db.table(table).get({ hymnNumber: hymnNumber });
     if (hymnItem) {
       return hymnItem;
     } else {
-      // if (table == 'simpleHymns') {
-
+      if (table === 'simpleHymns') {
+        const localItem = await db.table('localHymns').get({ hymnNumber: hymnNumber });
+        if (localItem) {
+          return {
+            id: localItem.id,
+            name: localItem.name || 'n/a',
+            last_edited_time: localItem.last_edited_time || new Date(),
+            hymnNumber: localItem.hymnNumber,
+            url: '',
+          };
+        }
+      }
       return {
         id: 'na',
         name: 'na',
@@ -121,21 +143,180 @@ export class IndexDbManagerService {
   ): Promise<boolean> {
     await db.on('ready', () => {});
     const count = await db.table(table).where('id').equals(id).count();
-    return count > 0;
+    if (count > 0) return true;
+    if (table === 'simpleHymns') {
+      const localCount = await db.table('localHymns').where('id').equals(id).count();
+      return localCount > 0;
+    }
+    return false;
   }
 
-  async listSimpleHymns(searchString: string): Promise<PreFetchHymn[]> {
+  async listSimpleHymns(searchString: string): Promise<DisplayHymn[]> {
     await db.on('ready', () => {});
-    return await db
-      .table('simpleHymns')
-      .filter((hymn) => {
-        const search = searchString.toLowerCase();
-        return (
-          hymn.hymnNumber.toLowerCase().includes(search) ||
-          hymn.name.toLowerCase().includes(search)
-        );
+    const query = (searchString || '').trim().toLowerCase();
+    if (!query) {
+      return [];
+    }
+
+    const [simpleHymns, localHymns, cachedHymnItems] = await Promise.all([
+      db.table('simpleHymns').toArray().catch(() => [] as PreFetchHymn[]),
+      db.table('localHymns').toArray().catch(() => [] as any[]),
+      db.table('simpleHymnItems').toArray().catch(() => [] as FetchedHymn[]),
+    ]);
+
+    const localByNumber = new Map<string, any>();
+    const localById = new Map<string, any>();
+    for (const local of localHymns) {
+      if (!local) continue;
+      if (local.hymnNumber != null) {
+        localByNumber.set(String(local.hymnNumber).trim(), local);
+      }
+      if (local.id != null) {
+        localById.set(String(local.id), local);
+      }
+    }
+
+    const cachedByNumber = new Map<string, FetchedHymn>();
+    for (const item of cachedHymnItems) {
+      if (!item) continue;
+      if (item.hymnNumber != null) {
+        cachedByNumber.set(String(item.hymnNumber).trim(), item);
+      }
+    }
+
+    const isNumericQuery = /^\d+$/.test(query);
+    const queryNum = isNumericQuery ? parseInt(query, 10) : null;
+    const queryTokens = query.split(/\s+/).filter(Boolean);
+
+    const evaluateMatch = (
+      hymnNumberStr: string,
+      nameStr: string,
+      marpStr: string
+    ): number | null => {
+      const numLower = hymnNumberStr.toLowerCase();
+      const nameLower = nameStr.toLowerCase();
+      const marpLower = marpStr.toLowerCase();
+
+      // Check numeric equivalence (e.g. searching '1' matches '001' or '01')
+      const isNumHymn = /^\d+$/.test(hymnNumberStr);
+      const hymnNumVal = isNumHymn ? parseInt(hymnNumberStr, 10) : null;
+      if (queryNum !== null && hymnNumVal !== null && queryNum === hymnNumVal) {
+        return 1; // Highest priority: exact numeric match
+      }
+
+      if (numLower === query) return 1;
+      if (numLower.startsWith(query)) return 2;
+      if (nameLower === query) return 3;
+      if (nameLower.startsWith(query)) return 4;
+      if (nameLower.includes(query)) return 5;
+      if (numLower.includes(query)) return 6;
+
+      // Check Marp file content (lyrics, verses, headings)
+      if (marpLower.includes(query)) return 7;
+
+      // Multi-token match across all fields
+      if (queryTokens.length > 1) {
+        const fullContent = `${numLower} ${nameLower} ${marpLower}`;
+        const allTokensFound = queryTokens.every((token) => fullContent.includes(token));
+        if (allTokensFound) {
+          return 8;
+        }
+      }
+
+      return null;
+    };
+
+    const matchedMap = new Map<string, { hymn: DisplayHymn; priority: number }>();
+
+    // 1. Process simpleHymns (augmented with local edits and cached files)
+    for (const hymn of simpleHymns) {
+      if (!hymn) continue;
+
+      const numStr = hymn.hymnNumber != null ? String(hymn.hymnNumber).trim() : '';
+      const idStr = hymn.id != null ? String(hymn.id) : '';
+      const nameStr = hymn.name != null ? String(hymn.name).trim() : '';
+
+      const local = localByNumber.get(numStr) || (idStr ? localById.get(idStr) : undefined);
+      const cached = cachedByNumber.get(numStr);
+      const hasLocal = !!local;
+
+      const effectiveName =
+        hasLocal && local.name && local.name !== 'na' && local.name !== 'n/a'
+          ? String(local.name).trim()
+          : nameStr;
+
+      const marpContent =
+        hasLocal && local.marp
+          ? String(local.marp)
+          : cached && cached.marp
+          ? String(cached.marp)
+          : '';
+
+      const matchPriority = evaluateMatch(numStr, effectiveName, marpContent);
+
+      if (matchPriority !== null) {
+        const key = numStr || idStr;
+        matchedMap.set(key, {
+          hymn: {
+            id: hymn.id || (local ? local.id : key),
+            hymnNumber: numStr,
+            name: effectiveName || 'n/a',
+            last_edited_time:
+              hasLocal && local.last_edited_time ? local.last_edited_time : hymn.last_edited_time,
+            hasLocal: hasLocal,
+            url: hymn.url || '',
+          },
+          priority: matchPriority,
+        });
+      }
+    }
+
+    // 2. Process localHymns that might only exist locally (e.g. offline or custom local files)
+    for (const local of localHymns) {
+      if (!local) continue;
+
+      const numStr = local.hymnNumber != null ? String(local.hymnNumber).trim() : '';
+      const idStr = local.id != null ? String(local.id) : '';
+      const key = numStr || idStr;
+
+      if (matchedMap.has(key)) {
+        continue;
+      }
+
+      const nameStr = local.name != null ? String(local.name).trim() : '';
+      const marpStr = local.marp != null ? String(local.marp) : '';
+
+      const matchPriority = evaluateMatch(numStr, nameStr, marpStr);
+
+      if (matchPriority !== null) {
+        matchedMap.set(key, {
+          hymn: {
+            id: local.id || key,
+            hymnNumber: numStr,
+            name: nameStr || 'n/a',
+            last_edited_time: local.last_edited_time || new Date(),
+            hasLocal: true,
+            url: '',
+          },
+          priority: matchPriority,
+        });
+      }
+    }
+
+    // Sort: priority first, then numerical hymnNumber
+    return Array.from(matchedMap.values())
+      .sort((a, b) => {
+        if (a.priority !== b.priority) {
+          return a.priority - b.priority;
+        }
+        const aNum = parseInt(a.hymn.hymnNumber, 10);
+        const bNum = parseInt(b.hymn.hymnNumber, 10);
+        if (!isNaN(aNum) && !isNaN(bNum)) {
+          return aNum - bNum;
+        }
+        return (a.hymn.hymnNumber || '').localeCompare(b.hymn.hymnNumber || '');
       })
-      .toArray();
+      .map((item) => item.hymn);
   }
 
   async getLastEightHymns(): Promise<FetchedHymn[]> {

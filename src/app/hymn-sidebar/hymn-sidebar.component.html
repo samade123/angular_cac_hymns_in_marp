@@ -8,7 +8,12 @@
       (click)="pickHymn(hymn.id)" [class.kb-active]="activeIndex === i">
       <div class="hymn-select-item__number">{{hymn.hymnNumber}}</div>
       <div class="hymn-select-item__info">
-        <h3 class="hymn-select-item__title">{{hymn.name}}</h3>
+        <h3 class="hymn-select-item__title">
+          {{hymn.name}}
+          <span *ngIf="hymn.hasLocal" class="hymn-select-item__local-badge" title="Local custom version available">
+            <i class="pi pi-file-edit"></i>
+          </span>
+        </h3>
         <span class="hymn-select-item__author" *ngIf="hymn.author">{{hymn.author}}</span>
       </div>
       <div class="hymn-select-item__hint"><i class="pi pi-arrow-right"></i></div>

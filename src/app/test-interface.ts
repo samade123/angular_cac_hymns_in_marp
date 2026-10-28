@@ -124,4 +124,7 @@ export interface DisplayHymn extends BaseHymn {
   last_used_time?: Date;
   last_edited_time?: Date;
   hasLocal?: boolean;
+  url?: string;
+  author?: string;
+  marp?: string;
 }

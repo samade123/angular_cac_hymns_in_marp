@@ -221,6 +221,21 @@ export class HymnDisplayMainComponent implements OnInit, AfterViewInit {
       } else {
         this.fetchMarp(simpleHymn);
       }
+    } else {
+      const localHymn = await this.dbStorageService.getLocalHymn(this.hymnNumber);
+      if (localHymn && localHymn.marp) {
+        this.file = localHymn.marp;
+        this.showHymns = true;
+        this.hymnItem = {
+          id: localHymn.id || simpleHymn.id,
+          name: localHymn.name || simpleHymn.name,
+          hymnNumber: localHymn.hymnNumber || simpleHymn.hymnNumber,
+          marp: localHymn.marp,
+          last_used_time: new Date(),
+        };
+        this.renderMarp();
+        return;
+      }
     }
   }
   diffMarp(simpleHymn: PreFetchHymn, localMarpFile: string): void {

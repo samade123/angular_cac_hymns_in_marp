@@ -50,10 +50,7 @@ export class HymnSidebarComponent implements OnInit {
   offset: number = 0;
   activeIndex: number = -1;
   friends$ = liveQuery(async () => {
-    const hymns = await this.dBstorageServie.listSimpleHymns(this.searchQuery);
-    const localHymns = await this.dBstorageServie.getAllLocalHymns();
-    const localSet = new Set(localHymns.map((h) => h.hymnNumber));
-    return hymns.map((h) => ({ ...h, hasLocal: localSet.has(h.hymnNumber) }));
+    return await this.dBstorageServie.listSimpleHymns(this.searchQuery);
   });
   allSimpleHymns$ = liveQuery(async () => {
     const hymns = await this.dBstorageServie.returnAll(this.offset);
@@ -111,10 +108,7 @@ export class HymnSidebarComponent implements OnInit {
   defineLivequeries(pageChange: Boolean = false): void {
     if (!pageChange) {
       this.friends$ = liveQuery(async () => {
-        const hymns = await this.dBstorageServie.listSimpleHymns(this.searchQuery);
-        const localHymns = await this.dBstorageServie.getAllLocalHymns();
-        const localSet = new Set(localHymns.map((h) => h.hymnNumber));
-        return hymns.map((h) => ({ ...h, hasLocal: localSet.has(h.hymnNumber) }));
+        return await this.dBstorageServie.listSimpleHymns(this.searchQuery);
       });
       this.allSimpleHymns$ = liveQuery(async () => {
         const hymns = await this.dBstorageServie.returnAll(this.offset);
@@ -178,10 +172,7 @@ export class HymnSidebarComponent implements OnInit {
   queryDb(): void {
     this.activeIndex = -1;
     this.friends$ = liveQuery(async () => {
-      const hymns = await this.dBstorageServie.listSimpleHymns(this.searchQuery);
-      const localHymns = await this.dBstorageServie.getAllLocalHymns();
-      const localSet = new Set(localHymns.map((h) => h.hymnNumber));
-      return hymns.map((h) => ({ ...h, hasLocal: localSet.has(h.hymnNumber) }));
+      return await this.dBstorageServie.listSimpleHymns(this.searchQuery);
     });
   }
 

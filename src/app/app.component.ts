@@ -2,12 +2,13 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { GrabNotiondbService } from './services/grab-notiondb.service';
 import { NotionDBQuery, Result, PreFetchHymn } from './test-interface';
 import { StorageManagerService } from './services/storage-manager.service';
-import { addHours, isPast, isFuture, addMinutes, format } from 'date-fns';
+import { addHours, isFuture, addMinutes, format, isPast } from 'date-fns';
 import { IndexDbManagerService } from './services/index-db-manager.service';
 import { CommsService } from './services/comms.service';
 import { Router } from '@angular/router';
 import { RouterManagerService } from './services/router-manager.service';
 import { LoadPolyFillService } from './services/load-poly-fill.service';
+import { padHymnNumber } from './services/hymn-utils';
 
 @Component({
   selector: 'app-root',
@@ -18,7 +19,7 @@ export class AppComponent implements OnInit {
   title = 'marp-hymns';
   data: NotionDBQuery;
   hymnsList: PreFetchHymn[];
-  results: Result[]; //define it here
+  results: Result[];
   selectedHymnId: string = '';
   selectedHymnObject: Result;
   selectedSimpleHymn: PreFetchHymn;
@@ -94,11 +95,9 @@ export class AppComponent implements OnInit {
         'https://cdn.jsdelivr.net/npm/@marp-team/marpit-svg-polyfill/lib/polyfill.browser.js',
       )
       .then(() => {
-        // Script loaded successfully
         console.log('polyfill loaded');
       })
       .catch((error) => {
-        // Handle loading error
         console.error(error, 'issue with loading polyfill');
       });
   }
@@ -118,6 +117,7 @@ export class AppComponent implements OnInit {
       }
     });
   }
+
   setFullScreen(): void {
     this.fullscreen = !this.fullscreen;
 
@@ -131,18 +131,12 @@ export class AppComponent implements OnInit {
   onKeyUp(event: KeyboardEvent) {
     switch (event.key) {
       case 'Escape':
-        console.log('Escape key pressed.', this.fullscreen);
         if (this.fullscreen) {
           this.setFullScreen();
         }
         break;
       case 'ArrowLeft':
-        // console.log('Left arrow key pressed.');
         if (this.fullscreen) {
-          // this.index =
-          //   this.index > 0 ? (this.index - 1) % this.data.length : this.index;
-          console.log('backward');
-
           this.commService.emitChangePage({
             type: 'direction',
             forward: false,
@@ -150,16 +144,11 @@ export class AppComponent implements OnInit {
         }
         break;
       case 'ArrowRight':
-        // console.log('Right arrow key pressed.');
-        console.log('forward');
-
         if (this.fullscreen) {
           this.commService.emitChangePage({
             type: 'direction',
             forward: true,
           });
-
-          // default:
         }
         break;
     }
@@ -167,35 +156,27 @@ export class AppComponent implements OnInit {
 
   @HostListener('window:keydown.control.enter', ['$event'])
   onShortcut(event: KeyboardEvent) {
-    // Your action for this shortcut
     if (!this.fullscreen) {
       this.setFullScreen();
     }
-    // console.log('Ctrl+Shift+S pressed!');
   }
 
   _initHymnNumberComms(): void {
     this.commService.subscriber$.subscribe((data: any) => {
       if (data.type && data.type == 'hymnId') {
-        // console.log(this.router.url, this.router.url.includes('?number'));
-
         if (this.router.url.includes('?number')) {
           this.selectHymnId(data.value);
         }
       }
     });
 
-    // 'hymnIdFromMain'
-
     this.commService.mainAppSubscriber$.subscribe((data: any) => {
       if (data.type && data.type == 'hymnIdFromSidebar') {
-        // console.log(data.value, 'worked');
         this.selectHymnId(data.value);
       } else if (data.type && data.type == 'reloadDb') {
         this.getNotionResponse();
       } else if (data.type && data.type == 'hymnIdFromMain') {
         if (this.selectedHymnId == '') {
-          // only change if empty
           this.setCurrentHymn(data.value);
         }
       }
@@ -235,18 +216,13 @@ export class AppComponent implements OnInit {
   }
 
   selectHymnId(id: string): void {
-    // this.selectedHymnId = id;
-
     this.setCurrentHymn(id).then(() => {
       let currentExpiry = this.storageManagerService.getData(
         'last-request-date',
       ) as string;
 
-      // console.log(isFuture(new Date(currentExpiry)), new Date(currentExpiry));
-
       this.dbService.doesHymnbyIdExist(this.selectedHymnId).then((exists) => {
         if (!exists) {
-          console.log(isFuture(new Date(currentExpiry)));
           if (isFuture(new Date(currentExpiry))) {
             this.runThroughResults();
           } else this.getNotionResponse(true);
@@ -261,8 +237,10 @@ export class AppComponent implements OnInit {
     if (
       await this.dbService.doesHymnbyIdExist(this.selectedHymnId, 'simpleHymns')
     ) {
+      // Ensure the router query parameter uses the 3-digit padded hymn number
+      const paddedNum = padHymnNumber(this.selectedSimpleHymn.hymnNumber);
       this.router.navigate(['/'], {
-        queryParams: { number: this.selectedSimpleHymn.hymnNumber },
+        queryParams: { number: paddedNum },
       });
     }
   }
@@ -280,7 +258,6 @@ export class AppComponent implements OnInit {
         this.storageManagerService.storeData('last-request', notionResponse);
         let newExpiry: Date = addHours(new Date(), 1);
         this.currentExpiry = format(newExpiry, 'p').toString();
-        // let newExpiry: Date = addMinutes(new Date(), 1);
 
         this.storageManagerService.storeData('last-request-date', newExpiry);
         this.hymnsList = this.service.simplifyHymns(this.results);
@@ -291,7 +268,6 @@ export class AppComponent implements OnInit {
       },
       (error) => {
         console.error('Error fetching notion data:', error);
-        // Handle the error here
       },
     );
   }
@@ -315,13 +291,7 @@ export class AppComponent implements OnInit {
       ) as string;
       this.currentExpiry = format(currentExpiry, 'p').toString();
 
-      console.log(
-        isPast(addMinutes(new Date(currentExpiry), 1)),
-        addMinutes(new Date(currentExpiry), 1),
-      );
-
       if (isPast(new Date(currentExpiry))) {
-        // if (isPast(addMinutes(new Date(currentExpiry), 1))) {
         this.getNotionResponse();
         console.log('data expired, requesting new', currentExpiry);
       }
@@ -343,21 +313,22 @@ export class AppComponent implements OnInit {
       
       const fetchedMap = new Map<string, any>();
       fetchedHymns.forEach(item => {
-        fetchedMap.set(item.hymnNumber, item);
+        fetchedMap.set(padHymnNumber(item.hymnNumber), item);
       });
 
       const localMap = new Map<string, any>();
       localHymns.forEach(item => {
-        localMap.set(item.hymnNumber, item);
+        localMap.set(padHymnNumber(item.hymnNumber), item);
       });
 
       this.cachedHymnsInfo = simpleHymns.map(hymn => {
-        const fetched = fetchedMap.get(hymn.hymnNumber);
-        const local = localMap.get(hymn.hymnNumber);
+        const paddedNum = padHymnNumber(hymn.hymnNumber);
+        const fetched = fetchedMap.get(paddedNum);
+        const local = localMap.get(paddedNum);
         return {
           id: hymn.id,
           name: hymn.name,
-          hymnNumber: hymn.hymnNumber,
+          hymnNumber: paddedNum,
           hasMarp: !!fetched,
           marp: fetched ? fetched.marp : '',
           hasLocal: !!local,
@@ -372,7 +343,7 @@ export class AppComponent implements OnInit {
 
   async deleteHymnCache(hymnNumber: string): Promise<void> {
     try {
-      await this.dbService.deleteFetchedHymn(hymnNumber);
+      await this.dbService.deleteFetchedHymn(padHymnNumber(hymnNumber));
       await this.loadCacheData();
     } catch (err) {
       console.error('Error deleting hymn cache:', err);
@@ -383,22 +354,23 @@ export class AppComponent implements OnInit {
     this.editingHymn = hymn;
     this.editorStatusMsg = '';
     
-    // Check if we have local marp first, otherwise cloud cached marp
     if (hymn.hasLocal && hymn.localMarp) {
       this.editMarpContent = hymn.localMarp;
     } else if (hymn.hasMarp && hymn.marp) {
       this.editMarpContent = hymn.marp;
     } else {
-      // Create standard Marp starter template if not cached yet
       this.editMarpContent = `---
 marp: true
 theme: my-second-theme
 paginate: true
 ---
 
-# ${hymn.hymnNumber} - ${hymn.name}
+# ${hymn.hymnNumber}
 
-1. First verse text goes here...
+${hymn.name}
+
+First verse text goes here...
+
 
 ---
 
@@ -420,19 +392,18 @@ paginate: true
   async saveLocalMarp(): Promise<void> {
     if (!this.editingHymn) return;
     try {
+      const paddedNum = padHymnNumber(this.editingHymn.hymnNumber);
       const localHymn = {
         id: this.editingHymn.id,
         name: this.editingHymn.name,
-        hymnNumber: this.editingHymn.hymnNumber,
+        hymnNumber: paddedNum,
         marp: this.editMarpContent,
         last_edited_time: new Date()
       };
       await this.dbService.saveLocalHymn(localHymn);
       this.editorStatusMsg = 'Saved local version successfully!';
       await this.loadCacheData();
-      // Re-link editingHymn to updated state
-      this.editingHymn = this.cachedHymnsInfo.find(h => h.hymnNumber === localHymn.hymnNumber) || this.editingHymn;
-      // Emit update so active hymn presentation reloads if in local mode
+      this.editingHymn = this.cachedHymnsInfo.find(h => h.hymnNumber === paddedNum) || this.editingHymn;
       this.commService.emitSourceModeChanged(this.hymnSourceMode);
       setTimeout(() => {
         this.editorStatusMsg = '';
@@ -445,9 +416,10 @@ paginate: true
 
   async deleteLocalHymn(hymnNumber: string): Promise<void> {
     try {
-      await this.dbService.deleteLocalHymn(hymnNumber);
-      if (this.editingHymn && this.editingHymn.hymnNumber === hymnNumber) {
-        const cloudCached = this.cachedHymnsInfo.find(h => h.hymnNumber === hymnNumber);
+      const paddedNum = padHymnNumber(hymnNumber);
+      await this.dbService.deleteLocalHymn(paddedNum);
+      if (this.editingHymn && padHymnNumber(this.editingHymn.hymnNumber) === paddedNum) {
+        const cloudCached = this.cachedHymnsInfo.find(h => h.hymnNumber === paddedNum);
         this.editMarpContent = cloudCached && cloudCached.marp ? cloudCached.marp : '';
       }
       await this.loadCacheData();

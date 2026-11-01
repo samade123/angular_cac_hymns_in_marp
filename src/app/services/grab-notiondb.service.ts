@@ -1,21 +1,21 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, catchError, throwError } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { catchError, throwError } from 'rxjs';
 import {
   Result,
   PreFetchHymn,
   RequestOptions,
   FetchedHymn,
-  Properties,
 } from '../test-interface';
 import { IndexDbManagerService } from './index-db-manager.service';
+import { padHymnNumber } from './hymn-utils';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GrabNotiondbService {
   constructor(
-    private http: HttpClient, // private storageManagerService: StorageManagerService
+    private http: HttpClient,
     private dbStorageService: IndexDbManagerService
   ) {}
 
@@ -80,11 +80,14 @@ export class GrabNotiondbService {
           }
         }
 
+        const rawNumber = result.properties['Number']['title'][0]['plain_text'] || '';
+        const hymnNumber = padHymnNumber(rawNumber);
+
         return {
           id: result.id,
           name,
           last_edited_time: result.last_edited_time,
-          hymnNumber: result.properties['Number']['title'][0]['plain_text'],
+          hymnNumber: hymnNumber,
           url: url,
         };
       });
@@ -93,6 +96,7 @@ export class GrabNotiondbService {
   isSimpleHymn(value: any): value is PreFetchHymn {
     return (
       typeof value === 'object' &&
+      value !== null &&
       'id' in value &&
       typeof value.id === 'string' &&
       'name' in value &&
@@ -100,20 +104,20 @@ export class GrabNotiondbService {
       'last_edited_time' in value &&
       value.last_edited_time instanceof Date &&
       'hymnNumber' in value &&
-      typeof value.hymnNumber === 'number'
+      typeof value.hymnNumber === 'string'
     );
   }
 
   isResult(value: any): value is Result {
     return (
       typeof value === 'object' &&
+      value !== null &&
       'parent' in value &&
       'last_edited_time' in value
     );
   }
 
   getMarpFile(s3Url: string) {
-    // return this.http.get(`api/getMarpFile.mjs?url=${s3Url}`).pipe(
     return this.http.get(`${s3Url}`).pipe(
       catchError((error) => {
         console.log(error);
@@ -143,24 +147,17 @@ export class GrabNotiondbService {
 
   async getHymn(simpleHymn: PreFetchHymn) {
     console.log('checking');
-    simpleHymn.hymnNumber;
     if (simpleHymn.url) {
-      // if (this.hymnDict[simpleHymn.hymnNumber]) {
-      // console.log('does the hymnexists',await this.dbStorageService.doesHymnExist(simpleHymn.hymnNumber))
       if (await this.dbStorageService.doesHymnExist(simpleHymn.hymnNumber)) {
         return;
       } else {
         this.getMarp(simpleHymn.url)
           .then(async (file) => {
-            // console.log(file, 'file for this hymn')
-            // this.renderMarp();
-            // this.storageService.storeData('hymn-dict', this.hymnDict);
             let hymnItem = this.simplifyHymnItem(simpleHymn, file);
             await this.dbStorageService.storeData('simpleHymnItems', hymnItem);
           })
           .catch((err) => {
             console.error(err);
-            // this.failedFetch.emit();
           });
       }
     }
